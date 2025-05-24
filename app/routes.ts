@@ -1,3 +1,37 @@
-import { type RouteConfig, index } from "@react-router/dev/routes";
+import {
+  type RouteConfig,
+  index,
+  layout,
+  prefix,
+  route,
+} from '@react-router/dev/routes';
 
-export default [index("routes/home.tsx")] satisfies RouteConfig;
+export default [
+  index('common/pages/home-page.tsx'),
+  ...prefix('commissions', [
+    index('features/commissions/commissions.tsx'),
+    route('character', 'features/commissions/character.tsx'),
+    route('illustration', 'features/commissions/illustration.tsx'),
+    route('virtual-3d', 'features/commissions/virtual-3d.tsx'),
+    route('live2d', 'features/commissions/live2d.tsx'),
+    route('design', 'features/commissions/design.tsx'),
+    route('video', 'features/commissions/video.tsx'),
+    route('all-samples', 'features/commissions/all-samples.tsx'),
+    route('recommended', 'features/commissions/recommended.tsx'),
+    route('join/artist', 'features/commissions/join-artist.tsx'),
+  ]),
+  ...prefix('/auth', [
+    layout('features/auth/layouts/auth-layout.tsx', [
+      route('/login', 'features/auth/pages/login-page.tsx'),
+      route('/join', 'features/auth/pages/join-page.tsx'),
+      ...prefix('/otp', [
+        route('/start', 'features/auth/pages/otp-start-page.tsx'),
+        route('/complete', 'features/auth/pages/otp-complete-page.tsx'),
+      ]),
+      ...prefix('/social/:provider', [
+        route('/start', 'features/auth/pages/social-start-page.tsx'),
+        route('/complete', 'features/auth/pages/social-complete-page.tsx'),
+      ]),
+    ]),
+  ]),
+] satisfies RouteConfig;
