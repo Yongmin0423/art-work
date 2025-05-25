@@ -1,13 +1,11 @@
-import type { Route } from './+types/auth';
+import { Outlet } from 'react-router';
 
-export const meta: Route.MetaFunction = () => {
-  return [{ title: 'Auth Layout' }];
-};
-
-export default function AuthLayout({ children }: { children: React.ReactNode }) {
+export default function AuthLayout() {
   return (
-    <div className="auth-layout">
-      {children}
+    <div className="flex flex-col h-screen items-center justify-center">
+      <div className="flex flex-col max-w-1/2 p-20 mx-auto border-md shadow-2xl rounded-md">
+        <Outlet />
+      </div>
     </div>
   );
 }
