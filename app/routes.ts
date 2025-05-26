@@ -9,16 +9,19 @@ import {
 export default [
   index('common/pages/home-page.tsx'),
   ...prefix('commissions', [
+    // Index는 레이아웃 없이 사용
     index('features/commissions/commissions.tsx'),
-    route('character', 'features/commissions/character.tsx'),
-    route('illustration', 'features/commissions/illustration.tsx'),
-    route('virtual-3d', 'features/commissions/virtual-3d.tsx'),
-    route('live2d', 'features/commissions/live2d.tsx'),
-    route('design', 'features/commissions/design.tsx'),
-    route('video', 'features/commissions/video.tsx'),
-    route('all-samples', 'features/commissions/all-samples.tsx'),
-    route('recommended', 'features/commissions/recommended.tsx'),
-    route('join/artist', 'features/commissions/join-artist.tsx'),
+    // 나머지는 공통 레이아웃 사용
+    layout('features/commissions/layouts/commissions-layout.tsx', [
+      route('character', 'features/commissions/character.tsx'),
+      route('illustration', 'features/commissions/illustration.tsx'),
+      route('virtual-3d', 'features/commissions/virtual-3d.tsx'),
+      route('live2d', 'features/commissions/live2d.tsx'),
+      route('design', 'features/commissions/design.tsx'),
+      route('video', 'features/commissions/video.tsx'),
+      route('recommended', 'features/commissions/recommended.tsx'),
+      route('join/artist', 'features/commissions/join-artist.tsx'),
+    ]),
   ]),
   ...prefix('/auth', [
     layout('features/auth/layouts/auth-layout.tsx', [

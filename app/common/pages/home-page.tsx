@@ -1,7 +1,8 @@
 import CategoryCard from '~/components/category-card';
-import { Hero } from '~/components/Hero';
+import { Hero } from '~/components/hero';
 import { Button } from '~/components/ui/button';
 import { Input } from '~/components/ui/input';
+import ArtistCard from '~/features/commissions/components/artist-card';
 
 export const meta = () => {
   return [
@@ -53,13 +54,22 @@ export default function HomePage() {
         </div>
       </div>
       <div>
-        <h1 className="font-bold text-3xl">Famous Artist</h1>
+        <h1 className="font-bold text-3xl mb-5">Famous Artist</h1>
         <div className="grid grid-cols-4 gap-10 ">
           {Array.from({ length: 4 }).map((_, index) => (
-            <CategoryCard
+            <ArtistCard
               key={index}
-              title="charater"
-              imageUrl="https://i.namu.wiki/i/R-92H0KLN-wen6aNLzERBpLNtAU6o8QTzwjI0cbKGVpyrIWart56j-NhtiOwtDd1EIRy-hQg0jLgbSRIZ_CJoQ.webp"
+              name="GQuuuuux"
+              description="캐릭터 일러스트 전문"
+              images={[
+                'https://i2.ruliweb.com/img/25/03/28/195db744fe120337.jpg',
+                'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTRrwNMHYCP7CVjFghDN7W-P6L6n13ehDxJnQ&s',
+              ]}
+              rating={4.8}
+              likes={123}
+              tags={['Anime', 'Fantasy', 'Portrait']}
+              commissionStatus="가능"
+              priceStart={50000}
             />
           ))}
         </div>
