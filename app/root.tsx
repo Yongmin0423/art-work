@@ -41,6 +41,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
           content="width=device-width, initial-scale=1"
         />
         <Links />
+        <Meta />
       </head>
       <body>
         <main>{children}</main>
@@ -54,16 +55,18 @@ export function Layout({ children }: { children: React.ReactNode }) {
 export default function App() {
   const { pathname } = useLocation();
   return (
-    <div className={pathname.includes('/auth/') ? '' : 'p-28'}>
-      {pathname.includes('/auth') ? null : (
-        <Navigation
-          isLoggedIn={false}
-          hasNotifications={false}
-          hasMessages={false}
-        />
-      )}
-      <Outlet />
-    </div>
+    <>
+      <div className={pathname.includes('/auth/') ? '' : 'p-28'}>
+        {pathname.includes('/auth') ? null : (
+          <Navigation
+            isLoggedIn={false}
+            hasNotifications={false}
+            hasMessages={false}
+          />
+        )}
+        <Outlet />
+      </div>
+    </>
   );
 }
 

@@ -9,8 +9,10 @@ import {
 import { Button } from '~/components/ui/button';
 import { Heart } from 'lucide-react';
 import { Badge } from '~/components/ui/badge';
+import { Link } from 'react-router';
 
 type ArtistCardProps = {
+  id: string;
   name: string;
   description: string;
   images: string[];
@@ -22,6 +24,7 @@ type ArtistCardProps = {
 };
 
 export default function ArtistCard({
+  id,
   name,
   description,
   images,
@@ -32,22 +35,27 @@ export default function ArtistCard({
   priceStart,
 }: ArtistCardProps) {
   return (
-    <Card className="w-full max-w-md">
-      <CardHeader>
-        <CardTitle>{name}</CardTitle>
-        <CardDescription>{description}</CardDescription>
-      </CardHeader>
+    <Card className="w-full max-w-md shadow-xl">
+      <Link
+        to={`/commissions/artist/${id}`}
+        className="cursor-pointer"
+      >
+        <CardHeader>
+          <CardTitle>{name}</CardTitle>
+          <CardDescription>{description}</CardDescription>
+        </CardHeader>
 
-      <CardContent className="grid grid-cols-2 gap-2">
-        {images.slice(0, 2).map((src, idx) => (
-          <img
-            key={idx}
-            src={src}
-            alt={`작품 ${idx + 1}`}
-            className="rounded object-cover w-full h-40"
-          />
-        ))}
-      </CardContent>
+        <CardContent className="grid grid-cols-2 gap-2">
+          {images.slice(0, 2).map((src, idx) => (
+            <img
+              key={idx}
+              src={src}
+              alt={`작품 ${idx + 1}`}
+              className="rounded object-cover w-full h-40"
+            />
+          ))}
+        </CardContent>
+      </Link>
 
       <CardFooter className="flex flex-col items-start gap-2 text-sm text-muted-foreground">
         <div className="flex items-center gap-4">

@@ -1,17 +1,8 @@
 import { Link } from 'react-router';
 import { Hero } from '~/components/hero';
-import type { Route } from './+types/commissions';
 import { Button } from '~/components/ui/button';
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from '~/components/ui/card';
-import { Heart } from 'lucide-react';
-import ArtistCard from './components/artist-card';
+import ArtistCard from '../components/artist-card';
+import type { Route } from './+types/commissions';
 
 export const meta: Route.MetaFunction = () => {
   return [
@@ -45,6 +36,7 @@ export default function commissios() {
         </div>
         {Array.from({ length: 3 }).map((_, index) => (
           <ArtistCard
+            id={`artist-${index}`}
             key={index}
             name="GQuuuuux"
             description="캐릭터 일러스트 전문"
@@ -81,6 +73,7 @@ export default function commissios() {
         </div>
         {Array.from({ length: 3 }).map((_, index) => (
           <ArtistCard
+            id={`artist-${index}`}
             key={index}
             name="GQuuuuux"
             description="캐릭터 일러스트 전문"
@@ -115,6 +108,7 @@ export default function commissios() {
         </div>
         {Array.from({ length: 3 }).map((_, index) => (
           <ArtistCard
+            id={`artist-${index}`}
             key={index}
             name="GQuuuuux"
             description="캐릭터 일러스트 전문"
@@ -149,6 +143,7 @@ export default function commissios() {
         </div>
         {Array.from({ length: 3 }).map((_, index) => (
           <ArtistCard
+            id={`artist-${index}`}
             key={index}
             name="GQuuuuux"
             description="캐릭터 일러스트 전문"
