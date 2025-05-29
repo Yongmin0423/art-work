@@ -10,14 +10,15 @@ import { Button } from '~/components/ui/button';
 import { Switch } from '~/components/ui/switch';
 import { COMMISSION_CATEGORIES } from '../constants';
 import { Input } from '~/components/ui/input';
+import { Marquee3D } from '~/common/components/marquee3d';
 
 export default function CommissionsLayout() {
   const [isSwitchOn, setIsSwitchOn] = useState(true);
 
   return (
     <div>
-      <div className="flex flex-col items-center">
-        <h2>이쪽은 히어로 섹션</h2>
+      <div className="flex flex-col items-center mb-5">
+        <Marquee3D />
       </div>
       <div className="grid grid-cols-8 gap-10">
         <div className="col-span-2">

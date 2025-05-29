@@ -64,4 +64,13 @@ export default [
       route('/posts', 'features/users/pages/profile-posts-page.tsx'),
     ]),
   ]),
+  ...prefix('/community', [
+    index('features/community/pages/community-page.tsx'),
+    route('/:postId', 'features/community/pages/post-page.tsx'),
+    route('/create', 'features/community/pages/submit-post-page.tsx'),
+  ]),
+  ...prefix('/reviews', [
+    index('features/reviews/pages/reviews.tsx'),
+    route('/:reviewId', 'features/reviews/pages/review-page.tsx'),
+  ]),
 ] satisfies RouteConfig;

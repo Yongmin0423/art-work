@@ -28,7 +28,9 @@ export default function Character() {
           />
         ))}
       </div>
-      <CommissionsPagination totalPages={10} />
+      <div className="mt-5">
+        <CommissionsPagination totalPages={10} />
+      </div>
     </>
   );
 }

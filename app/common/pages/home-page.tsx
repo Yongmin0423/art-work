@@ -3,6 +3,7 @@ import { Hero } from '~/components/hero';
 import { Button } from '~/components/ui/button';
 import { Input } from '~/components/ui/input';
 import ArtistCard from '~/features/commissions/components/artist-card';
+import { BentoDemo } from '../components/bento-grid';
 
 export const meta = () => {
   return [
@@ -25,13 +26,6 @@ export default function HomePage() {
             title="Make a your own art with the best Artist"
             subtitle="find your favorite artist and make a your own art"
           />
-          <div className="flex w-2/3 mx-auto gap-5">
-            <Input
-              placeholder="search by art,artist etc.."
-              className="w-full"
-            />
-            <Button>Search</Button>
-          </div>
         </div>
         <div className="col-span-2">
           <img
@@ -40,8 +34,11 @@ export default function HomePage() {
             className="w-full h-full object-cover"
           />
         </div>
+        <div className="col-span-6">
+          <BentoDemo />
+        </div>
       </div>
-      <div className="mb-10">
+      {/* <div className="mb-10">
         <h1 className="font-bold text-3xl">Category</h1>
         <div className="grid grid-cols-4 gap-10 ">
           {Array.from({ length: 4 }).map((_, index) => (
@@ -52,13 +49,13 @@ export default function HomePage() {
             />
           ))}
         </div>
-      </div>
+      </div> */}
       <div>
         <h1 className="font-bold text-3xl mb-5">Famous Artist</h1>
         <div className="grid grid-cols-4 gap-10 ">
           {Array.from({ length: 4 }).map((_, index) => (
             <ArtistCard
-              key={index}
+              id={index.toString()}
               name="GQuuuuux"
               description="캐릭터 일러스트 전문"
               images={[

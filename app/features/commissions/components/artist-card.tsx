@@ -74,10 +74,10 @@ export default function ArtistCard({
             <p
               className={`font-semibold ${
                 commissionStatus === '가능'
-                  ? 'text-green-600'
+                  ? 'text-green-600 border border-green-600 text-center rounded-full px-2'
                   : commissionStatus === '대기 중'
-                  ? 'text-yellow-600'
-                  : 'text-red-600'
+                  ? 'text-yellow-600 border border-yellow-600 text-center rounded-full px-2'
+                  : 'text-red-600 border border-red-600 text-center rounded-full px-2'
               }`}
             >
               커미션 {commissionStatus}

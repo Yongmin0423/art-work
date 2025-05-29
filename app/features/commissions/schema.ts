@@ -82,16 +82,16 @@ export const commissionOrder = pgTable('commission_order', {
   completed_at: timestamp(),
 });
 
-// 포트폴리오/샘플 작품
-export const portfolio = pgTable('portfolio', {
-  portfolio_id: bigint({ mode: 'number' })
-    .primaryKey()
-    .generatedAlwaysAsIdentity(),
-  commission_id: bigint({ mode: 'number' }).references(
-    () => commission.commission_id
-  ),
-  image_url: text().notNull(),
-  description: text(),
-  is_main: boolean().default(false), // 대표 이미지 여부
-  created_at: timestamp().notNull().defaultNow(),
-});
+// // 포트폴리오/샘플 작품
+// export const portfolio = pgTable('portfolio', {
+//   portfolio_id: bigint({ mode: 'number' })
+//     .primaryKey()
+//     .generatedAlwaysAsIdentity(),
+//   commission_id: bigint({ mode: 'number' }).references(
+//     () => commission.commission_id
+//   ),
+//   image_url: text().notNull(),
+//   description: text(),
+//   is_main: boolean().default(false), // 대표 이미지 여부
+//   created_at: timestamp().notNull().defaultNow(),
+// });

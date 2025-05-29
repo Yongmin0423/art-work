@@ -106,24 +106,9 @@ const menus = [
     to: '/community',
     items: [
       {
-        name: '전체글 보기',
-        description: '커뮤니티의 모든 게시글을 확인하세요.',
-        to: '/community/all',
-      },
-      {
-        name: '자유게시판',
-        description: '자유롭게 이야기를 나누는 공간입니다.',
-        to: '/community/free-board',
-      },
-      {
-        name: 'Q&A',
-        description: '궁금한 점을 질문하고 답변을 받아보세요.',
-        to: '/community/qna',
-      },
-      {
-        name: '팁 & 노하우',
-        description: '작가와 고객 모두에게 유용한 정보를 공유합니다.',
-        to: '/community/tips',
+        name: '커뮤니티',
+        description: '커뮤니티의 게시글을 확인하세요.',
+        to: '/community',
       },
       {
         name: '새 글 작성',
@@ -140,7 +125,7 @@ const menus = [
         name: '모든 후기 보기',
         description:
           '커미션 및 작품에 대한 고객님들의 생생한 후기를 확인하세요.',
-        to: '/reviews/all',
+        to: '/reviews',
       },
       {
         name: '후기 작성하기',
