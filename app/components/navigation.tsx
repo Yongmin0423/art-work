@@ -12,21 +12,19 @@ import { Separator } from './ui/separator';
 import { cn } from '~/lib/utils';
 import { Button } from './ui/button';
 import {
-  BanknoteIcon,
-  BarChart3Icon,
   BellIcon,
   ClipboardListIcon,
-  Edit3Icon,
-  FilePlus2Icon,
-  GalleryHorizontalEndIcon,
+  CreditCardIcon,
   HeartIcon,
   HelpCircleIcon,
-  ImageUpIcon,
+  HomeIcon,
+  ImageIcon,
   InfoIcon,
   LogOutIcon,
   MessageCircleIcon,
   MessageSquareIcon,
   SettingsIcon,
+  ShoppingCartIcon,
   StarIcon,
   UserIcon,
 } from 'lucide-react';
@@ -86,18 +84,18 @@ const menus = [
         name: '모든 샘플 보기',
         description:
           '모든 카테고리의 커미션 샘플을 한눈에 살펴보고 마음에 드는 작가님을 찾아보세요.',
-        to: '/commissions/all-samples',
+        to: '/commissions',
       },
       {
         name: '추천 작가',
         description:
           '실력 있는 추천 작가님들의 프로필과 포트폴리오를 직접 확인하세요.',
-        to: '/artists/recommended',
+        to: '/commissions/recommended',
       },
       {
         name: '작가로 참여하기',
         description: '작가로 활동하고 싶으신가요? 지금 바로 등록하세요.',
-        to: '/join/artist',
+        to: '/commissions/join/artist',
       },
     ],
   },
@@ -286,76 +284,22 @@ export default function Navigation({
                   className="cursor-pointer"
                 >
                   <Link to="/my/dashboard">
-                    <BarChart3Icon className="size-4 mr-2" />
+                    <HomeIcon className="size-4 mr-2" />
                     대시보드
                   </Link>
                 </DropdownMenuItem>
               </DropdownMenuGroup>
               <DropdownMenuSeparator />
 
-              {/* 창작 및 판매 (작가 활동 중심) */}
-              <DropdownMenuGroup>
-                <DropdownMenuItem
-                  asChild
-                  className="cursor-pointer"
-                >
-                  <Link to="/my/artworks">
-                    <GalleryHorizontalEndIcon className="size-4 mr-2" />내 작품
-                    관리
-                  </Link>
-                </DropdownMenuItem>
-                <DropdownMenuItem
-                  asChild
-                  className="cursor-pointer"
-                >
-                  <Link to="/my/earnings">
-                    <BanknoteIcon className="size-4 mr-2" />
-                    수익/정산 관리
-                  </Link>
-                </DropdownMenuItem>
-              </DropdownMenuGroup>
-              <DropdownMenuSeparator />
-
-              {/* 의뢰 및 구매 (의뢰인 활동 중심) */}
+              {/* 내 의뢰 */}
               <DropdownMenuGroup>
                 <DropdownMenuItem
                   asChild
                   className="cursor-pointer"
                 >
                   <Link to="/my/commissions/requested">
-                    <ClipboardListIcon className="size-4 mr-2" />
-                    나의 의뢰 목록
-                  </Link>
-                </DropdownMenuItem>
-                <DropdownMenuItem
-                  asChild
-                  className="cursor-pointer"
-                >
-                  <Link to="/my/commissions/new">
-                    <FilePlus2Icon className="size-4 mr-2" />새 의뢰 요청
-                  </Link>
-                </DropdownMenuItem>
-              </DropdownMenuGroup>
-              <DropdownMenuSeparator />
-
-              {/* 공통 기능 */}
-              <DropdownMenuGroup>
-                <DropdownMenuItem
-                  asChild
-                  className="cursor-pointer"
-                >
-                  <Link to="/my/messages">
-                    <MessageSquareIcon className="size-4 mr-2" />
-                    메시지
-                  </Link>
-                </DropdownMenuItem>
-                <DropdownMenuItem
-                  asChild
-                  className="cursor-pointer"
-                >
-                  <Link to="/my/favorites">
-                    <HeartIcon className="size-4 mr-2" />
-                    찜한 목록
+                    <ShoppingCartIcon className="size-4 mr-2" />
+                    의뢰한 커미션
                   </Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem
@@ -364,21 +308,69 @@ export default function Navigation({
                 >
                   <Link to="/my/reviews">
                     <StarIcon className="size-4 mr-2" />
-                    나의 후기
+                    내가 쓴 후기
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  asChild
+                  className="cursor-pointer"
+                >
+                  <Link to="/my/favorites">
+                    <HeartIcon className="size-4 mr-2" />
+                    찜한 작가
                   </Link>
                 </DropdownMenuItem>
               </DropdownMenuGroup>
               <DropdownMenuSeparator />
 
-              {/* 내 계정 관리 */}
+              {/* 작가 활동 */}
               <DropdownMenuGroup>
                 <DropdownMenuItem
                   asChild
                   className="cursor-pointer"
                 >
-                  <Link to="/profile/me">
-                    {' '}
-                    {/* 혹은 /profile/{userId} */}
+                  <Link to="/my/commissions/received">
+                    <ClipboardListIcon className="size-4 mr-2" />
+                    받은 커미션
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  asChild
+                  className="cursor-pointer"
+                >
+                  <Link to="/my/artworks">
+                    <ImageIcon className="size-4 mr-2" />
+                    포트폴리오 관리
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  asChild
+                  className="cursor-pointer"
+                >
+                  <Link to="/my/earnings">
+                    <CreditCardIcon className="size-4 mr-2" />
+                    수익 관리
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  asChild
+                  className="cursor-pointer"
+                >
+                  <Link to="/my/artist/reviews">
+                    <MessageSquareIcon className="size-4 mr-2" />
+                    받은 후기
+                  </Link>
+                </DropdownMenuItem>
+              </DropdownMenuGroup>
+              <DropdownMenuSeparator />
+
+              {/* 계정 */}
+              <DropdownMenuGroup>
+                <DropdownMenuItem
+                  asChild
+                  className="cursor-pointer"
+                >
+                  <Link to="/users/yongmin0423">
                     <UserIcon className="size-4 mr-2" />내 프로필 보기
                   </Link>
                 </DropdownMenuItem>
@@ -386,16 +378,25 @@ export default function Navigation({
                   asChild
                   className="cursor-pointer"
                 >
-                  <Link to="/settings/profile">
-                    <Edit3Icon className="size-4 mr-2" />
-                    프로필 수정
+                  <Link to="/my/profile">
+                    <UserIcon className="size-4 mr-2" />
+                    프로필 설정
                   </Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem
                   asChild
                   className="cursor-pointer"
                 >
-                  <Link to="/settings/account">
+                  <Link to="/my/notifications">
+                    <BellIcon className="size-4 mr-2" />
+                    알림 설정
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  asChild
+                  className="cursor-pointer"
+                >
+                  <Link to="/my/settings">
                     <SettingsIcon className="size-4 mr-2" />
                     계정 설정
                   </Link>
@@ -409,7 +410,7 @@ export default function Navigation({
                   asChild
                   className="cursor-pointer"
                 >
-                  <Link to="/help">
+                  <Link to="/support">
                     <HelpCircleIcon className="size-4 mr-2" />
                     도움말 센터
                   </Link>
@@ -418,9 +419,7 @@ export default function Navigation({
                   asChild
                   className="cursor-pointer"
                 >
-                  <Link to="/blog">
-                    {' '}
-                    {/* 또는 /announcements */}
+                  <Link to="/support/announcements">
                     <InfoIcon className="size-4 mr-2" />
                     공지사항/블로그
                   </Link>
