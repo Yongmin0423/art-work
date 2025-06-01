@@ -5,36 +5,8 @@
     {
       "idx": 0,
       "version": "7",
-      "when": 1748362638251,
-      "tag": "0000_past_wildside",
-      "breakpoints": true
-    },
-    {
-      "idx": 1,
-      "version": "7",
-      "when": 1748364865630,
-      "tag": "0001_early_felicia_hardy",
-      "breakpoints": true
-    },
-    {
-      "idx": 2,
-      "version": "7",
-      "when": 1748616856934,
-      "tag": "0002_woozy_preak",
-      "breakpoints": true
-    },
-    {
-      "idx": 3,
-      "version": "7",
-      "when": 1748622090816,
-      "tag": "0003_youthful_sentry",
-      "breakpoints": true
-    },
-    {
-      "idx": 4,
-      "version": "7",
-      "when": 1748675097461,
-      "tag": "0004_melodic_ben_grimm",
+      "when": 1748795015206,
+      "tag": "0000_right_captain_britain",
       "breakpoints": true
     }
   ]
