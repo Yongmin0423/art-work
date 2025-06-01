@@ -9,7 +9,7 @@
     "typecheck": "react-router typegen && tsc",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
-    "db:studio": "drizzle-kit studio"
+    "db:typegen": "supabase gen types typescript --project-id utlsbgksqrdprpugvplk > database.types.ts"
   },
   "dependencies": {
     "@radix-ui/react-accordion": "^1.2.11",
@@ -28,6 +28,7 @@
     "@radix-ui/react-tooltip": "^1.2.7",
     "@react-router/node": "^7.5.3",
     "@react-router/serve": "^7.5.3",
+    "@supabase/supabase-js": "^2.49.8",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "drizzle-orm": "^0.43.1",
@@ -49,6 +50,7 @@
     "@types/react": "^19.1.2",
     "@types/react-dom": "^19.1.2",
     "drizzle-kit": "^0.31.1",
+    "supabase": "^2.23.4",
     "tailwindcss": "^4.1.4",
     "tw-animate-css": "^1.3.0",
     "typescript": "^5.8.3",

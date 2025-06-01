@@ -4,6 +4,8 @@ import { Button } from '~/components/ui/button';
 import { Input } from '~/components/ui/input';
 import ArtistCard from '~/features/commissions/components/artist-card';
 import { BentoDemo } from '../components/bento-grid';
+import type { Route } from './+types/home-page';
+import { getArtist } from '~/features/commissions/queries';
 
 export const meta = () => {
   return [
@@ -17,7 +19,13 @@ export const meta = () => {
   ];
 };
 
-export default function HomePage() {
+export const loader = async ({ params }: Route.LoaderArgs) => {
+  const artist = await getArtist({ limit: 4 });
+  console.log(artist);
+  return { artist };
+};
+
+export default function HomePage({ loaderData }: Route.ComponentProps) {
   return (
     <div>
       <div className="grid grid-cols-6 h-full">

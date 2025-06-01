@@ -11,7 +11,7 @@ export const meta: Route.MetaFunction = () => {
   ];
 };
 
-export default function commissios() {
+export default function commissions() {
   return (
     <div className="space-y-20">
       <Hero
@@ -20,9 +20,7 @@ export default function commissios() {
       />
       <div className="grid grid-cols-4 gap-4">
         <div>
-          <h2 className="text-3xl font-bold leading-tight tracking-tight">
-            Charater-Illustration
-          </h2>
+          <h2 className="text-3xl font-bold leading-tight tracking-tight">Charater-Illustration</h2>
           <p className="text-xl font-light text-foreground">
             The most popular Charater-Illustrator on artwork.
           </p>
@@ -54,9 +52,7 @@ export default function commissios() {
       </div>
       <div className="grid grid-cols-4 gap-4">
         <div>
-          <h2 className="text-3xl font-bold leading-tight tracking-tight">
-            Virtual-3D
-          </h2>
+          <h2 className="text-3xl font-bold leading-tight tracking-tight">Virtual-3D</h2>
           <p className="text-xl font-light text-foreground">
             The most popular Virtual-3D Artist on artwork.
           </p>
@@ -66,9 +62,7 @@ export default function commissios() {
             asChild
             className="text-3xl mt-5"
           >
-            <Link to="/commissions/virtual-3d">
-              Explore all products &rarr;
-            </Link>
+            <Link to="/commissions/virtual-3d">Explore all products &rarr;</Link>
           </Button>
         </div>
         {Array.from({ length: 3 }).map((_, index) => (
@@ -91,9 +85,7 @@ export default function commissios() {
       </div>
       <div className="grid grid-cols-4 gap-4">
         <div>
-          <h2 className="text-3xl font-bold leading-tight tracking-tight">
-            Design
-          </h2>
+          <h2 className="text-3xl font-bold leading-tight tracking-tight">Design</h2>
           <p className="text-xl font-light text-foreground">
             The most popular Designer on artwork.
           </p>
@@ -126,9 +118,7 @@ export default function commissios() {
       </div>
       <div className="grid grid-cols-4 gap-4">
         <div>
-          <h2 className="text-3xl font-bold leading-tight tracking-tight">
-            Live2D
-          </h2>
+          <h2 className="text-3xl font-bold leading-tight tracking-tight">Live2D</h2>
           <p className="text-xl font-light text-foreground">
             The most popular Live2D Artist on artwork.
           </p>

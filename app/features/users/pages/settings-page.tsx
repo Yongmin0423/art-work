@@ -1,10 +1,10 @@
 import { Form } from 'react-router';
 import InputPair from '~/components/input-pair';
-
 import { useState } from 'react';
 import { Label } from '~/components/ui/label';
 import { Input } from '~/components/ui/input';
 import { Button } from '~/components/ui/button';
+import { Avatar, AvatarFallback, AvatarImage } from '~/components/ui/avatar';
 import type { Route } from './+types/settings-page';
 import SelectPair from '~/common/components/select-pair';
 
@@ -14,93 +14,129 @@ export const meta: Route.MetaFunction = () => {
 
 export default function SettingsPage() {
   const [avatar, setAvatar] = useState<string | null>(null);
+
   const onChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files) {
       const file = event.target.files[0];
       setAvatar(URL.createObjectURL(file));
     }
   };
+
   return (
-    <div className="space-y-20 ">
+    <div className="space-y-20">
       <div className="grid grid-cols-6 gap-40">
         <div className="col-span-4 flex flex-col gap-10">
           <h2 className="text-2xl font-semibold">Edit profile</h2>
-          <Form className="flex flex-col w-1/2 gap-5">
+          <Form className="flex flex-col w-full max-w-lg gap-5">
             <InputPair
               label="Name"
-              description="Your public name"
+              description="Your display name (shown on your profile)"
               required
               id="name"
               name="name"
               placeholder="John Doe"
-            />
-            <SelectPair
-              label="Role"
-              description="What role do you do identify the most with"
-              name="role"
-              placeholder="Select a role"
-              options={[
-                { label: 'Developer', value: 'developer' },
-                { label: 'Designer', value: 'designer' },
-                { label: 'Product Manager', value: 'product-manager' },
-                { label: 'Founder', value: 'founder' },
-                { label: 'Other', value: 'other' },
-              ]}
+              defaultValue="John Doe"
             />
             <InputPair
-              label="Headline"
-              description="An introduction to your profile."
+              label="Username"
+              description="Your unique username (used in profile URL)"
               required
-              id="headline"
-              name="headline"
-              placeholder="John Doe"
-              textArea
+              id="username"
+              name="username"
+              placeholder="john_doe"
+              defaultValue="john_doe"
+            />
+            <InputPair
+              label="Job Title"
+              description="Your professional title or specialty"
+              id="jobTitle"
+              name="jobTitle"
+              placeholder="Product Designer"
+              defaultValue="Product Designer"
             />
             <InputPair
               label="Bio"
-              description="Your public bio. It will be displayed on your profile page."
-              required
+              description="Tell others about yourself"
               id="bio"
               name="bio"
-              placeholder="John Doe"
+              placeholder="Passionate about creating beautiful and functional designs..."
               textArea
             />
-            <Button className="w-full">Update profile</Button>
+            <SelectPair
+              label="Work Status"
+              description="Your current availability for work"
+              name="workStatus"
+              placeholder="Select your status"
+              options={[
+                { label: 'Available for work', value: 'available' },
+                { label: 'Busy', value: 'busy' },
+                { label: 'Not available', value: 'unavailable' },
+              ]}
+            />
+            <div className="grid grid-cols-2 gap-3">
+              <InputPair
+                label="Location"
+                description="Where you're based"
+                id="location"
+                name="location"
+                placeholder="Seoul, South Korea"
+              />
+              <InputPair
+                label="Website"
+                description="Your personal website or portfolio"
+                id="website"
+                name="website"
+                type="url"
+                placeholder="https://johndoe.com"
+              />
+            </div>
+            <Button
+              type="submit"
+              className="w-full"
+            >
+              Update profile
+            </Button>
           </Form>
         </div>
-        <aside className="col-span-2 p-6 rounded-lg border shadow-md">
-          <Label className="flex flex-col gap-1">
-            Avatar
-            <small className="text-muted-foreground">
-              This is your public avatar.
-            </small>
-          </Label>
-          <div className="space-y-5">
-            <div className="size-40 rounded-full shadow-xl overflow-hidden ">
-              {avatar ? (
-                <img
-                  src={avatar}
-                  className="object-cover w-full h-full"
+
+        <aside className="col-span-2 p-6 rounded-lg border shadow-md h-fit">
+          <div className="space-y-4">
+            <div>
+              <Label className="text-sm font-medium">Avatar</Label>
+              <p className="text-xs text-muted-foreground mt-1">This is your public avatar.</p>
+            </div>
+
+            <div className="flex flex-col items-center space-y-4">
+              <Avatar className="size-32">
+                <AvatarImage
+                  src={avatar || 'https://github.com/shadcn.png'}
+                  alt="Avatar preview"
                 />
-              ) : null}
+                <AvatarFallback>JD</AvatarFallback>
+              </Avatar>
+
+              <Input
+                type="file"
+                className="w-full"
+                onChange={onChange}
+                accept="image/png,image/jpeg,image/jpg"
+                name="avatar"
+              />
+
+              <div className="text-xs text-muted-foreground space-y-1 text-center">
+                <p>Recommended: 400x400px</p>
+                <p>Formats: PNG, JPEG, JPG</p>
+                <p>Max size: 2MB</p>
+              </div>
+
+              <Button
+                type="button"
+                className="w-full"
+                size="sm"
+              >
+                Update avatar
+              </Button>
             </div>
-            <Input
-              type="file"
-              className="w-1/2"
-              onChange={onChange}
-              required
-              name="icon"
-            />
-            <div className="flex flex-col text-xs">
-              <span className=" text-muted-foreground">
-                Recommended size: 128x128px
-              </span>
-              <span className=" text-muted-foreground">
-                Allowed formats: PNG, JPEG
-              </span>
-              <span className=" text-muted-foreground">Max file size: 1MB</span>
-            </div>
-            <Button className="w-full">Update avatar</Button>
           </div>
         </aside>
       </div>
