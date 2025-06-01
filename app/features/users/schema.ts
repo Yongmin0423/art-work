@@ -9,9 +9,11 @@ import {
   timestamp,
   uuid,
 } from 'drizzle-orm/pg-core';
+import { commission, commissionOrder } from '../commissions/schema';
 import { posts } from '../community/schema';
-import { commission } from '../commissions/schema';
+import { reviews } from '../reviews/schema';
 
+// ===== USERS & PROFILES =====
 const users = pgSchema('auth').table('users', {
   id: uuid().primaryKey(),
 });
@@ -20,14 +22,14 @@ export const profiles = pgTable('profiles', {
   profile_id: uuid()
     .primaryKey()
     .references(() => users.id, { onDelete: 'cascade' }),
-  username: text().notNull().unique(), // 고유한 사용자명 (URL에 사용)
-  name: text().notNull(), // 실제 이름 또는 표시될 이름
+  username: text().notNull().unique(),
+  name: text().notNull(),
   job_title: text(),
   bio: text(),
   work_status: text().default('available').notNull(),
   location: text(),
   website: text(),
-  avatar_url: text(), // 아바타 이미지 URL
+  avatar_url: text(),
   stats: jsonb()
     .$type<{
       followers: number;
@@ -53,14 +55,18 @@ export const follows = pgTable(
   (table) => [primaryKey({ columns: [table.follower_id, table.following_id] })]
 );
 
+// ===== NOTIFICATIONS & MESSAGING =====
 export const notificationType = pgEnum('notification_type', [
   'follow',
+  'artist_follow',
   'commission_request',
   'commission_accepted',
   'commission_completed',
   'review',
   'reply',
   'mention',
+  'commission_like',
+  'review_like',
 ]);
 
 export const notifications = pgTable('notifications', {
@@ -74,18 +80,27 @@ export const notifications = pgTable('notifications', {
   commission_id: bigint({ mode: 'number' }).references(() => commission.commission_id, {
     onDelete: 'cascade',
   }),
+  order_id: bigint({ mode: 'number' }).references(() => commissionOrder.order_id, {
+    onDelete: 'cascade',
+  }),
+  review_id: bigint({ mode: 'number' }).references(() => reviews.review_id, {
+    onDelete: 'cascade',
+  }),
   target_id: uuid()
     .references(() => profiles.profile_id, {
       onDelete: 'cascade',
     })
     .notNull(),
   type: notificationType().notNull(),
-  read: timestamp(), // null이면 읽지 않음, timestamp가 있으면 읽음
+  read: timestamp(),
   created_at: timestamp().notNull().defaultNow(),
 });
 
 export const messageRooms = pgTable('message_rooms', {
   message_room_id: bigint({ mode: 'number' }).primaryKey().generatedAlwaysAsIdentity(),
+  // 🔗 커미션 관련 대화방인 경우
+  commission_id: bigint({ mode: 'number' }).references(() => commission.commission_id),
+  order_id: bigint({ mode: 'number' }).references(() => commissionOrder.order_id),
   created_at: timestamp().notNull().defaultNow(),
 });
 
