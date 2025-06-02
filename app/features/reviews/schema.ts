@@ -1,5 +1,7 @@
+// ===== REVIEWS =====
 import {
   bigint,
+  boolean,
   integer,
   pgTable,
   primaryKey,
@@ -9,9 +11,8 @@ import {
   type AnyPgColumn,
 } from 'drizzle-orm/pg-core';
 import { profiles } from '../users/schema';
-import { commission, commissionOrder, artist } from '../commissions/schema';
+import { commission, commissionOrder } from '../commissions/schema';
 
-// ===== REVIEWS =====
 export const reviews = pgTable('reviews', {
   review_id: bigint({ mode: 'number' }).primaryKey().generatedAlwaysAsIdentity(),
 
@@ -22,13 +23,13 @@ export const reviews = pgTable('reviews', {
     .unique(), // 한 주문당 하나의 리뷰만
 
   commission_id: bigint({ mode: 'number' })
-    .references(() => commission.commission_id)
+    .references(() => commission.commission_id, { onDelete: 'cascade' })
     .notNull(),
-  artist_id: bigint({ mode: 'number' })
-    .references(() => artist.artist_id)
+  artist_id: uuid()
+    .references(() => profiles.profile_id, { onDelete: 'cascade' })
     .notNull(),
   reviewer_id: uuid()
-    .references(() => profiles.profile_id)
+    .references(() => profiles.profile_id, { onDelete: 'cascade' })
     .notNull(),
 
   title: text().notNull(),
@@ -36,7 +37,13 @@ export const reviews = pgTable('reviews', {
   rating: integer().notNull(), // 1-5
   image_url: text(), // 완성작 이미지
 
-  views: integer().default(0),
+  // 통계
+  likes_count: integer().default(0).notNull(), // views -> likes_count 이름 통일
+  views_count: integer().default(0).notNull(), // views -> views_count 이름 통일
+
+  // 리뷰 상태
+  is_featured: boolean().default(false).notNull(), // 대표 리뷰 여부
+
   created_at: timestamp().notNull().defaultNow(),
   updated_at: timestamp().notNull().defaultNow(),
 });
@@ -58,15 +65,34 @@ export const reviewLikes = pgTable(
 export const reviewComments = pgTable('review_comments', {
   comment_id: bigint({ mode: 'number' }).primaryKey().generatedAlwaysAsIdentity(),
   review_id: bigint({ mode: 'number' })
-    .references(() => reviews.review_id)
+    .references(() => reviews.review_id, { onDelete: 'cascade' })
     .notNull(),
   parent_id: bigint({ mode: 'number' }).references((): AnyPgColumn => reviewComments.comment_id, {
     onDelete: 'cascade',
   }),
   profile_id: uuid()
-    .references(() => profiles.profile_id)
+    .references(() => profiles.profile_id, { onDelete: 'cascade' })
     .notNull(),
   comment: text().notNull(),
+
+  // 댓글 통계
+  likes_count: integer().default(0).notNull(),
+
   created_at: timestamp().notNull().defaultNow(),
   updated_at: timestamp().notNull().defaultNow(),
 });
+
+// 리뷰 댓글 좋아요
+export const reviewCommentLikes = pgTable(
+  'review_comment_likes',
+  {
+    comment_id: bigint({ mode: 'number' }).references(() => reviewComments.comment_id, {
+      onDelete: 'cascade',
+    }),
+    profile_id: uuid().references(() => profiles.profile_id, {
+      onDelete: 'cascade',
+    }),
+    created_at: timestamp().notNull().defaultNow(),
+  },
+  (table) => [primaryKey({ columns: [table.comment_id, table.profile_id] })]
+);

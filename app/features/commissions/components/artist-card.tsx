@@ -5,28 +5,28 @@ import {
   CardDescription,
   CardContent,
   CardFooter,
-} from '~/components/ui/card';
-import { Button } from '~/components/ui/button';
-import { Heart } from 'lucide-react';
-import { Badge } from '~/components/ui/badge';
-import { Link } from 'react-router';
+} from "~/components/ui/card";
+import { Button } from "~/components/ui/button";
+import { Heart } from "lucide-react";
+import { Badge } from "~/components/ui/badge";
+import { Link } from "react-router";
 
-type ArtistCardProps = {
-  id: string;
-  name: string;
-  description: string;
+interface ArtistCardProps {
+  id: number;
+  title: string;
+  artistName: string;
   images: string[];
   rating: number;
   likes: number;
   tags: string[];
-  commissionStatus: '가능' | '대기 중' | '불가';
+  commissionStatus: "가능" | "대기 중" | "불가";
   priceStart: number;
-};
+}
 
 export default function ArtistCard({
   id,
-  name,
-  description,
+  title,
+  artistName,
   images,
   rating,
   likes,
@@ -36,13 +36,10 @@ export default function ArtistCard({
 }: ArtistCardProps) {
   return (
     <Card className="w-full max-w-md shadow-xl">
-      <Link
-        to={`/commissions/artist/${id}`}
-        className="cursor-pointer"
-      >
+      <Link to={`/commissions/artist/${id}`} className="cursor-pointer">
         <CardHeader>
-          <CardTitle>{name}</CardTitle>
-          <CardDescription>{description}</CardDescription>
+          <CardTitle>{title}</CardTitle>
+          <CardDescription>{artistName}</CardDescription>
         </CardHeader>
 
         <CardContent className="grid grid-cols-2 gap-2">
@@ -73,11 +70,11 @@ export default function ArtistCard({
           <div>
             <p
               className={`font-semibold ${
-                commissionStatus === '가능'
-                  ? 'text-green-600 border border-green-600 text-center rounded-full px-2'
-                  : commissionStatus === '대기 중'
-                  ? 'text-yellow-600 border border-yellow-600 text-center rounded-full px-2'
-                  : 'text-red-600 border border-red-600 text-center rounded-full px-2'
+                commissionStatus === "가능"
+                  ? "text-green-600 border border-green-600 text-center rounded-full px-2"
+                  : commissionStatus === "대기 중"
+                  ? "text-yellow-600 border border-yellow-600 text-center rounded-full px-2"
+                  : "text-red-600 border border-red-600 text-center rounded-full px-2"
               }`}
             >
               커미션 {commissionStatus}
@@ -87,10 +84,7 @@ export default function ArtistCard({
             </p>
           </div>
 
-          <Button
-            variant="ghost"
-            size="icon"
-          >
+          <Button variant="ghost" size="icon">
             <Heart className="w-5 h-5 text-red-500" />
           </Button>
         </div>

@@ -9,62 +9,107 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      artist: {
+      commission: {
         Row: {
-          artist_id: number
-          bio: string | null
+          artist_id: string
+          base_size: string | null
+          category: Database["public"]["Enums"]["commission_category"]
+          commission_id: number
           created_at: string
-          email: string
-          name: string
-          profile_image: string | null
-          social_links: Json | null
+          description: string
+          likes_count: number
+          order_count: number
+          price_options: Json
+          price_start: number
+          revision_count: number
+          status: Database["public"]["Enums"]["commission_status"]
+          tags: Json
+          title: string
+          turnaround_days: number
+          updated_at: string
+          views_count: number
         }
         Insert: {
-          artist_id?: never
-          bio?: string | null
+          artist_id: string
+          base_size?: string | null
+          category: Database["public"]["Enums"]["commission_category"]
+          commission_id?: never
           created_at?: string
-          email: string
-          name: string
-          profile_image?: string | null
-          social_links?: Json | null
+          description: string
+          likes_count?: number
+          order_count?: number
+          price_options?: Json
+          price_start: number
+          revision_count?: number
+          status?: Database["public"]["Enums"]["commission_status"]
+          tags?: Json
+          title: string
+          turnaround_days: number
+          updated_at?: string
+          views_count?: number
         }
         Update: {
-          artist_id?: never
-          bio?: string | null
+          artist_id?: string
+          base_size?: string | null
+          category?: Database["public"]["Enums"]["commission_category"]
+          commission_id?: never
           created_at?: string
-          email?: string
-          name?: string
-          profile_image?: string | null
-          social_links?: Json | null
+          description?: string
+          likes_count?: number
+          order_count?: number
+          price_options?: Json
+          price_start?: number
+          revision_count?: number
+          status?: Database["public"]["Enums"]["commission_status"]
+          tags?: Json
+          title?: string
+          turnaround_days?: number
+          updated_at?: string
+          views_count?: number
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "commission_artist_id_profiles_profile_id_fk"
+            columns: ["artist_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["profile_id"]
+          },
+        ]
       }
-      artist_follows: {
+      commission_like: {
         Row: {
-          artist_id: number
+          commission_id: number
           created_at: string
           profile_id: string
         }
         Insert: {
-          artist_id: number
+          commission_id: number
           created_at?: string
           profile_id: string
         }
         Update: {
-          artist_id?: number
+          commission_id?: number
           created_at?: string
           profile_id?: string
         }
         Relationships: [
           {
-            foreignKeyName: "artist_follows_artist_id_artist_artist_id_fk"
-            columns: ["artist_id"]
+            foreignKeyName: "commission_like_commission_id_commission_commission_id_fk"
+            columns: ["commission_id"]
             isOneToOne: false
-            referencedRelation: "artist"
-            referencedColumns: ["artist_id"]
+            referencedRelation: "commission"
+            referencedColumns: ["commission_id"]
           },
           {
-            foreignKeyName: "artist_follows_profile_id_profiles_profile_id_fk"
+            foreignKeyName: "commission_like_commission_id_commission_commission_id_fk"
+            columns: ["commission_id"]
+            isOneToOne: false
+            referencedRelation: "commission_with_artist"
+            referencedColumns: ["commission_id"]
+          },
+          {
+            foreignKeyName: "commission_like_profile_id_profiles_profile_id_fk"
             columns: ["profile_id"]
             isOneToOne: false
             referencedRelation: "profiles"
@@ -72,115 +117,75 @@ export type Database = {
           },
         ]
       }
-      commission: {
+      commission_order: {
         Row: {
-          artist_id: number | null
-          category: Database["public"]["Enums"]["commission_category"]
+          accepted_at: string | null
+          artist_id: string
+          client_id: string
           commission_id: number
+          completed_at: string | null
           created_at: string
-          currency: string
-          description: string
-          image: Json
-          likes_count: number
-          name: string
-          price_end: number | null
-          price_start: number
-          rating_avg: number | null
-          rating_count: number
-          revision_count: number | null
-          status: Database["public"]["Enums"]["commission_status"]
-          tags: Json
-          turnaround_days: number | null
+          deadline: string | null
+          final_image_url: string | null
+          order_id: number
+          requirements: string | null
+          revision_count_used: number
+          selected_options: Json
+          started_at: string | null
+          status: Database["public"]["Enums"]["order_status"]
+          total_price: number
           updated_at: string
         }
         Insert: {
-          artist_id?: number | null
-          category: Database["public"]["Enums"]["commission_category"]
-          commission_id?: never
+          accepted_at?: string | null
+          artist_id: string
+          client_id: string
+          commission_id: number
+          completed_at?: string | null
           created_at?: string
-          currency?: string
-          description: string
-          image?: Json
-          likes_count?: number
-          name: string
-          price_end?: number | null
-          price_start: number
-          rating_avg?: number | null
-          rating_count?: number
-          revision_count?: number | null
-          status: Database["public"]["Enums"]["commission_status"]
-          tags?: Json
-          turnaround_days?: number | null
+          deadline?: string | null
+          final_image_url?: string | null
+          order_id?: never
+          requirements?: string | null
+          revision_count_used?: number
+          selected_options?: Json
+          started_at?: string | null
+          status?: Database["public"]["Enums"]["order_status"]
+          total_price: number
           updated_at?: string
         }
         Update: {
-          artist_id?: number | null
-          category?: Database["public"]["Enums"]["commission_category"]
-          commission_id?: never
+          accepted_at?: string | null
+          artist_id?: string
+          client_id?: string
+          commission_id?: number
+          completed_at?: string | null
           created_at?: string
-          currency?: string
-          description?: string
-          image?: Json
-          likes_count?: number
-          name?: string
-          price_end?: number | null
-          price_start?: number
-          rating_avg?: number | null
-          rating_count?: number
-          revision_count?: number | null
-          status?: Database["public"]["Enums"]["commission_status"]
-          tags?: Json
-          turnaround_days?: number | null
+          deadline?: string | null
+          final_image_url?: string | null
+          order_id?: never
+          requirements?: string | null
+          revision_count_used?: number
+          selected_options?: Json
+          started_at?: string | null
+          status?: Database["public"]["Enums"]["order_status"]
+          total_price?: number
           updated_at?: string
         }
         Relationships: [
           {
-            foreignKeyName: "commission_artist_id_artist_artist_id_fk"
+            foreignKeyName: "commission_order_artist_id_profiles_profile_id_fk"
             columns: ["artist_id"]
             isOneToOne: false
-            referencedRelation: "artist"
-            referencedColumns: ["artist_id"]
+            referencedRelation: "profiles"
+            referencedColumns: ["profile_id"]
           },
-        ]
-      }
-      commission_order: {
-        Row: {
-          artist_id: number | null
-          client_id: number | null
-          commission_id: number | null
-          completed_at: string | null
-          created_at: string
-          order_id: number
-          price_agreed: number
-          requirements: string | null
-        }
-        Insert: {
-          artist_id?: number | null
-          client_id?: number | null
-          commission_id?: number | null
-          completed_at?: string | null
-          created_at?: string
-          order_id?: never
-          price_agreed: number
-          requirements?: string | null
-        }
-        Update: {
-          artist_id?: number | null
-          client_id?: number | null
-          commission_id?: number | null
-          completed_at?: string | null
-          created_at?: string
-          order_id?: never
-          price_agreed?: number
-          requirements?: string | null
-        }
-        Relationships: [
           {
-            foreignKeyName: "commission_order_artist_id_artist_artist_id_fk"
-            columns: ["artist_id"]
+            foreignKeyName: "commission_order_client_id_profiles_profile_id_fk"
+            columns: ["client_id"]
             isOneToOne: false
-            referencedRelation: "artist"
-            referencedColumns: ["artist_id"]
+            referencedRelation: "profiles"
+            referencedColumns: ["profile_id"]
           },
           {
             foreignKeyName: "commission_order_commission_id_commission_commission_id_fk"
@@ -188,6 +193,56 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "commission"
             referencedColumns: ["commission_id"]
+          },
+          {
+            foreignKeyName: "commission_order_commission_id_commission_commission_id_fk"
+            columns: ["commission_id"]
+            isOneToOne: false
+            referencedRelation: "commission_with_artist"
+            referencedColumns: ["commission_id"]
+          },
+        ]
+      }
+      commission_portfolio: {
+        Row: {
+          commission_id: number
+          created_at: string
+          display_order: number | null
+          portfolio_id: number
+        }
+        Insert: {
+          commission_id: number
+          created_at?: string
+          display_order?: number | null
+          portfolio_id: number
+        }
+        Update: {
+          commission_id?: number
+          created_at?: string
+          display_order?: number | null
+          portfolio_id?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "commission_portfolio_commission_id_commission_commission_id_fk"
+            columns: ["commission_id"]
+            isOneToOne: false
+            referencedRelation: "commission"
+            referencedColumns: ["commission_id"]
+          },
+          {
+            foreignKeyName: "commission_portfolio_commission_id_commission_commission_id_fk"
+            columns: ["commission_id"]
+            isOneToOne: false
+            referencedRelation: "commission_with_artist"
+            referencedColumns: ["commission_id"]
+          },
+          {
+            foreignKeyName: "commission_portfolio_portfolio_id_portfolio_item_portfolio_id_f"
+            columns: ["portfolio_id"]
+            isOneToOne: false
+            referencedRelation: "portfolio_item"
+            referencedColumns: ["portfolio_id"]
           },
         ]
       }
@@ -226,18 +281,21 @@ export type Database = {
       }
       message_room_members: {
         Row: {
+          is_active: boolean
           joined_at: string
           last_read_at: string | null
           message_room_id: number
           profile_id: string
         }
         Insert: {
+          is_active?: boolean
           joined_at?: string
           last_read_at?: string | null
           message_room_id: number
           profile_id: string
         }
         Update: {
+          is_active?: boolean
           joined_at?: string
           last_read_at?: string | null
           message_room_id?: number
@@ -263,39 +321,71 @@ export type Database = {
       message_rooms: {
         Row: {
           created_at: string
+          created_by: string | null
           message_room_id: number
+          room_name: string | null
+          room_type: string
+          updated_at: string
         }
         Insert: {
           created_at?: string
+          created_by?: string | null
           message_room_id?: never
+          room_name?: string | null
+          room_type?: string
+          updated_at?: string
         }
         Update: {
           created_at?: string
+          created_by?: string | null
           message_room_id?: never
+          room_name?: string | null
+          room_type?: string
+          updated_at?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "message_rooms_created_by_profiles_profile_id_fk"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["profile_id"]
+          },
+        ]
       }
       messages: {
         Row: {
           content: string
           created_at: string
+          is_deleted: boolean
+          is_edited: boolean
           message_id: number
           message_room_id: number | null
+          message_type: string
           sender_id: string | null
+          updated_at: string
         }
         Insert: {
           content: string
           created_at?: string
+          is_deleted?: boolean
+          is_edited?: boolean
           message_id?: never
           message_room_id?: number | null
+          message_type?: string
           sender_id?: string | null
+          updated_at?: string
         }
         Update: {
           content?: string
           created_at?: string
+          is_deleted?: boolean
+          is_edited?: boolean
           message_id?: never
           message_room_id?: number | null
+          message_type?: string
           sender_id?: string | null
+          updated_at?: string
         }
         Relationships: [
           {
@@ -316,50 +406,42 @@ export type Database = {
       }
       notifications: {
         Row: {
-          commission_id: number | null
           created_at: string
+          message: string | null
           notification_id: number
-          post_id: number | null
-          read: string | null
+          read: boolean
+          read_at: string | null
+          reference_id: number | null
           source_id: string | null
           target_id: string
+          title: string | null
           type: Database["public"]["Enums"]["notification_type"]
         }
         Insert: {
-          commission_id?: number | null
           created_at?: string
+          message?: string | null
           notification_id?: never
-          post_id?: number | null
-          read?: string | null
+          read?: boolean
+          read_at?: string | null
+          reference_id?: number | null
           source_id?: string | null
           target_id: string
+          title?: string | null
           type: Database["public"]["Enums"]["notification_type"]
         }
         Update: {
-          commission_id?: number | null
           created_at?: string
+          message?: string | null
           notification_id?: never
-          post_id?: number | null
-          read?: string | null
+          read?: boolean
+          read_at?: string | null
+          reference_id?: number | null
           source_id?: string | null
           target_id?: string
+          title?: string | null
           type?: Database["public"]["Enums"]["notification_type"]
         }
         Relationships: [
-          {
-            foreignKeyName: "notifications_commission_id_commission_commission_id_fk"
-            columns: ["commission_id"]
-            isOneToOne: false
-            referencedRelation: "commission"
-            referencedColumns: ["commission_id"]
-          },
-          {
-            foreignKeyName: "notifications_post_id_posts_post_id_fk"
-            columns: ["post_id"]
-            isOneToOne: false
-            referencedRelation: "posts"
-            referencedColumns: ["post_id"]
-          },
           {
             foreignKeyName: "notifications_source_id_profiles_profile_id_fk"
             columns: ["source_id"]
@@ -376,6 +458,104 @@ export type Database = {
           },
         ]
       }
+      order_status_history: {
+        Row: {
+          changed_by: string | null
+          created_at: string
+          from_status: Database["public"]["Enums"]["order_status"] | null
+          history_id: number
+          order_id: number
+          reason: string | null
+          to_status: Database["public"]["Enums"]["order_status"]
+        }
+        Insert: {
+          changed_by?: string | null
+          created_at?: string
+          from_status?: Database["public"]["Enums"]["order_status"] | null
+          history_id?: never
+          order_id: number
+          reason?: string | null
+          to_status: Database["public"]["Enums"]["order_status"]
+        }
+        Update: {
+          changed_by?: string | null
+          created_at?: string
+          from_status?: Database["public"]["Enums"]["order_status"] | null
+          history_id?: never
+          order_id?: number
+          reason?: string | null
+          to_status?: Database["public"]["Enums"]["order_status"]
+        }
+        Relationships: [
+          {
+            foreignKeyName: "order_status_history_changed_by_profiles_profile_id_fk"
+            columns: ["changed_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "order_status_history_order_id_commission_order_order_id_fk"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "commission_order"
+            referencedColumns: ["order_id"]
+          },
+        ]
+      }
+      portfolio_item: {
+        Row: {
+          artist_id: string
+          category: string | null
+          created_at: string
+          description: string | null
+          display_order: number | null
+          image_url: string
+          is_featured: boolean | null
+          portfolio_id: number
+          tags: Json
+          title: string
+          updated_at: string
+          views_count: number
+        }
+        Insert: {
+          artist_id: string
+          category?: string | null
+          created_at?: string
+          description?: string | null
+          display_order?: number | null
+          image_url: string
+          is_featured?: boolean | null
+          portfolio_id?: never
+          tags?: Json
+          title: string
+          updated_at?: string
+          views_count?: number
+        }
+        Update: {
+          artist_id?: string
+          category?: string | null
+          created_at?: string
+          description?: string | null
+          display_order?: number | null
+          image_url?: string
+          is_featured?: boolean | null
+          portfolio_id?: never
+          tags?: Json
+          title?: string
+          updated_at?: string
+          views_count?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "portfolio_item_artist_id_profiles_profile_id_fk"
+            columns: ["artist_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["profile_id"]
+          },
+        ]
+      }
       post_replies: {
         Row: {
           created_at: string
@@ -383,8 +563,10 @@ export type Database = {
           post_id: number | null
           post_reply_id: number
           profile_id: string
+          replies_count: number
           reply: string
           updated_at: string
+          upvotes_count: number
         }
         Insert: {
           created_at?: string
@@ -392,8 +574,10 @@ export type Database = {
           post_id?: number | null
           post_reply_id?: never
           profile_id: string
+          replies_count?: number
           reply: string
           updated_at?: string
+          upvotes_count?: number
         }
         Update: {
           created_at?: string
@@ -401,8 +585,10 @@ export type Database = {
           post_id?: number | null
           post_reply_id?: never
           profile_id?: string
+          replies_count?: number
           reply?: string
           updated_at?: string
+          upvotes_count?: number
         }
         Relationships: [
           {
@@ -428,16 +614,52 @@ export type Database = {
           },
         ]
       }
+      post_reply_upvotes: {
+        Row: {
+          created_at: string
+          post_reply_id: number
+          profile_id: string
+        }
+        Insert: {
+          created_at?: string
+          post_reply_id: number
+          profile_id: string
+        }
+        Update: {
+          created_at?: string
+          post_reply_id?: number
+          profile_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "post_reply_upvotes_post_reply_id_post_replies_post_reply_id_fk"
+            columns: ["post_reply_id"]
+            isOneToOne: false
+            referencedRelation: "post_replies"
+            referencedColumns: ["post_reply_id"]
+          },
+          {
+            foreignKeyName: "post_reply_upvotes_profile_id_profiles_profile_id_fk"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["profile_id"]
+          },
+        ]
+      }
       post_upvotes: {
         Row: {
+          created_at: string
           post_id: number
           profile_id: string
         }
         Insert: {
+          created_at?: string
           post_id: number
           profile_id: string
         }
         Update: {
+          created_at?: string
           post_id?: number
           profile_id?: string
         }
@@ -462,29 +684,44 @@ export type Database = {
         Row: {
           content: string
           created_at: string
+          is_locked: boolean
+          is_pinned: boolean
           post_id: number
           profile_id: string | null
+          replies_count: number
           title: string
           topic_id: number | null
           updated_at: string
+          upvotes_count: number
+          views_count: number
         }
         Insert: {
           content: string
           created_at?: string
+          is_locked?: boolean
+          is_pinned?: boolean
           post_id?: never
           profile_id?: string | null
+          replies_count?: number
           title: string
           topic_id?: number | null
           updated_at?: string
+          upvotes_count?: number
+          views_count?: number
         }
         Update: {
           content?: string
           created_at?: string
+          is_locked?: boolean
+          is_pinned?: boolean
           post_id?: never
           profile_id?: string | null
+          replies_count?: number
           title?: string
           topic_id?: number | null
           updated_at?: string
+          upvotes_count?: number
+          views_count?: number
         }
         Relationships: [
           {
@@ -508,13 +745,15 @@ export type Database = {
           avatar_url: string | null
           bio: string | null
           created_at: string
+          followers_count: number
+          following_count: number
           job_title: string | null
           location: string | null
           name: string
           profile_id: string
-          stats: Json | null
           updated_at: string
           username: string
+          views_count: number
           website: string | null
           work_status: string
         }
@@ -522,13 +761,15 @@ export type Database = {
           avatar_url?: string | null
           bio?: string | null
           created_at?: string
+          followers_count?: number
+          following_count?: number
           job_title?: string | null
           location?: string | null
           name: string
           profile_id: string
-          stats?: Json | null
           updated_at?: string
           username: string
+          views_count?: number
           website?: string | null
           work_status?: string
         }
@@ -536,23 +777,59 @@ export type Database = {
           avatar_url?: string | null
           bio?: string | null
           created_at?: string
+          followers_count?: number
+          following_count?: number
           job_title?: string | null
           location?: string | null
           name?: string
           profile_id?: string
-          stats?: Json | null
           updated_at?: string
           username?: string
+          views_count?: number
           website?: string | null
           work_status?: string
         }
         Relationships: []
+      }
+      review_comment_likes: {
+        Row: {
+          comment_id: number
+          created_at: string
+          profile_id: string
+        }
+        Insert: {
+          comment_id: number
+          created_at?: string
+          profile_id: string
+        }
+        Update: {
+          comment_id?: number
+          created_at?: string
+          profile_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "review_comment_likes_comment_id_review_comments_comment_id_fk"
+            columns: ["comment_id"]
+            isOneToOne: false
+            referencedRelation: "review_comments"
+            referencedColumns: ["comment_id"]
+          },
+          {
+            foreignKeyName: "review_comment_likes_profile_id_profiles_profile_id_fk"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["profile_id"]
+          },
+        ]
       }
       review_comments: {
         Row: {
           comment: string
           comment_id: number
           created_at: string
+          likes_count: number
           parent_id: number | null
           profile_id: string
           review_id: number
@@ -562,6 +839,7 @@ export type Database = {
           comment: string
           comment_id?: never
           created_at?: string
+          likes_count?: number
           parent_id?: number | null
           profile_id: string
           review_id: number
@@ -571,6 +849,7 @@ export type Database = {
           comment?: string
           comment_id?: never
           created_at?: string
+          likes_count?: number
           parent_id?: number | null
           profile_id?: string
           review_id?: number
@@ -635,51 +914,60 @@ export type Database = {
       }
       reviews: {
         Row: {
-          artist_id: number
-          commission_id: number | null
+          artist_id: string
+          commission_id: number
           created_at: string
           description: string
           image_url: string | null
+          is_featured: boolean
+          likes_count: number
+          order_id: number
           rating: number
           review_id: number
           reviewer_id: string
           title: string
           updated_at: string
-          views: number | null
+          views_count: number
         }
         Insert: {
-          artist_id: number
-          commission_id?: number | null
+          artist_id: string
+          commission_id: number
           created_at?: string
           description: string
           image_url?: string | null
+          is_featured?: boolean
+          likes_count?: number
+          order_id: number
           rating: number
           review_id?: never
           reviewer_id: string
           title: string
           updated_at?: string
-          views?: number | null
+          views_count?: number
         }
         Update: {
-          artist_id?: number
-          commission_id?: number | null
+          artist_id?: string
+          commission_id?: number
           created_at?: string
           description?: string
           image_url?: string | null
+          is_featured?: boolean
+          likes_count?: number
+          order_id?: number
           rating?: number
           review_id?: never
           reviewer_id?: string
           title?: string
           updated_at?: string
-          views?: number | null
+          views_count?: number
         }
         Relationships: [
           {
-            foreignKeyName: "reviews_artist_id_artist_artist_id_fk"
+            foreignKeyName: "reviews_artist_id_profiles_profile_id_fk"
             columns: ["artist_id"]
             isOneToOne: false
-            referencedRelation: "artist"
-            referencedColumns: ["artist_id"]
+            referencedRelation: "profiles"
+            referencedColumns: ["profile_id"]
           },
           {
             foreignKeyName: "reviews_commission_id_commission_commission_id_fk"
@@ -687,6 +975,20 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "commission"
             referencedColumns: ["commission_id"]
+          },
+          {
+            foreignKeyName: "reviews_commission_id_commission_commission_id_fk"
+            columns: ["commission_id"]
+            isOneToOne: false
+            referencedRelation: "commission_with_artist"
+            referencedColumns: ["commission_id"]
+          },
+          {
+            foreignKeyName: "reviews_order_id_commission_order_order_id_fk"
+            columns: ["order_id"]
+            isOneToOne: true
+            referencedRelation: "commission_order"
+            referencedColumns: ["order_id"]
           },
           {
             foreignKeyName: "reviews_reviewer_id_profiles_profile_id_fk"
@@ -700,27 +1002,78 @@ export type Database = {
       topics: {
         Row: {
           created_at: string
+          description: string | null
           name: string
+          post_count: number
           slug: string
           topic_id: number
+          updated_at: string
         }
         Insert: {
           created_at?: string
+          description?: string | null
           name: string
+          post_count?: number
           slug: string
           topic_id?: never
+          updated_at?: string
         }
         Update: {
           created_at?: string
+          description?: string | null
           name?: string
+          post_count?: number
           slug?: string
           topic_id?: never
+          updated_at?: string
         }
         Relationships: []
       }
     }
     Views: {
-      [_ in never]: never
+      commission_with_artist: {
+        Row: {
+          artist_avatar_url: string | null
+          artist_avg_rating: number | null
+          artist_bio: string | null
+          artist_followers_count: number | null
+          artist_following_count: number | null
+          artist_id: string | null
+          artist_job_title: string | null
+          artist_location: string | null
+          artist_name: string | null
+          artist_username: string | null
+          artist_views_count: number | null
+          artist_website: string | null
+          artist_work_status: string | null
+          base_size: string | null
+          category: Database["public"]["Enums"]["commission_category"] | null
+          commission_id: number | null
+          created_at: string | null
+          description: string | null
+          images: Json | null
+          likes_count: number | null
+          order_count: number | null
+          price_options: Json | null
+          price_start: number | null
+          revision_count: number | null
+          status: Database["public"]["Enums"]["commission_status"] | null
+          tags: Json | null
+          title: string | null
+          turnaround_days: number | null
+          updated_at: string | null
+          views_count: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "commission_artist_id_profiles_profile_id_fk"
+            columns: ["artist_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["profile_id"]
+          },
+        ]
+      }
     }
     Functions: {
       [_ in never]: never
@@ -733,7 +1086,9 @@ export type Database = {
         | "live2d"
         | "design"
         | "video"
-      commission_status: "available" | "pending" | "unavailable"
+        | "animation"
+        | "concept-art"
+      commission_status: "available" | "pending" | "unavailable" | "paused"
       notification_type:
         | "follow"
         | "commission_request"
@@ -742,6 +1097,19 @@ export type Database = {
         | "review"
         | "reply"
         | "mention"
+        | "commission_like"
+        | "review_like"
+        | "post_upvote"
+        | "post_reply"
+      order_status:
+        | "pending"
+        | "accepted"
+        | "in_progress"
+        | "revision_requested"
+        | "completed"
+        | "cancelled"
+        | "refunded"
+        | "disputed"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -864,8 +1232,10 @@ export const Constants = {
         "live2d",
         "design",
         "video",
+        "animation",
+        "concept-art",
       ],
-      commission_status: ["available", "pending", "unavailable"],
+      commission_status: ["available", "pending", "unavailable", "paused"],
       notification_type: [
         "follow",
         "commission_request",
@@ -874,6 +1244,20 @@ export const Constants = {
         "review",
         "reply",
         "mention",
+        "commission_like",
+        "review_like",
+        "post_upvote",
+        "post_reply",
+      ],
+      order_status: [
+        "pending",
+        "accepted",
+        "in_progress",
+        "revision_requested",
+        "completed",
+        "cancelled",
+        "refunded",
+        "disputed",
       ],
     },
   },
