@@ -1,25 +1,33 @@
-import { Hero } from '~/components/hero';
-import { Form, Link, useSearchParams } from 'react-router';
-import { Button } from '~/components/ui/button';
+import { Hero } from "~/components/hero";
+import { Form, Link, useSearchParams } from "react-router";
+import { Button } from "~/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
   DropdownMenuContent,
   DropdownMenuTrigger,
-} from '~/components/ui/dropdown-menu';
-import { ChevronDownIcon } from 'lucide-react';
-import { PERIOD_OPTIONS, SORT_OPTIONS } from '../constants';
-import { Input } from '~/components/ui/input';
-import { PostCard } from '../components/post-card';
+} from "~/components/ui/dropdown-menu";
+import { ChevronDownIcon } from "lucide-react";
+import { PERIOD_OPTIONS, SORT_OPTIONS } from "../constants";
+import { Input } from "~/components/ui/input";
+import { PostCard } from "../components/post-card";
+import { getPosts, getTopics } from "../queries";
+import type { Route } from "./+types/community-page";
 
 export const meta = () => {
-  return [{ title: 'Community | wemake' }];
+  return [{ title: "Community | wemake" }];
 };
 
-export default function CommunityPage() {
+export const loader = async () => {
+  const posts = await getPosts();
+  const topics = await getTopics();
+  return { posts, topics };
+};
+
+export default function CommunityPage({ loaderData }: Route.ComponentProps) {
   const [searchParams, setSearchParams] = useSearchParams();
-  const sorting = searchParams.get('sorting') || 'newest';
-  const period = searchParams.get('period') || 'all';
+  const sorting = searchParams.get("sorting") || "newest";
+  const period = searchParams.get("period") || "all";
   return (
     <div className="space-y-20">
       <Hero
@@ -43,7 +51,7 @@ export default function CommunityPage() {
                         key={option}
                         onCheckedChange={(checked: boolean) => {
                           if (checked) {
-                            searchParams.set('sorting', option);
+                            searchParams.set("sorting", option);
                             setSearchParams(searchParams);
                           }
                         }}
@@ -53,7 +61,7 @@ export default function CommunityPage() {
                     ))}
                   </DropdownMenuContent>
                 </DropdownMenu>
-                {sorting === 'popular' && (
+                {sorting === "popular" && (
                   <DropdownMenu>
                     <DropdownMenuTrigger className="flex items-center gap-1">
                       <span className="text-sm capitalize">{period}</span>
@@ -66,7 +74,7 @@ export default function CommunityPage() {
                           key={option}
                           onCheckedChange={(checked: boolean) => {
                             if (checked) {
-                              searchParams.set('period', option);
+                              searchParams.set("period", option);
                               setSearchParams(searchParams);
                             }
                           }}
@@ -91,17 +99,17 @@ export default function CommunityPage() {
             </Button>
           </div>
           <div className="space-y-5">
-            {Array.from({ length: 11 }).map((_, index) => (
+            {loaderData.posts.map((post) => (
               <PostCard
-                key={`postId-${index}`}
-                postId={`postId-${index}`}
-                title="What is the best productivity tool?"
-                author="Nico"
-                authorAvatarUrl="https://github.com/apple.png"
-                category="Productivity"
-                timeAgo="12 hours ago"
+                key={post.post_id}
+                postId={post.post_id.toString()}
+                title={post.title}
+                author={post.profiles.name}
+                authorAvatarUrl={post.profiles.avatar_url}
+                category={post.topics.name}
+                timeAgo={post.created_at}
                 expanded
-                votesCount={index}
+                votesCount={post.upvotes_count}
               />
             ))}
           </div>
@@ -111,20 +119,16 @@ export default function CommunityPage() {
             Topics
           </span>
           <div className="flex flex-col gap-2 items-start">
-            {[
-              'AI Tools',
-              'Design Tools',
-              'Dev Tools',
-              'Note Taking Apps',
-              'Productivity Tools',
-            ].map((category) => (
+            {loaderData.topics.map((category) => (
               <Button
                 asChild
-                variant={'link'}
-                key={category}
+                variant={"link"}
+                key={category.slug}
                 className="pl-0"
               >
-                <Link to={`/community?topic=${category}`}>{category}</Link>
+                <Link to={`/community?topic=${category.slug}`}>
+                  {category.name}
+                </Link>
               </Button>
             ))}
           </div>

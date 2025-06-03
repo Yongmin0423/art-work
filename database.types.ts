@@ -698,10 +698,10 @@ export type Database = {
           is_locked: boolean
           is_pinned: boolean
           post_id: number
-          profile_id: string | null
+          profile_id: string
           replies_count: number
           title: string
-          topic_id: number | null
+          topic_id: number
           updated_at: string
           upvotes_count: number
           views_count: number
@@ -712,10 +712,10 @@ export type Database = {
           is_locked?: boolean
           is_pinned?: boolean
           post_id?: never
-          profile_id?: string | null
+          profile_id: string
           replies_count?: number
           title: string
-          topic_id?: number | null
+          topic_id: number
           updated_at?: string
           upvotes_count?: number
           views_count?: number
@@ -726,10 +726,10 @@ export type Database = {
           is_locked?: boolean
           is_pinned?: boolean
           post_id?: never
-          profile_id?: string | null
+          profile_id?: string
           replies_count?: number
           title?: string
-          topic_id?: number | null
+          topic_id?: number
           updated_at?: string
           upvotes_count?: number
           views_count?: number

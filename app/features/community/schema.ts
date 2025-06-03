@@ -9,11 +9,11 @@ import {
   timestamp,
   uuid,
   type AnyPgColumn,
-} from 'drizzle-orm/pg-core';
-import { profiles } from '../users/schema';
+} from "drizzle-orm/pg-core";
+import { profiles } from "../users/schema";
 
-export const topics = pgTable('topics', {
-  topic_id: bigint({ mode: 'number' }).primaryKey().generatedAlwaysAsIdentity(),
+export const topics = pgTable("topics", {
+  topic_id: bigint({ mode: "number" }).primaryKey().generatedAlwaysAsIdentity(),
   name: text().notNull(),
   slug: text().notNull().unique(), // unique 제약 추가
   description: text(), // 토픽 설명 추가
@@ -22,8 +22,8 @@ export const topics = pgTable('topics', {
   updated_at: timestamp().notNull().defaultNow(),
 });
 
-export const posts = pgTable('posts', {
-  post_id: bigint({ mode: 'number' }).primaryKey().generatedAlwaysAsIdentity(),
+export const posts = pgTable("posts", {
+  post_id: bigint({ mode: "number" }).primaryKey().generatedAlwaysAsIdentity(),
   title: text().notNull(),
   content: text().notNull(),
 
@@ -39,39 +39,48 @@ export const posts = pgTable('posts', {
   created_at: timestamp().notNull().defaultNow(),
   updated_at: timestamp().notNull().defaultNow(),
 
-  topic_id: bigint({ mode: 'number' }).references(() => topics.topic_id, {
-    onDelete: 'set null', // 토픽 삭제되어도 게시물은 유지
-  }),
-  profile_id: uuid().references(() => profiles.profile_id, {
-    onDelete: 'cascade',
-  }),
+  topic_id: bigint({ mode: "number" })
+    .references(() => topics.topic_id, {
+      onDelete: "restrict", // 토픽이 게시물을 가지고 있으면 삭제 불가
+    })
+    .notNull(), // NOT NULL 추가
+  profile_id: uuid()
+    .references(() => profiles.profile_id, {
+      onDelete: "cascade",
+    })
+    .notNull(), // NOT NULL 추가
 });
 
 export const postUpvotes = pgTable(
-  'post_upvotes',
+  "post_upvotes",
   {
-    post_id: bigint({ mode: 'number' }).references(() => posts.post_id, {
-      onDelete: 'cascade',
+    post_id: bigint({ mode: "number" }).references(() => posts.post_id, {
+      onDelete: "cascade",
     }),
     profile_id: uuid().references(() => profiles.profile_id, {
-      onDelete: 'cascade',
+      onDelete: "cascade",
     }),
     created_at: timestamp().notNull().defaultNow(), // 생성 시간 추가
   },
   (table) => [primaryKey({ columns: [table.post_id, table.profile_id] })]
 );
 
-export const postReplies = pgTable('post_replies', {
-  post_reply_id: bigint({ mode: 'number' }).primaryKey().generatedAlwaysAsIdentity(),
-  post_id: bigint({ mode: 'number' }).references(() => posts.post_id, {
-    onDelete: 'cascade',
+export const postReplies = pgTable("post_replies", {
+  post_reply_id: bigint({ mode: "number" })
+    .primaryKey()
+    .generatedAlwaysAsIdentity(),
+  post_id: bigint({ mode: "number" }).references(() => posts.post_id, {
+    onDelete: "cascade",
   }),
-  parent_id: bigint({ mode: 'number' }).references((): AnyPgColumn => postReplies.post_reply_id, {
-    onDelete: 'cascade',
-  }),
+  parent_id: bigint({ mode: "number" }).references(
+    (): AnyPgColumn => postReplies.post_reply_id,
+    {
+      onDelete: "cascade",
+    }
+  ),
   profile_id: uuid()
     .references(() => profiles.profile_id, {
-      onDelete: 'cascade',
+      onDelete: "cascade",
     })
     .notNull(),
   reply: text().notNull(),
@@ -86,13 +95,16 @@ export const postReplies = pgTable('post_replies', {
 
 // 댓글 좋아요
 export const postReplyUpvotes = pgTable(
-  'post_reply_upvotes',
+  "post_reply_upvotes",
   {
-    post_reply_id: bigint({ mode: 'number' }).references(() => postReplies.post_reply_id, {
-      onDelete: 'cascade',
-    }),
+    post_reply_id: bigint({ mode: "number" }).references(
+      () => postReplies.post_reply_id,
+      {
+        onDelete: "cascade",
+      }
+    ),
     profile_id: uuid().references(() => profiles.profile_id, {
-      onDelete: 'cascade',
+      onDelete: "cascade",
     }),
     created_at: timestamp().notNull().defaultNow(),
   },

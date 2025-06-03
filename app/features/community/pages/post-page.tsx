@@ -4,21 +4,29 @@ import {
   BreadcrumbLink,
   BreadcrumbList,
   BreadcrumbSeparator,
-} from '~/components/ui/breadcrumb';
-import type { Route } from './+types/post-page';
-import { Form, Link } from 'react-router';
-import { ChevronUpIcon, DotIcon } from 'lucide-react';
-import { Button } from '~/components/ui/button';
-import { Textarea } from '~/components/ui/textarea';
-import { Avatar, AvatarFallback, AvatarImage } from '~/components/ui/avatar';
-import { Badge } from '~/components/ui/badge';
-import { Reply } from '~/features/community/components/reply';
+} from "~/components/ui/breadcrumb";
+import type { Route } from "./+types/post-page";
+import { Form, Link } from "react-router";
+import { ChevronUpIcon, DotIcon } from "lucide-react";
+import { Button } from "~/components/ui/button";
+import { Textarea } from "~/components/ui/textarea";
+import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar";
+import { Badge } from "~/components/ui/badge";
+import { Reply } from "~/features/community/components/reply";
+import { getPost } from "../queries";
+import { DateTime } from "luxon";
 
 export const meta: Route.MetaFunction = ({ params }) => {
   return [{ title: `${params.postId} | wemake` }];
 };
 
-export default function PostPage() {
+export const loader = async ({ params }: Route.LoaderArgs) => {
+  const post = await getPost({ postId: params.postId });
+  console.log(post);
+  return { post };
+};
+
+export default function PostPage({ loaderData }: Route.ComponentProps) {
   return (
     <div className="space-y-10">
       <Breadcrumb>
@@ -31,14 +39,16 @@ export default function PostPage() {
           <BreadcrumbSeparator />
           <BreadcrumbItem>
             <BreadcrumbLink asChild>
-              <Link to="/community?topic=productivity">Productivity</Link>
+              <Link to={`/community?topic=${loaderData.post.topics.slug}`}>
+                {loaderData.post.topics.slug}
+              </Link>
             </BreadcrumbLink>
           </BreadcrumbItem>
           <BreadcrumbSeparator />
           <BreadcrumbItem>
             <BreadcrumbLink asChild>
-              <Link to="/community/postId">
-                What is the best productivity tool?
+              <Link to={`/community/${loaderData.post.post_id}`}>
+                {loaderData.post.title}
               </Link>
             </BreadcrumbLink>
           </BreadcrumbItem>
@@ -47,24 +57,21 @@ export default function PostPage() {
       <div className="grid grid-cols-6 gap-40 items-start">
         <div className="col-span-4 space-y-10">
           <div className="flex w-full items-start gap-10">
-            <Button
-              variant="outline"
-              className="flex flex-col h-14"
-            >
+            <Button variant="outline" className="flex flex-col h-14">
               <ChevronUpIcon className="size-4 shrink-0" />
               <span>10</span>
             </Button>
             <div className="space-y-20">
               <div className="space-y-2">
-                <h2 className="text-3xl font-bold">
-                  What is the best productivity tool?
-                </h2>
+                <h2 className="text-3xl font-bold">{loaderData.post.title}</h2>
                 <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                  <span>@nico</span>
+                  <span>{loaderData.post.profiles.name}</span>
                   <DotIcon className="size-5" />
-                  <span>12 hours ago</span>
+                  <span>
+                    {DateTime.fromISO(loaderData.post.created_at).toRelative()}
+                  </span>
                   <DotIcon className="size-5" />
-                  <span>10 replies</span>
+                  <span>{loaderData.post.replies_count} replies</span>
                 </div>
                 <p className="text-muted-foreground w-3/4">
                   Hello, I'm looking for a productivity tool that can help me
@@ -106,22 +113,56 @@ export default function PostPage() {
         <aside className="col-span-2 space-y-5 border rounded-lg p-6 shadow-sm">
           <div className="flex gap-5">
             <Avatar className="size-14">
-              <AvatarFallback>N</AvatarFallback>
-              <AvatarImage src="https://github.com/serranoarevalo.png" />
+              <AvatarFallback>
+                {loaderData.post.profiles.name?.[0] || "U"}
+              </AvatarFallback>
+              {loaderData.post.profiles.avatar_url && (
+                <AvatarImage src={loaderData.post.profiles.avatar_url} />
+              )}
             </Avatar>
-            <div className="flex flex-col">
-              <h4 className="text-lg font-medium">Nicolas</h4>
-              <Badge variant="secondary">Entrepreneur</Badge>
+            <div className="flex flex-col gap-2">
+              <h4 className="text-lg font-bold">
+                {loaderData.post.profiles.name}
+              </h4>
+              <Badge variant="secondary">{loaderData.post.topics.name}</Badge>
+              <div className="flex items-center gap-4 text-sm">
+                <span>👥 {loaderData.post.profiles.followers_count || 0}</span>
+              </div>
             </div>
           </div>
-          <div className="gap-2 text-sm flex flex-col">
-            <span>🎂 Joined 3 months ago</span>
-            <span>🚀 Launched 10 products</span>
+          <div className="space-y-2 text-sm">
+            {loaderData.post.profiles.job_title && (
+              <div className="flex items-center gap-2">
+                <span>💼</span>
+                <span>{loaderData.post.profiles.job_title}</span>
+              </div>
+            )}
+            {loaderData.post.profiles.location && (
+              <div className="flex items-center gap-2">
+                <span>📍</span>
+                <span>{loaderData.post.profiles.location}</span>
+              </div>
+            )}
+            {loaderData.post.profiles.website && (
+              <div className="flex items-center gap-2">
+                <span>🌐</span>
+                <a
+                  href={loaderData.post.profiles.website}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-blue-600 hover:underline"
+                >
+                  {loaderData.post.profiles.website}
+                </a>
+              </div>
+            )}
           </div>
-          <Button
-            variant="outline"
-            className="w-full"
-          >
+          {loaderData.post.profiles.bio && (
+            <div className="text-sm text-muted-foreground">
+              <p>{loaderData.post.profiles.bio}</p>
+            </div>
+          )}
+          <Button variant="outline" className="w-full">
             Follow
           </Button>
         </aside>

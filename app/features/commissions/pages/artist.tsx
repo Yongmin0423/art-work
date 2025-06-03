@@ -28,7 +28,6 @@ export async function loader({ params }: Route.LoaderArgs) {
   if (!id) {
     throw new Response("ID가 필요합니다", { status: 400 });
   }
-  console.log(commission);
   return { commission };
 }
 
