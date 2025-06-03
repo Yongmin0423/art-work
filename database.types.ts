@@ -9,6 +9,83 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      artist_portfolio: {
+        Row: {
+          artist_id: string
+          category: string | null
+          created_at: string
+          description: string | null
+          images: Json
+          tags: Json
+          title: string
+          updated_at: string
+          views_count: number
+        }
+        Insert: {
+          artist_id: string
+          category?: string | null
+          created_at?: string
+          description?: string | null
+          images?: Json
+          tags?: Json
+          title: string
+          updated_at?: string
+          views_count?: number
+        }
+        Update: {
+          artist_id?: string
+          category?: string | null
+          created_at?: string
+          description?: string | null
+          images?: Json
+          tags?: Json
+          title?: string
+          updated_at?: string
+          views_count?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "artist_portfolio_artist_id_profiles_profile_id_fk"
+            columns: ["artist_id"]
+            isOneToOne: true
+            referencedRelation: "profiles"
+            referencedColumns: ["profile_id"]
+          },
+        ]
+      }
+      category_showcase: {
+        Row: {
+          alt_text: string
+          created_at: string
+          display_order: number
+          image_url: string
+          is_active: string
+          showcase_id: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          alt_text: string
+          created_at?: string
+          display_order?: number
+          image_url: string
+          is_active?: string
+          showcase_id?: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          alt_text?: string
+          created_at?: string
+          display_order?: number
+          image_url?: string
+          is_active?: string
+          showcase_id?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       commission: {
         Row: {
           artist_id: string
@@ -203,49 +280,6 @@ export type Database = {
           },
         ]
       }
-      commission_portfolio: {
-        Row: {
-          commission_id: number
-          created_at: string
-          display_order: number | null
-          portfolio_id: number
-        }
-        Insert: {
-          commission_id: number
-          created_at?: string
-          display_order?: number | null
-          portfolio_id: number
-        }
-        Update: {
-          commission_id?: number
-          created_at?: string
-          display_order?: number | null
-          portfolio_id?: number
-        }
-        Relationships: [
-          {
-            foreignKeyName: "commission_portfolio_commission_id_commission_commission_id_fk"
-            columns: ["commission_id"]
-            isOneToOne: false
-            referencedRelation: "commission"
-            referencedColumns: ["commission_id"]
-          },
-          {
-            foreignKeyName: "commission_portfolio_commission_id_commission_commission_id_fk"
-            columns: ["commission_id"]
-            isOneToOne: false
-            referencedRelation: "commission_with_artist"
-            referencedColumns: ["commission_id"]
-          },
-          {
-            foreignKeyName: "commission_portfolio_portfolio_id_portfolio_item_portfolio_id_f"
-            columns: ["portfolio_id"]
-            isOneToOne: false
-            referencedRelation: "portfolio_item"
-            referencedColumns: ["portfolio_id"]
-          },
-        ]
-      }
       follows: {
         Row: {
           created_at: string
@@ -278,6 +312,36 @@ export type Database = {
             referencedColumns: ["profile_id"]
           },
         ]
+      }
+      logo: {
+        Row: {
+          alt_text: string
+          created_at: string
+          image_url: string
+          is_active: string
+          logo_id: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          alt_text: string
+          created_at?: string
+          image_url: string
+          is_active?: string
+          logo_id?: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          alt_text?: string
+          created_at?: string
+          image_url?: string
+          is_active?: string
+          logo_id?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
       }
       message_room_members: {
         Row: {
@@ -500,59 +564,6 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "commission_order"
             referencedColumns: ["order_id"]
-          },
-        ]
-      }
-      portfolio_item: {
-        Row: {
-          artist_id: string
-          category: string | null
-          created_at: string
-          description: string | null
-          display_order: number | null
-          image_url: string
-          is_featured: boolean | null
-          portfolio_id: number
-          tags: Json
-          title: string
-          updated_at: string
-          views_count: number
-        }
-        Insert: {
-          artist_id: string
-          category?: string | null
-          created_at?: string
-          description?: string | null
-          display_order?: number | null
-          image_url: string
-          is_featured?: boolean | null
-          portfolio_id?: never
-          tags?: Json
-          title: string
-          updated_at?: string
-          views_count?: number
-        }
-        Update: {
-          artist_id?: string
-          category?: string | null
-          created_at?: string
-          description?: string | null
-          display_order?: number | null
-          image_url?: string
-          is_featured?: boolean | null
-          portfolio_id?: never
-          tags?: Json
-          title?: string
-          updated_at?: string
-          views_count?: number
-        }
-        Relationships: [
-          {
-            foreignKeyName: "portfolio_item_artist_id_profiles_profile_id_fk"
-            columns: ["artist_id"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["profile_id"]
           },
         ]
       }

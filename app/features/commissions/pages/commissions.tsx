@@ -2,6 +2,7 @@ import { Link } from "react-router";
 import { Hero } from "~/components/hero";
 import { Button } from "~/components/ui/button";
 import ArtistCard from "../components/artist-card";
+import { getTopCommissionsByCategory } from "../queries";
 import type { Route } from "./+types/commissions";
 
 export const meta: Route.MetaFunction = () => {
@@ -11,7 +12,35 @@ export const meta: Route.MetaFunction = () => {
   ];
 };
 
-export default function commissions() {
+export const loader = async () => {
+  const [
+    characterCommissions,
+    virtual3dCommissions,
+    designCommissions,
+    live2dCommissions,
+  ] = await Promise.all([
+    getTopCommissionsByCategory("character", 3),
+    getTopCommissionsByCategory("virtual-3d", 3),
+    getTopCommissionsByCategory("design", 3),
+    getTopCommissionsByCategory("live2d", 3),
+  ]);
+
+  return {
+    characterCommissions,
+    virtual3dCommissions,
+    designCommissions,
+    live2dCommissions,
+  };
+};
+
+export default function commissions({ loaderData }: Route.ComponentProps) {
+  const {
+    characterCommissions,
+    virtual3dCommissions,
+    designCommissions,
+    live2dCommissions,
+  } = loaderData;
+
   return (
     <div className="space-y-20">
       <Hero
@@ -21,30 +50,27 @@ export default function commissions() {
       <div className="grid grid-cols-4 gap-4">
         <div>
           <h2 className="text-3xl font-bold leading-tight tracking-tight">
-            Charater-Illustration
+            Character-Illustration
           </h2>
           <p className="text-xl font-light text-foreground">
-            The most popular Charater-Illustrator on artwork.
+            The most popular Character-Illustrator on artwork.
           </p>
           <Button variant="link" asChild className="text-3xl mt-5">
             <Link to="/commissions/character">Explore all products &rarr;</Link>
           </Button>
         </div>
-        {Array.from({ length: 3 }).map((_, index) => (
+        {characterCommissions.map((commission) => (
           <ArtistCard
-            id={`artist-${index}`}
-            key={index}
-            title="GQuuuuux"
-            artistName="캐릭터 일러스트 전문"
-            images={[
-              "https://i2.ruliweb.com/img/25/03/28/195db744fe120337.jpg",
-              "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTRrwNMHYCP7CVjFghDN7W-P6L6n13ehDxJnQ&s",
-            ]}
-            rating={4.8}
-            likes={123}
-            tags={["Anime", "Fantasy", "Portrait"]}
+            id={commission.commission_id}
+            key={commission.commission_id}
+            title={commission.title}
+            artistName={commission.artist_name}
+            images={commission.images}
+            rating={commission.artist_avg_rating}
+            likes={commission.likes_count}
+            tags={commission.tags}
             commissionStatus="가능"
-            priceStart={50000}
+            priceStart={commission.price_start}
           />
         ))}
       </div>
@@ -63,21 +89,18 @@ export default function commissions() {
             </Link>
           </Button>
         </div>
-        {Array.from({ length: 3 }).map((_, index) => (
+        {virtual3dCommissions.map((commission) => (
           <ArtistCard
-            id={`artist-${index}`}
-            key={index}
-            name="GQuuuuux"
-            description="캐릭터 일러스트 전문"
-            images={[
-              "https://i2.ruliweb.com/img/25/03/28/195db744fe120337.jpg",
-              "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTRrwNMHYCP7CVjFghDN7W-P6L6n13ehDxJnQ&s",
-            ]}
-            rating={4.8}
-            likes={123}
-            tags={["Anime", "Fantasy", "Portrait"]}
+            id={commission.commission_id}
+            key={commission.commission_id}
+            title={commission.title}
+            artistName={commission.artist_name}
+            images={commission.images}
+            rating={commission.artist_avg_rating}
+            likes={commission.likes_count}
+            tags={commission.tags}
             commissionStatus="가능"
-            priceStart={50000}
+            priceStart={commission.price_start}
           />
         ))}
       </div>
@@ -94,21 +117,18 @@ export default function commissions() {
             <Link to="/commissions/design">Explore all products &rarr;</Link>
           </Button>
         </div>
-        {Array.from({ length: 3 }).map((_, index) => (
+        {designCommissions.map((commission) => (
           <ArtistCard
-            id={`artist-${index}`}
-            key={index}
-            name="GQuuuuux"
-            description="캐릭터 일러스트 전문"
-            images={[
-              "https://i2.ruliweb.com/img/25/03/28/195db744fe120337.jpg",
-              "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTRrwNMHYCP7CVjFghDN7W-P6L6n13ehDxJnQ&s",
-            ]}
-            rating={4.8}
-            likes={123}
-            tags={["Anime", "Fantasy", "Portrait"]}
+            id={commission.commission_id}
+            key={commission.commission_id}
+            title={commission.title}
+            artistName={commission.artist_name}
+            images={commission.images}
+            rating={commission.artist_avg_rating}
+            likes={commission.likes_count}
+            tags={commission.tags}
             commissionStatus="가능"
-            priceStart={50000}
+            priceStart={commission.price_start}
           />
         ))}
       </div>
@@ -125,21 +145,18 @@ export default function commissions() {
             <Link to="/commissions/live2d">Explore all products &rarr;</Link>
           </Button>
         </div>
-        {Array.from({ length: 3 }).map((_, index) => (
+        {live2dCommissions.map((commission) => (
           <ArtistCard
-            id={`artist-${index}`}
-            key={index}
-            name="GQuuuuux"
-            description="캐릭터 일러스트 전문"
-            images={[
-              "https://i2.ruliweb.com/img/25/03/28/195db744fe120337.jpg",
-              "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTRrwNMHYCP7CVjFghDN7W-P6L6n13ehDxJnQ&s",
-            ]}
-            rating={4.8}
-            likes={123}
-            tags={["Anime", "Fantasy", "Portrait"]}
+            id={commission.commission_id}
+            key={commission.commission_id}
+            title={commission.title}
+            artistName={commission.artist_name}
+            images={commission.images}
+            rating={commission.artist_avg_rating}
+            likes={commission.likes_count}
+            tags={commission.tags}
             commissionStatus="가능"
-            priceStart={50000}
+            priceStart={commission.price_start}
           />
         ))}
       </div>

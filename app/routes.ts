@@ -4,76 +4,71 @@ import {
   layout,
   prefix,
   route,
-} from '@react-router/dev/routes';
+} from "@react-router/dev/routes";
 
 export default [
-  index('common/pages/home-page.tsx'),
-  ...prefix('commissions', [
-    index('features/commissions/pages/commissions.tsx'),
-    route('artist/:id', 'features/commissions/pages/artist.tsx'),
-    layout('features/commissions/layouts/commissions-layout.tsx', [
-      route('character', 'features/commissions/pages/character.tsx'),
-      route('illustration', 'features/commissions/pages/illustration.tsx'),
-      route('virtual-3d', 'features/commissions/pages/virtual-3d.tsx'),
-      route('live2d', 'features/commissions/pages/live2d.tsx'),
-      route('design', 'features/commissions/pages/design.tsx'),
-      route('video', 'features/commissions/pages/video.tsx'),
-      route('recommended', 'features/commissions/pages/recommended.tsx'),
-      route('join/artist', 'features/commissions/pages/join-artist.tsx'),
+  index("common/pages/home-page.tsx"),
+  ...prefix("commissions", [
+    index("features/commissions/pages/commissions.tsx"),
+    route("artist/:id", "features/commissions/pages/artist.tsx"),
+    layout("features/commissions/layouts/commissions-layout.tsx", [
+      route(":category", "features/commissions/pages/category.tsx"),
+      route("recommended", "features/commissions/pages/recommended.tsx"),
+      route("join/artist", "features/commissions/pages/join-artist.tsx"),
     ]),
   ]),
-  ...prefix('/auth', [
-    layout('features/auth/layouts/auth-layout.tsx', [
-      route('/login', 'features/auth/pages/login-page.tsx'),
-      route('/join', 'features/auth/pages/join-page.tsx'),
-      ...prefix('/otp', [
-        route('/start', 'features/auth/pages/otp-start-page.tsx'),
-        route('/complete', 'features/auth/pages/otp-complete-page.tsx'),
+  ...prefix("/auth", [
+    layout("features/auth/layouts/auth-layout.tsx", [
+      route("/login", "features/auth/pages/login-page.tsx"),
+      route("/join", "features/auth/pages/join-page.tsx"),
+      ...prefix("/otp", [
+        route("/start", "features/auth/pages/otp-start-page.tsx"),
+        route("/complete", "features/auth/pages/otp-complete-page.tsx"),
       ]),
-      ...prefix('/social/:provider', [
-        route('/start', 'features/auth/pages/social-start-page.tsx'),
-        route('/complete', 'features/auth/pages/social-complete-page.tsx'),
+      ...prefix("/social/:provider", [
+        route("/start", "features/auth/pages/social-start-page.tsx"),
+        route("/complete", "features/auth/pages/social-complete-page.tsx"),
       ]),
     ]),
   ]),
   ...prefix(`/my`, [
-    layout('features/users/layouts/dashboard-layout.tsx', [
-      ...prefix('/dashboard', [
-        index('features/users/pages/dashboard-page.tsx'),
+    layout("features/users/layouts/dashboard-layout.tsx", [
+      ...prefix("/dashboard", [
+        index("features/users/pages/dashboard-page.tsx"),
         route(
-          '/commissions/requested',
-          'features/users/pages/dashboard-recieved-commissions.tsx'
+          "/commissions/requested",
+          "features/users/pages/dashboard-recieved-commissions.tsx"
         ),
         route(
-          '/products/:productId',
-          'features/users/pages/dashboard-product-page.tsx'
+          "/products/:productId",
+          "features/users/pages/dashboard-product-page.tsx"
         ),
       ]),
     ]),
-    route('profile', 'features/users/pages/my-profile-page.tsx'),
-    route('settings', 'features/users/pages/settings-page.tsx'),
-    route('/notifications', 'features/users/pages/notifications-page.tsx'),
-    layout('features/users/layouts/messages-layout.tsx', [
-      ...prefix('/messages', [
-        index('features/users/pages/messages-page.tsx'),
-        route('/:messageId', 'features/users/pages/message-page.tsx'),
+    route("profile", "features/users/pages/my-profile-page.tsx"),
+    route("settings", "features/users/pages/settings-page.tsx"),
+    route("/notifications", "features/users/pages/notifications-page.tsx"),
+    layout("features/users/layouts/messages-layout.tsx", [
+      ...prefix("/messages", [
+        index("features/users/pages/messages-page.tsx"),
+        route("/:messageId", "features/users/pages/message-page.tsx"),
       ]),
     ]),
   ]),
-  layout('features/users/layouts/profile-layout.tsx', [
-    ...prefix('/users/:username', [
-      index('features/users/pages/profile-page.tsx'),
-      route('/products', 'features/users/pages/profile-products-page.tsx'),
-      route('/posts', 'features/users/pages/profile-posts-page.tsx'),
+  layout("features/users/layouts/profile-layout.tsx", [
+    ...prefix("/users/:username", [
+      index("features/users/pages/profile-page.tsx"),
+      route("/products", "features/users/pages/profile-products-page.tsx"),
+      route("/posts", "features/users/pages/profile-posts-page.tsx"),
     ]),
   ]),
-  ...prefix('/community', [
-    index('features/community/pages/community-page.tsx'),
-    route('/:postId', 'features/community/pages/post-page.tsx'),
-    route('/create', 'features/community/pages/submit-post-page.tsx'),
+  ...prefix("/community", [
+    index("features/community/pages/community-page.tsx"),
+    route("/:postId", "features/community/pages/post-page.tsx"),
+    route("/create", "features/community/pages/submit-post-page.tsx"),
   ]),
-  ...prefix('/reviews', [
-    index('features/reviews/pages/reviews.tsx'),
-    route('/:reviewId', 'features/reviews/pages/review-page.tsx'),
+  ...prefix("/reviews", [
+    index("features/reviews/pages/reviews.tsx"),
+    route("/:reviewId", "features/reviews/pages/review-page.tsx"),
   ]),
 ] satisfies RouteConfig;

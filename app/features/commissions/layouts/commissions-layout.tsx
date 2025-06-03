@@ -1,24 +1,47 @@
-import { useState } from 'react';
-import { Form, Link, Outlet } from 'react-router';
+import { useState } from "react";
+import { Form, Link, Outlet } from "react-router";
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
-} from '~/components/ui/accordion';
-import { Button } from '~/components/ui/button';
-import { Switch } from '~/components/ui/switch';
-import { COMMISSION_CATEGORIES } from '../constants';
-import { Input } from '~/components/ui/input';
-import { Marquee3D } from '~/common/components/marquee3d';
+} from "~/components/ui/accordion";
+import { Button } from "~/components/ui/button";
+import { Switch } from "~/components/ui/switch";
+import { COMMISSION_CATEGORIES } from "../constants";
+import { Input } from "~/components/ui/input";
+import { Marquee3D } from "~/common/components/marquee3d";
+import type { Route } from "./+types/commissions-layout";
+import { getImagesByCategory } from "../queries";
+import type { Database } from "database.types";
 
-export default function CommissionsLayout() {
+type CategoryType = Database["public"]["Enums"]["commission_category"];
+
+export const meta: Route.MetaFunction = () => {
+  return [{ title: "Commissions" }];
+};
+
+export const loader = async ({ params }: Route.LoaderArgs) => {
+  const category = params.category;
+  if (!category) {
+    throw new Error("Category parameter is required");
+  }
+
+  const categoryImages = await getImagesByCategory({
+    category: category as CategoryType,
+  });
+  return { categoryImages };
+};
+
+export default function CommissionsLayout({
+  loaderData,
+}: Route.ComponentProps) {
   const [isSwitchOn, setIsSwitchOn] = useState(true);
 
   return (
     <div>
       <div className="flex flex-col items-center mb-5">
-        <Marquee3D />
+        <Marquee3D images={loaderData.categoryImages} />
       </div>
       <div className="grid grid-cols-8 gap-10">
         <div className="col-span-2">
@@ -31,21 +54,13 @@ export default function CommissionsLayout() {
               />
             </div>
             <div>
-              <Accordion
-                type="single"
-                collapsible
-                defaultValue="category"
-              >
+              <Accordion type="single" collapsible defaultValue="category">
                 <AccordionItem value="category">
                   <AccordionTrigger>Category</AccordionTrigger>
                   <AccordionContent>
                     <div className="flex flex-col gap-2">
                       {COMMISSION_CATEGORIES.map((category) => (
-                        <Button
-                          key={category.value}
-                          asChild
-                          variant="outline"
-                        >
+                        <Button key={category.value} asChild variant="outline">
                           <Link to={`/commissions/${category.value}`}>
                             {category.label}
                           </Link>
@@ -57,10 +72,7 @@ export default function CommissionsLayout() {
               </Accordion>
             </div>
             <div>
-              <Accordion
-                type="single"
-                collapsible
-              >
+              <Accordion type="single" collapsible>
                 <AccordionItem value="price">
                   <AccordionTrigger>Price</AccordionTrigger>
                   <AccordionContent>

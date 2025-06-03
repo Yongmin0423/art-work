@@ -27,7 +27,6 @@ export const loader = async () => {
     getCategoryShowcase(),
   ]);
 
-  console.log(commissions);
   return { commissions, logo, categoryShowcase };
 };
 
@@ -78,11 +77,17 @@ export default function HomePage({ loaderData }: Route.ComponentProps) {
               id={commission.commission_id}
               title={commission.title}
               artistName={commission.artist_name}
-              images={commission.images}
+              images={commission.images || []}
               rating={commission.artist_avg_rating}
               likes={commission.likes_count}
               tags={commission.tags}
-              commissionStatus={commission.status}
+              commissionStatus={
+                commission.status === "available"
+                  ? "가능"
+                  : commission.status === "pending"
+                  ? "대기 중"
+                  : "불가"
+              }
               priceStart={commission.price_start}
             />
           ))}
