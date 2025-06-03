@@ -4,13 +4,14 @@ import {
   CardFooter,
   CardContent,
   CardTitle,
-} from '~/components/ui/card';
-import { Button } from '~/components/ui/button';
-import { Link } from 'react-router';
-import { EyeIcon, DotIcon, StarIcon, StarOffIcon } from 'lucide-react';
+} from "~/components/ui/card";
+import { Button } from "~/components/ui/button";
+import { Link } from "react-router";
+import { EyeIcon, DotIcon, StarIcon, StarOffIcon } from "lucide-react";
+import { DateTime } from "luxon";
 
 interface ReviewCardProps {
-  reviewId: string;
+  reviewId: number;
   title: string;
   artist: string;
   views: number;
@@ -52,10 +53,7 @@ export function ReviewCard({
     <Link to={`/reviews/${reviewId}`}>
       <Card className="bg-transparent hover:bg-card/50 transition-colors">
         <div>
-          <img
-            src={image}
-            alt="review image"
-          />
+          <img src={image} alt="review image" />
           <div>{artist}</div>
         </div>
         <CardHeader>
@@ -68,7 +66,7 @@ export function ReviewCard({
             <span>{views}</span>
           </div>
           <DotIcon className="size-2" />
-          <span>{timeAgo}</span>
+          <span>{DateTime.fromISO(timeAgo).toRelative()}</span>
           <DotIcon className="size-2" />
           <span>{writer.slice(0, 1)}</span>
         </CardContent>

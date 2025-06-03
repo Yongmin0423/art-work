@@ -18,6 +18,14 @@ const users = pgSchema("auth").table("users", {
   id: uuid().primaryKey(),
 });
 
+// 커미션 상태 enum 추가
+export const commissionStatusEnum = pgEnum("commission_status", [
+  "available",
+  "pending",
+  "unavailable",
+  "paused",
+]);
+
 export const profiles = pgTable("profiles", {
   profile_id: uuid()
     .primaryKey()
@@ -30,6 +38,10 @@ export const profiles = pgTable("profiles", {
   location: text(),
   website: text(),
   avatar_url: text(),
+
+  // 아티스트 전용 필드들
+  specialties: text().array().default([]).notNull(), // PostgreSQL 네이티브 배열 타입!
+  commission_status: commissionStatusEnum().default("available").notNull(), // 현재 커미션 받기 상태
 
   // 통합된 통계 (모든 유저 공통)
   followers_count: integer().notNull().default(0),

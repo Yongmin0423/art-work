@@ -1,0 +1,1 @@
+ALTER TABLE "reviews" ALTER COLUMN "image_url" SET NOT NULL;

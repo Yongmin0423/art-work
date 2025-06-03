@@ -22,6 +22,27 @@
       "when": 1748964441061,
       "tag": "0002_bent_titanium_man",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1748968841842,
+      "tag": "0003_brave_iron_patriot",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1748970459099,
+      "tag": "0004_marvelous_marten_broadcloak",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1748971545653,
+      "tag": "0005_organic_veda",
+      "breakpoints": true
     }
   ]
 }

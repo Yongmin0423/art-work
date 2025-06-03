@@ -755,6 +755,7 @@ export type Database = {
         Row: {
           avatar_url: string | null
           bio: string | null
+          commission_status: Database["public"]["Enums"]["commission_status"]
           created_at: string
           followers_count: number
           following_count: number
@@ -762,6 +763,7 @@ export type Database = {
           location: string | null
           name: string
           profile_id: string
+          specialties: string[]
           updated_at: string
           username: string
           views_count: number
@@ -771,6 +773,7 @@ export type Database = {
         Insert: {
           avatar_url?: string | null
           bio?: string | null
+          commission_status?: Database["public"]["Enums"]["commission_status"]
           created_at?: string
           followers_count?: number
           following_count?: number
@@ -778,6 +781,7 @@ export type Database = {
           location?: string | null
           name: string
           profile_id: string
+          specialties?: string[]
           updated_at?: string
           username: string
           views_count?: number
@@ -787,6 +791,7 @@ export type Database = {
         Update: {
           avatar_url?: string | null
           bio?: string | null
+          commission_status?: Database["public"]["Enums"]["commission_status"]
           created_at?: string
           followers_count?: number
           following_count?: number
@@ -794,6 +799,7 @@ export type Database = {
           location?: string | null
           name?: string
           profile_id?: string
+          specialties?: string[]
           updated_at?: string
           username?: string
           views_count?: number
@@ -929,7 +935,7 @@ export type Database = {
           commission_id: number
           created_at: string
           description: string
-          image_url: string | null
+          image_url: string
           is_featured: boolean
           likes_count: number
           order_id: number
@@ -945,7 +951,7 @@ export type Database = {
           commission_id: number
           created_at?: string
           description: string
-          image_url?: string | null
+          image_url: string
           is_featured?: boolean
           likes_count?: number
           order_id: number
@@ -961,7 +967,7 @@ export type Database = {
           commission_id?: number
           created_at?: string
           description?: string
-          image_url?: string | null
+          image_url?: string
           is_featured?: boolean
           likes_count?: number
           order_id?: number

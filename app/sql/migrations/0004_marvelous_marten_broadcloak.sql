@@ -1,0 +1,2 @@
+ALTER TABLE "profiles" ADD COLUMN "specialties" jsonb DEFAULT '[]'::jsonb NOT NULL;--> statement-breakpoint
+ALTER TABLE "profiles" ADD COLUMN "commission_status" "commission_status" DEFAULT 'available' NOT NULL;
