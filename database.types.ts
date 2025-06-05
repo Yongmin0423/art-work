@@ -1093,7 +1093,14 @@ export type Database = {
       }
     }
     Functions: {
-      [_ in never]: never
+      increment_profile_view_count: {
+        Args: { profile_id_param: string }
+        Returns: undefined
+      }
+      increment_view_count: {
+        Args: { table_name: string; record_id: number; id_column?: string }
+        Returns: undefined
+      }
     }
     Enums: {
       commission_category:

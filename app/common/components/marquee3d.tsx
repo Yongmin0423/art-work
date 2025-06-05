@@ -42,7 +42,7 @@ const ReviewCard = ({ img }: { img: string }) => {
 };
 
 export function Marquee3D({ images }: { images: string[] }) {
-  console.log("Marquee3D images:", images);
+
 
   // images props를 reviews 형태로 변환
   const reviewsFromImages = images.map((img) => ({ img }));
@@ -51,7 +51,6 @@ export function Marquee3D({ images }: { images: string[] }) {
   const reviewsToUse =
     reviewsFromImages.length > 0 ? reviewsFromImages : reviews;
 
-  console.log("reviewsToUse:", reviewsToUse);
 
   const firstRow = reviewsToUse.slice(0, Math.ceil(reviewsToUse.length / 4));
   const secondRow = reviewsToUse.slice(
