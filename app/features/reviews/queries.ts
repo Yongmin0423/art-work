@@ -1,6 +1,7 @@
-import client from "~/supa-client";
+import type { SupabaseClient } from "@supabase/supabase-js";
+import type { Database } from "~/supa-client";
 
-export const getReviews = async () => {
+export const getReviews = async (client: SupabaseClient<Database>) => {
   const { data, error } = await client
     .from("reviews")
     .select(
@@ -23,7 +24,10 @@ export const getReviews = async () => {
   return data;
 };
 
-export const getReview = async ({ reviewId }: { reviewId: number }) => {
+export const getReview = async (
+  client: SupabaseClient<Database>,
+  { reviewId }: { reviewId: number }
+) => {
   const { data, error } = await client
     .from("reviews")
     .select(
@@ -70,7 +74,7 @@ export const getReview = async ({ reviewId }: { reviewId: number }) => {
     .single();
 
   // 아티스트 평균 평점 가져오기
-  const avgRating = await getArtistAvgRating(data.artist_id);
+  const avgRating = await getArtistAvgRating(client, data.artist_id);
 
   return {
     ...data,
@@ -80,7 +84,10 @@ export const getReview = async ({ reviewId }: { reviewId: number }) => {
 };
 
 // 아티스트 평균 평점 계산 함수
-export const getArtistAvgRating = async (artistId: string) => {
+export const getArtistAvgRating = async (
+  client: SupabaseClient<Database>,
+  artistId: string
+) => {
   const { data, error } = await client
     .from("reviews")
     .select("rating")

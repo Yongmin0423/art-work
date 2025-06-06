@@ -1,12 +1,13 @@
-import client from "~/supa-client";
+import type { SupabaseClient } from "@supabase/supabase-js";
+import type { Database } from "~/supa-client";
 
-export const getTopics = async () => {
+export const getTopics = async (client: SupabaseClient<Database>) => {
   const { data, error } = await client.from("topics").select("name,slug");
   if (error) throw error;
   return data;
 };
 
-export const getPosts = async () => {
+export const getPosts = async (client: SupabaseClient<Database>) => {
   const { data, error } = await client.from("posts").select(`
     post_id,
     title,
@@ -28,7 +29,10 @@ export const getPosts = async () => {
   return data;
 };
 
-export const getPost = async ({ postId }: { postId: string }) => {
+export const getPost = async (
+  client: SupabaseClient<Database>,
+  { postId }: { postId: string }
+) => {
   const { data, error } = await client
     .from("posts")
     .select(

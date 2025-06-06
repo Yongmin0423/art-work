@@ -4,6 +4,7 @@ import { Button } from "~/components/ui/button";
 import ArtistCard from "../components/artist-card";
 import { getTopCommissionsByCategory } from "../queries";
 import type { Route } from "./+types/commissions";
+import { makeSSRClient } from "~/supa-client";
 
 export const meta: Route.MetaFunction = () => {
   return [
@@ -12,17 +13,18 @@ export const meta: Route.MetaFunction = () => {
   ];
 };
 
-export const loader = async () => {
+export const loader = async ({ request }: Route.LoaderArgs) => {
+  const { client, headers } = makeSSRClient(request);
   const [
     characterCommissions,
     virtual3dCommissions,
     designCommissions,
     live2dCommissions,
   ] = await Promise.all([
-    getTopCommissionsByCategory("character", 3),
-    getTopCommissionsByCategory("virtual-3d", 3),
-    getTopCommissionsByCategory("design", 3),
-    getTopCommissionsByCategory("live2d", 3),
+    getTopCommissionsByCategory(client, "character", 3),
+    getTopCommissionsByCategory(client, "virtual-3d", 3),
+    getTopCommissionsByCategory(client, "design", 3),
+    getTopCommissionsByCategory(client, "live2d", 3),
   ]);
 
   return {

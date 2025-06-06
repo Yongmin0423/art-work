@@ -1,12 +1,11 @@
-import { CalendarIcon, FileTextIcon } from "@radix-ui/react-icons";
-import { BellIcon, Share2Icon } from "lucide-react";
-
 import { cn } from "~/lib/utils";
 import { BentoCard, BentoGrid } from "~/components/magicui/bento-grid";
 import { Marquee } from "~/components/magicui/marquee";
-import CommunityPage from "~/features/community/pages/community-page";
 import { Hero } from "~/components/hero";
-import type { CategoryShowcase } from "~/common/schema";
+import type { Database } from "~/supa-client";
+
+type CategoryShowcase =
+  Database["public"]["Tables"]["category_showcase"]["Row"];
 
 // 기본 fallback 데이터
 const defaultFiles = [

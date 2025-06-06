@@ -7,6 +7,7 @@ import { BentoDemo } from "../components/bento-grid";
 import type { Route } from "./+types/home-page";
 import { getCommissions } from "~/features/commissions/queries";
 import { getActiveLogo, getCategoryShowcase } from "~/common/queries";
+import { makeSSRClient } from "~/supa-client";
 
 export const meta = () => {
   return [
@@ -20,11 +21,12 @@ export const meta = () => {
   ];
 };
 
-export const loader = async () => {
+export const loader = async ({ request }: Route.LoaderArgs) => {
+  const { client, headers } = makeSSRClient(request);
   const [commissions, logo, categoryShowcase] = await Promise.all([
-    getCommissions(),
-    getActiveLogo(),
-    getCategoryShowcase(),
+    getCommissions(client),
+    getActiveLogo(client),
+    getCategoryShowcase(client),
   ]);
 
   return { commissions, logo, categoryShowcase };

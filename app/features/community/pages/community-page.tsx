@@ -13,14 +13,16 @@ import { Input } from "~/components/ui/input";
 import { PostCard } from "../components/post-card";
 import { getPosts, getTopics } from "../queries";
 import type { Route } from "./+types/community-page";
+import { makeSSRClient } from "~/supa-client";
 
 export const meta = () => {
   return [{ title: "Community | wemake" }];
 };
 
-export const loader = async () => {
-  const posts = await getPosts();
-  const topics = await getTopics();
+export const loader = async ({ request }: Route.LoaderArgs) => {
+  const { client, headers } = makeSSRClient(request);
+  const posts = await getPosts(client);
+  const topics = await getTopics(client);
   return { posts, topics };
 };
 

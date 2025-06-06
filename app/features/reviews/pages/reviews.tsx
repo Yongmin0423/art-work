@@ -2,6 +2,7 @@ import { Hero } from "~/components/hero";
 import { ReviewCard } from "../components/review-card";
 import type { Route } from "./+types/reviews";
 import { getReviews } from "../queries";
+import { makeSSRClient } from "~/supa-client";
 
 export const meta: Route.MetaFunction = () => {
   return [
@@ -13,8 +14,9 @@ export const meta: Route.MetaFunction = () => {
   ];
 };
 
-export const loader = async () => {
-  const reviews = await getReviews();
+export const loader = async ({ request }: Route.LoaderArgs) => {
+  const { client, headers } = makeSSRClient(request);
+  const reviews = await getReviews(client);
   return { reviews };
 };
 

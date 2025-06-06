@@ -10,6 +10,7 @@ import PriceSelector from "../components/price-selector";
 import { useState } from "react";
 import { Button } from "~/components/ui/button";
 import { getCommissionById } from "../queries";
+import { makeSSRClient } from "~/supa-client";
 
 export const meta: Route.MetaFunction = ({ params }) => {
   return [
@@ -21,9 +22,12 @@ export const meta: Route.MetaFunction = ({ params }) => {
   ];
 };
 
-export async function loader({ params }: Route.LoaderArgs) {
+export async function loader({ params, request }: Route.LoaderArgs) {
   const { id } = params;
-  const commission = await getCommissionById({ commissionId: Number(id) });
+  const { client, headers } = makeSSRClient(request);
+  const commission = await getCommissionById(client, {
+    commissionId: Number(id),
+  });
 
   if (!id) {
     throw new Response("ID가 필요합니다", { status: 400 });

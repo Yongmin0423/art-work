@@ -15,13 +15,15 @@ import { Badge } from "~/components/ui/badge";
 import { Reply } from "~/features/community/components/reply";
 import { getPost } from "../queries";
 import { DateTime } from "luxon";
+import { makeSSRClient } from "~/supa-client";
 
 export const meta: Route.MetaFunction = ({ params }) => {
   return [{ title: `${params.postId} | wemake` }];
 };
 
-export const loader = async ({ params }: Route.LoaderArgs) => {
-  const post = await getPost({ postId: params.postId });
+export const loader = async ({ params, request }: Route.LoaderArgs) => {
+  const { client, headers } = makeSSRClient(request);
+  const post = await getPost(client, { postId: params.postId });
   console.log(post);
   return { post };
 };

@@ -2,14 +2,16 @@ import ArtistCard from "../components/artist-card";
 import CommissionsPagination from "../components/commissions-pagination";
 import { getCommissionsByCategory } from "../queries";
 import type { Route } from "./+types/category";
+import { makeSSRClient } from "~/supa-client";
 
 export const meta: Route.MetaFunction = () => {
   return [{ title: "Character Commission" }];
 };
 
-export const loader = async ({ params }: Route.LoaderArgs) => {
+export const loader = async ({ params, request }: Route.LoaderArgs) => {
   const category = params.category;
-  const commissions = await getCommissionsByCategory(category);
+  const { client, headers } = makeSSRClient(request);
+  const commissions = await getCommissionsByCategory(client, category);
   return { commissions };
 };
 
