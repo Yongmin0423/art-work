@@ -8,6 +8,7 @@ import { Badge } from "~/components/ui/badge";
 import type { Route } from "./+types/review-page";
 import { getReview } from "../queries";
 import { DateTime } from "luxon";
+import { makeSSRClient } from "~/supa-client";
 
 export const meta = () => {
   return [
@@ -19,8 +20,9 @@ export const meta = () => {
   ];
 };
 
-export const loader = async ({ params }: Route.LoaderArgs) => {
-  const review = await getReview({ reviewId: Number(params.reviewId) });
+export const loader = async ({ params, request }: Route.LoaderArgs) => {
+  const { client, headers } = makeSSRClient(request);
+  const review = await getReview(client, { reviewId: Number(params.reviewId) });
   console.log(review);
   return { review };
 };
