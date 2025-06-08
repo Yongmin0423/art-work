@@ -23,7 +23,6 @@ export const meta = () => {
 export const loader = async ({ params, request }: Route.LoaderArgs) => {
   const { client, headers } = makeSSRClient(request);
   const review = await getReview(client, { reviewId: Number(params.reviewId) });
-  console.log(review);
   return { review };
 };
 

@@ -28,6 +28,7 @@ export const action = async ({ request }: Route.ActionArgs) => {
   const { success, data, error } = formSchema.safeParse(
     Object.fromEntries(formData)
   );
+  console.log(success, data, error);
   if (!success) {
     return {
       loginError: null,
@@ -69,7 +70,7 @@ export default function LoginPage({ actionData }: Route.ComponentProps) {
           Log in to your account
         </h1>
       </div>
-      <Form className="w-full space-y-5">
+      <Form className="w-full space-y-5" method="post">
         <InputPair
           label="Email"
           description="이메일을 입력해주세요."

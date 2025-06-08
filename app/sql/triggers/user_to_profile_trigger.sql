@@ -9,53 +9,36 @@ security definer
 set search_path = ''
 as $$
 begin
-    if new.raw_user_meta_data ? 'name' and new.raw_user_meta_data ? 'username' then
-        insert into public.profiles (
-            profile_id, 
-            username, 
-            name, 
-            job_title, 
-            bio,
-            work_status,
-            location,
-            website,
-            avatar_url
-        )
-        values (
-            new.id,
-            new.raw_user_meta_data ->> 'username',
-            new.raw_user_meta_data ->> 'name',
-            'Digital Artist',
-            'Professional digital artist specializing in character design and illustration',
-            'available',
-            null,
-            null,
-            null
-        );
-    else
-        insert into public.profiles (
-            profile_id, 
-            username, 
-            name, 
-            job_title, 
-            bio,
-            work_status,
-            location,
-            website,
-            avatar_url
-        )
-        values (
-            new.id,
-            'mr.' || substr(md5(random()::text), 1, 8),
-            'Anonymous',
-            'Digital Artist',
-            'Professional digital artist specializing in character design and illustration',
-            'available',
-            null,
-            null,
-            null
-        );
-    end if;
+    -- 예외 처리 추가
+    begin
+        if new.raw_user_meta_data ? 'name' and new.raw_user_meta_data ? 'username' then
+            insert into public.profiles (
+                profile_id, 
+                username, 
+                name
+            )
+            values (
+                new.id,
+                new.raw_user_meta_data ->> 'username',
+                new.raw_user_meta_data ->> 'name'
+            );
+        else
+            insert into public.profiles (
+                profile_id, 
+                username, 
+                name
+            )
+            values (
+                new.id,
+                'user_' || substr(md5(random()::text), 1, 8),
+                'Anonymous User'
+            );
+        end if;
+    exception
+        when others then
+            -- 에러가 발생해도 사용자 생성은 계속 진행
+            raise log 'Error creating profile for user %: %', new.id, SQLERRM;
+    end;
     return new;
 end;
 $$;

@@ -57,8 +57,22 @@ export const action = async ({ request }: Route.ActionArgs) => {
     },
   });
   if (signUpError) {
+    console.error("Sign up error:", signUpError);
+
+    // 구체적인 에러 메시지 제공
+    let errorMessage = signUpError.message;
+
+    if (signUpError.message.includes("Database error")) {
+      errorMessage =
+        "계정 생성 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.";
+    } else if (signUpError.message.includes("User already registered")) {
+      errorMessage = "이미 가입된 이메일입니다.";
+    } else if (signUpError.message.includes("Invalid email")) {
+      errorMessage = "유효하지 않은 이메일 주소입니다.";
+    }
+
     return {
-      signUpError: signUpError.message,
+      signUpError: errorMessage,
     };
   }
   return redirect("/", { headers });

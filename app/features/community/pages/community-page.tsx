@@ -97,7 +97,7 @@ export default function CommunityPage({ loaderData }: Route.ComponentProps) {
               </Form>
             </div>
             <Button asChild>
-              <Link to={`/community/new`}>Create Discussion</Link>
+              <Link to={`/community/create`}>Create Discussion</Link>
             </Button>
           </div>
           <div className="space-y-5">

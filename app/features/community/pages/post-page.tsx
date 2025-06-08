@@ -24,7 +24,7 @@ export const meta: Route.MetaFunction = ({ params }) => {
 export const loader = async ({ params, request }: Route.LoaderArgs) => {
   const { client, headers } = makeSSRClient(request);
   const post = await getPost(client, { postId: params.postId });
-  console.log(post);
+
   return { post };
 };
 
@@ -70,17 +70,15 @@ export default function PostPage({ loaderData }: Route.ComponentProps) {
                   <span>{loaderData.post.profiles.name}</span>
                   <DotIcon className="size-5" />
                   <span>
-                    {DateTime.fromISO(loaderData.post.created_at).toRelative()}
+                    {DateTime.fromISO(loaderData.post.created_at, {
+                      zone: "utc",
+                    }).toRelative({ unit: "hours" })}
                   </span>
                   <DotIcon className="size-5" />
                   <span>{loaderData.post.replies_count} replies</span>
                 </div>
                 <p className="text-muted-foreground w-3/4">
-                  Hello, I'm looking for a productivity tool that can help me
-                  manage my tasks and projects. Any recommendations? I have
-                  tried Notion, but it's not what I'm looking for. I dream of a
-                  tool that can help me manage my tasks and projects. Any
-                  recommendations?
+                  {loaderData.post.content}
                 </p>
               </div>
               <Form className="flex items-start gap-5 w-3/4">
