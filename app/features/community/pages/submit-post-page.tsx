@@ -3,7 +3,7 @@ import { Form, redirect } from "react-router";
 import InputPair from "~/components/input-pair";
 import { Button } from "~/components/ui/button";
 import type { Route } from "./+types/submit-post-page";
-import SelectPair from "~/common/components/select-pair";
+import SelectPair from "~/components/select-pair";
 import { makeSSRClient } from "~/supa-client";
 import { getLoggedInUser, getTopics } from "../queries";
 import { z } from "zod";

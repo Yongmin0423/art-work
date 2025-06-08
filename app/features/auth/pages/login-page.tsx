@@ -28,7 +28,7 @@ export const action = async ({ request }: Route.ActionArgs) => {
   const { success, data, error } = formSchema.safeParse(
     Object.fromEntries(formData)
   );
-  console.log(success, data, error);
+
   if (!success) {
     return {
       loginError: null,

@@ -5,7 +5,7 @@ import { DotIcon } from "lucide-react";
 import { MarqueeHorizontal } from "~/common/components/marquee-horizontal";
 import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar";
 import { Separator } from "~/components/ui/separator";
-import SelectPair from "~/common/components/select-pair";
+import SelectPair from "~/components/select-pair";
 import PriceSelector from "../components/price-selector";
 import { useState } from "react";
 import { Button } from "~/components/ui/button";

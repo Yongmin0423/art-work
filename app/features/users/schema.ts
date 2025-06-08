@@ -13,6 +13,7 @@ import {
   timestamp,
   uuid,
 } from "drizzle-orm/pg-core";
+import { commissionCategory } from "../commissions/schema";
 
 const users = pgSchema("auth").table("users", {
   id: uuid().primaryKey(),
@@ -80,7 +81,7 @@ export const artistPortfolio = pgTable("artist_portfolio", {
   images: jsonb().notNull().default([]), // 이미지 URL 배열
 
   // 카테고리/태그로 분류
-  category: text(), // 'character', 'illustration', 'design' 등
+  category: commissionCategory(), // 커미션과 동일한 카테고리 enum 사용
   tags: jsonb().notNull().default([]),
 
   // 통계

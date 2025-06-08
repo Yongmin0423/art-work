@@ -83,7 +83,16 @@ export default function App({ loaderData }: Route.ComponentProps) {
             hasMessages={false}
           />
         )}
-        <Outlet />
+        <Outlet
+          context={{
+            isLoggedIn,
+            name: loaderData.profile?.name,
+            userId: loaderData.user?.id,
+            username: loaderData.profile?.username,
+            avatar: loaderData.profile?.avatar_url,
+            email: loaderData.user?.email,
+          }}
+        />
       </div>
     </>
   );

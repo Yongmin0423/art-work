@@ -1,7 +1,7 @@
-import { Form, Link, NavLink, Outlet } from 'react-router';
-import { Avatar, AvatarFallback, AvatarImage } from '~/components/ui/avatar';
-import { Badge } from '~/components/ui/badge';
-import { Button, buttonVariants } from '~/components/ui/button';
+import { Form, Link, NavLink, Outlet, useOutletContext } from "react-router";
+import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar";
+import { Badge } from "~/components/ui/badge";
+import { Button, buttonVariants } from "~/components/ui/button";
 import {
   Dialog,
   DialogDescription,
@@ -9,30 +9,30 @@ import {
   DialogContent,
   DialogTrigger,
   DialogTitle,
-} from '~/components/ui/dialog';
-import { Textarea } from '~/components/ui/textarea';
-import { cn } from '~/lib/utils';
+} from "~/components/ui/dialog";
+import { Textarea } from "~/components/ui/textarea";
+import { cn } from "~/lib/utils";
+import type { Route } from "./+types/profile-layout";
+import { makeSSRClient } from "~/supa-client";
+import { getUserProfile } from "../queries";
 
-// 임시 데이터 - 실제로는 loader에서 가져올 것
-const profileData = {
-  name: 'John Doe',
-  username: 'john_doe',
-  jobTitle: 'Product Designer',
-  bio: 'Passionate about creating beautiful and functional designs...',
-  location: 'Seoul, South Korea',
-  website: 'https://johndoe.com',
-  avatarUrl: 'https://github.com/shadcn.png',
-  workStatus: 'available',
-  stats: {
-    followers: 1234,
-    following: 567,
-    views: 8901,
-  },
-  isOwnProfile: false, // 본인 프로필인지 확인
-  isFollowing: false, // 팔로우 중인지 확인
+export const loader = async ({ request, params }: Route.LoaderArgs) => {
+  const { client } = await makeSSRClient(request);
+  const user = await getUserProfile(client, {
+    username: params.username as string,
+  });
+  return { user };
 };
 
-export default function ProfileLayout() {
+export default function ProfileLayout({
+  loaderData,
+  params,
+}: Route.ComponentProps & { params: { username: string } }) {
+  const { isLoggedIn, username } = useOutletContext<{
+    isLoggedIn: boolean;
+    username: string;
+  }>();
+
   const formatNumber = (num: number) => {
     if (num >= 1000) {
       return `${(num / 1000).toFixed(1)}k`;
@@ -46,83 +46,88 @@ export default function ProfileLayout() {
       <div className="flex items-start gap-6">
         <Avatar className="size-32">
           <AvatarImage
-            src={profileData.avatarUrl}
-            alt={profileData.name}
+            src={loaderData.user.avatar_url || ""}
+            alt={loaderData.user.name}
           />
-          <AvatarFallback>
-            {profileData.name
-              .split(' ')
-              .map((n) => n[0])
-              .join('')
-              .toUpperCase()}
-          </AvatarFallback>
+          <AvatarFallback>{loaderData.user.name[0]}</AvatarFallback>
         </Avatar>
 
         <div className="flex-1 space-y-4">
           <div className="flex items-center gap-3">
-            <h1 className="text-3xl font-bold">{profileData.name}</h1>
-            <Badge variant={profileData.workStatus === 'available' ? 'default' : 'secondary'}>
-              {profileData.workStatus === 'available'
-                ? 'Available'
-                : profileData.workStatus === 'busy'
-                ? 'Busy'
-                : 'Not Available'}
+            <h1 className="text-3xl font-bold">{loaderData.user.name}</h1>
+            <Badge
+              variant={
+                loaderData.user.work_status === "available"
+                  ? "default"
+                  : "secondary"
+              }
+            >
+              {loaderData.user.work_status === "available"
+                ? "Available"
+                : loaderData.user.work_status === "busy"
+                ? "Busy"
+                : "Not Available"}
             </Badge>
           </div>
 
           <div className="flex items-center gap-2 text-sm text-muted-foreground">
-            <span>@{profileData.username}</span>
-            {profileData.jobTitle && (
+            <span>@{loaderData.user.username}</span>
+            {loaderData.user.job_title && (
               <>
                 <span>•</span>
-                <span>{profileData.jobTitle}</span>
+                <span>{loaderData.user.job_title}</span>
               </>
             )}
-            {profileData.location && (
+            {loaderData.user.location && (
               <>
                 <span>•</span>
-                <span>{profileData.location}</span>
+                <span>{loaderData.user.location}</span>
               </>
             )}
           </div>
 
-          {profileData.bio && <p className="text-foreground max-w-2xl">{profileData.bio}</p>}
+          {loaderData.user.bio && (
+            <p className="text-foreground max-w-2xl">{loaderData.user.bio}</p>
+          )}
 
-          {profileData.website && (
+          {loaderData.user.website && (
             <a
-              href={profileData.website}
+              href={loaderData.user.website}
               target="_blank"
               rel="noopener noreferrer"
               className="text-sm text-blue-600 hover:underline"
             >
-              {profileData.website}
+              {loaderData.user.website}
             </a>
           )}
 
           <div className="flex items-center gap-4 text-sm">
             <span>
-              <strong>{formatNumber(profileData.stats.followers)}</strong> followers
+              <strong>{formatNumber(loaderData.user.stats.followers)}</strong>{" "}
+              followers
             </span>
             <span>
-              <strong>{formatNumber(profileData.stats.following)}</strong> following
+              <strong>{formatNumber(loaderData.user.stats.following)}</strong>{" "}
+              following
             </span>
             <span>
-              <strong>{formatNumber(profileData.stats.views)}</strong> profile views
+              <strong>{formatNumber(loaderData.user.stats.views)}</strong>{" "}
+              profile views
             </span>
           </div>
 
           <div className="flex gap-3">
-            {profileData.isOwnProfile ? (
-              <Button
-                variant="outline"
-                asChild
-              >
+            {isLoggedIn && username === params.username ? (
+              <Button variant="outline" asChild>
                 <Link to="/my/settings">Edit profile</Link>
               </Button>
-            ) : (
+            ) : null}
+            {!isLoggedIn ? (
               <>
-                <Button variant={profileData.isFollowing ? 'outline' : 'default'}>
-                  {profileData.isFollowing ? 'Following' : 'Follow'}
+                <Button
+                  variant={loaderData.user.isFollowing ? "outline" : "default"}
+                >
+                  {loaderData.user.isFollowing ? "Following" : "Follow"}
                 </Button>
                 <Dialog>
                   <DialogTrigger asChild>
@@ -131,7 +136,9 @@ export default function ProfileLayout() {
                   <DialogContent>
                     <DialogHeader>
                       <DialogTitle>Send Message</DialogTitle>
-                      <DialogDescription>Send a message to {profileData.name}</DialogDescription>
+                      <DialogDescription>
+                        Send a message to {loaderData.user.name}
+                      </DialogDescription>
                     </DialogHeader>
                     <Form className="space-y-4">
                       <Textarea
@@ -142,10 +149,7 @@ export default function ProfileLayout() {
                         required
                       />
                       <div className="flex justify-end gap-2">
-                        <Button
-                          type="button"
-                          variant="outline"
-                        >
+                        <Button type="button" variant="outline">
                           Cancel
                         </Button>
                         <Button type="submit">Send Message</Button>
@@ -154,7 +158,7 @@ export default function ProfileLayout() {
                   </DialogContent>
                 </Dialog>
               </>
-            )}
+            ) : null}
           </div>
         </div>
       </div>
@@ -163,18 +167,24 @@ export default function ProfileLayout() {
       <div className="border-b">
         <div className="flex gap-1">
           {[
-            { label: 'About', to: `/users/${profileData.username}` },
-            { label: 'Portfolio', to: `/users/${profileData.username}/portfolio` },
-            { label: 'Posts', to: `/users/${profileData.username}/posts` },
-            { label: 'Reviews', to: `/users/${profileData.username}/reviews` },
+            { label: "About", to: `/users/${loaderData.user.username}` },
+            {
+              label: "Portfolio",
+              to: `/users/${loaderData.user.username}/portfolio`,
+            },
+            { label: "Posts", to: `/users/${loaderData.user.username}/posts` },
+            {
+              label: "Reviews",
+              to: `/users/${loaderData.user.username}/reviews`,
+            },
           ].map((item) => (
             <NavLink
               end
               key={item.label}
               className={({ isActive }) =>
                 cn(
-                  'px-4 py-2 text-sm font-medium border-b-2 border-transparent hover:border-border transition-colors',
-                  isActive && 'border-primary text-primary'
+                  "px-4 py-2 text-sm font-medium border-b-2 border-transparent hover:border-border transition-colors",
+                  isActive && "border-primary text-primary"
                 )
               }
               to={item.to}
@@ -187,7 +197,7 @@ export default function ProfileLayout() {
 
       {/* Content */}
       <div className="max-w-4xl">
-        <Outlet />
+        <Outlet context={{ isLoggedIn, username }} />
       </div>
     </div>
   );

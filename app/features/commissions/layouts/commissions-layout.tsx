@@ -14,6 +14,8 @@ import { Marquee3D } from "~/common/components/marquee3d";
 import type { Route } from "./+types/commissions-layout";
 import { getImagesByCategory } from "../queries";
 import type { Database } from "database.types";
+import { makeSSRClient } from "~/supa-client";
+import type { SupabaseClient } from "@supabase/supabase-js";
 
 type CategoryType = Database["public"]["Enums"]["commission_category"];
 
@@ -21,13 +23,16 @@ export const meta: Route.MetaFunction = () => {
   return [{ title: "Commissions" }];
 };
 
-export const loader = async ({ params }: Route.LoaderArgs) => {
+export const loader = async ({ params, request }: Route.LoaderArgs) => {
   const category = params.category;
+
+  // category가 없으면 빈 배열 반환 (기본값)
   if (!category) {
-    throw new Error("Category parameter is required");
+    return { categoryImages: [] };
   }
 
-  const categoryImages = await getImagesByCategory({
+  const { client } = await makeSSRClient(request);
+  const categoryImages = await getImagesByCategory(client, {
     category: category as CategoryType,
   });
   return { categoryImages };

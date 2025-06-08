@@ -1,12 +1,12 @@
-import { useState } from 'react';
-import { Label } from '~/components/ui/label';
+import { useState } from "react";
+import { Label } from "~/components/ui/label";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '~/components/ui/select';
+} from "~/components/ui/select";
 
 export default function SelectPair({
   name,
@@ -15,12 +15,14 @@ export default function SelectPair({
   description,
   placeholder,
   options,
+  defaultValue,
 }: {
   label: string;
   description: string;
   name: string;
   required?: boolean;
   placeholder: string;
+  defaultValue?: string;
   options: {
     label: string;
     value: string;
@@ -29,10 +31,7 @@ export default function SelectPair({
   const [open, setOpen] = useState(false);
   return (
     <div className="space-y-2 flex flex-col">
-      <Label
-        className="flex flex-col gap-1"
-        onClick={() => setOpen(true)}
-      >
+      <Label className="flex flex-col gap-1" onClick={() => setOpen(true)}>
         {label}
         <small className="text-muted-foreground">{description}</small>
       </Label>
@@ -41,16 +40,14 @@ export default function SelectPair({
         onOpenChange={setOpen}
         name={name}
         required={required}
+        defaultValue={defaultValue}
       >
         <SelectTrigger>
           <SelectValue placeholder={placeholder} />
         </SelectTrigger>
         <SelectContent>
           {options.map((option) => (
-            <SelectItem
-              key={option.value}
-              value={option.value}
-            >
+            <SelectItem key={option.value} value={option.value}>
               {option.label}
             </SelectItem>
           ))}

@@ -107,3 +107,48 @@ export const getArtistAvgRating = async (
 
   return avgRating;
 };
+
+export const getReviewsByUsername = async (
+  client: SupabaseClient<Database>,
+  { username }: { username: string }
+) => {
+  // 먼저 username으로 profile_id를 찾기
+  const { data: profile, error: profileError } = await client
+    .from("profiles")
+    .select("profile_id")
+    .eq("username", username)
+    .single();
+
+  if (profileError) throw profileError;
+
+  // 그 profile_id로 해당 사용자가 작성한 리뷰들 조회
+  const { data, error } = await client
+    .from("reviews")
+    .select(
+      `
+      review_id,
+      title,
+      description,
+      rating,
+      image_url,
+      likes_count,
+      views_count,
+      created_at,
+      reviewer:profiles!reviews_reviewer_id_profiles_profile_id_fk(
+        name,
+        avatar_url,
+        username
+      ),
+      artist:profiles!reviews_artist_id_profiles_profile_id_fk(
+        name,
+        avatar_url,
+        username
+      )
+    `
+    )
+    .eq("reviewer_id", profile.profile_id)
+    .order("created_at", { ascending: false });
+
+  if (error) throw error;
+  return data;
+};
