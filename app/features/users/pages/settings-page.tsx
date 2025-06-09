@@ -11,7 +11,7 @@ import { makeSSRClient } from "~/supa-client";
 import { getLoggedInUser } from "~/features/community/queries";
 import { getUserById } from "../queries";
 import { z } from "zod";
-import { updateUser } from "../mutation";
+import { updateUser, updateUserAvatar } from "../mutation";
 import { Alert, AlertDescription, AlertTitle } from "~/components/ui/alert";
 
 export const meta: Route.MetaFunction = () => {
@@ -39,34 +39,59 @@ export const action = async ({ request }: Route.ActionArgs) => {
   const { client } = await makeSSRClient(request);
   const userId = await getLoggedInUser(client);
   const formData = await request.formData();
-  const { success, data, error } = formSchema.safeParse(
-    Object.fromEntries(formData)
-  );
-  if (!success) {
-    return { error: error.flatten().fieldErrors };
+  const avatar = formData.get("avatar");
+  if (avatar && avatar instanceof File) {
+    if (avatar.size <= 2 * 1024 * 1024 && avatar.type.startsWith("image/")) {
+      const { data, error } = await client.storage
+        .from("avatars")
+        .upload(`${userId}/${Date.now()}`, avatar, {
+          contentType: avatar.type,
+          upsert: false,
+        });
+      if (error) {
+        console.log(error);
+        return { formErrors: { avatar: ["Failed to upload avatar"] } };
+      }
+      const {
+        data: { publicUrl },
+      } = await client.storage.from("avatars").getPublicUrl(data.path);
+      await updateUserAvatar(client, {
+        id: userId,
+        avatarUrl: publicUrl,
+      });
+    }
+  } else {
+    const { success, data, error } = formSchema.safeParse(
+      Object.fromEntries(formData)
+    );
+    if (!success) {
+      return { formErrors: error.flatten().fieldErrors };
+    }
+    const { name, username, job_title, bio, work_status, location, website } =
+      data;
+    const user = await updateUser(client, {
+      id: userId,
+      name,
+      username,
+      job_title,
+      bio,
+      work_status,
+      location,
+      website,
+    });
+    return {
+      ok: true,
+    };
   }
-  const { name, username, job_title, bio, work_status, location, website } =
-    data;
-  const user = await updateUser(client, {
-    id: userId,
-    name,
-    username,
-    job_title,
-    bio,
-    work_status,
-    location,
-    website,
-  });
-  return {
-    ok: true,
-  };
 };
 
 export default function SettingsPage({
   loaderData,
   actionData,
 }: Route.ComponentProps) {
-  const [avatar, setAvatar] = useState<string | null>(null);
+  const [avatar, setAvatar] = useState<string | null>(
+    loaderData.user.avatar_url
+  );
 
   const onChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files) {
@@ -98,6 +123,14 @@ export default function SettingsPage({
               placeholder="John Doe"
               defaultValue={loaderData.user?.name}
             />
+            {actionData?.formErrors && "name" in actionData?.formErrors ? (
+              <Alert>
+                <AlertTitle>Error</AlertTitle>
+                <AlertDescription>
+                  {actionData.formErrors?.name?.join(", ")}
+                </AlertDescription>
+              </Alert>
+            ) : null}
             <InputPair
               label="Username"
               description="Your unique username (used in profile URL)"
@@ -107,14 +140,30 @@ export default function SettingsPage({
               placeholder="john_doe"
               defaultValue={loaderData.user?.username}
             />
+            {actionData?.formErrors && "username" in actionData?.formErrors ? (
+              <Alert>
+                <AlertTitle>Error</AlertTitle>
+                <AlertDescription>
+                  {actionData.formErrors?.username?.join(", ")}
+                </AlertDescription>
+              </Alert>
+            ) : null}
             <InputPair
               label="Job Title"
               description="Your professional title or specialty"
-              id="jobTitle"
-              name="jobTitle"
+              id="job_title"
+              name="job_title"
               placeholder="Product Designer"
               defaultValue={loaderData.user?.job_title || ""}
             />
+            {actionData?.formErrors && "job_title" in actionData?.formErrors ? (
+              <Alert>
+                <AlertTitle>Error</AlertTitle>
+                <AlertDescription>
+                  {actionData.formErrors?.job_title?.join(", ")}
+                </AlertDescription>
+              </Alert>
+            ) : null}
             <InputPair
               label="Bio"
               description="Tell others about yourself"
@@ -124,10 +173,18 @@ export default function SettingsPage({
               textArea
               defaultValue={loaderData.user?.bio ?? ""}
             />
+            {actionData?.formErrors && "bio" in actionData?.formErrors ? (
+              <Alert>
+                <AlertTitle>Error</AlertTitle>
+                <AlertDescription>
+                  {actionData.formErrors?.bio}
+                </AlertDescription>
+              </Alert>
+            ) : null}
             <SelectPair
               label="Work Status"
               description="Your current availability for work"
-              name="workStatus"
+              name="work_status"
               placeholder="Select your status"
               defaultValue={loaderData.user?.work_status ?? "available"}
               options={[
@@ -145,6 +202,15 @@ export default function SettingsPage({
                 placeholder="Seoul, South Korea"
                 defaultValue={loaderData.user?.location ?? ""}
               />
+              {actionData?.formErrors &&
+              "location" in actionData?.formErrors ? (
+                <Alert>
+                  <AlertTitle>Error</AlertTitle>
+                  <AlertDescription>
+                    {actionData.formErrors?.location?.join(", ")}
+                  </AlertDescription>
+                </Alert>
+              ) : null}
               <InputPair
                 label="Website"
                 description="Your personal website or portfolio"
@@ -154,6 +220,14 @@ export default function SettingsPage({
                 placeholder="https://johndoe.com"
                 defaultValue={loaderData.user?.website ?? ""}
               />
+              {actionData?.formErrors && "website" in actionData?.formErrors ? (
+                <Alert>
+                  <AlertTitle>Error</AlertTitle>
+                  <AlertDescription>
+                    {actionData.formErrors?.website}
+                  </AlertDescription>
+                </Alert>
+              ) : null}
             </div>
             <Button type="submit" className="w-full">
               Update profile
@@ -161,7 +235,11 @@ export default function SettingsPage({
           </Form>
         </div>
 
-        <aside className="col-span-2 p-6 rounded-lg border shadow-md h-fit">
+        <Form
+          method="post"
+          className="col-span-2 p-6 rounded-lg border shadow-md h-fit"
+          encType="multipart/form-data"
+        >
           <div className="space-y-4">
             <div>
               <Label className="text-sm font-medium">Avatar</Label>
@@ -172,11 +250,13 @@ export default function SettingsPage({
 
             <div className="flex flex-col items-center space-y-4">
               <Avatar className="size-32">
-                <AvatarImage
-                  src={avatar || "https://github.com/shadcn.png"}
-                  alt="Avatar preview"
-                />
-                <AvatarFallback>JD</AvatarFallback>
+                {(avatar || loaderData.user?.avatar_url) && (
+                  <AvatarImage
+                    src={avatar || loaderData.user?.avatar_url || ""}
+                    alt="Avatar preview"
+                  />
+                )}
+                <AvatarFallback>{loaderData.user?.name[0]}</AvatarFallback>
               </Avatar>
 
               <Input
@@ -186,6 +266,14 @@ export default function SettingsPage({
                 accept="image/png,image/jpeg,image/jpg"
                 name="avatar"
               />
+              {actionData?.formErrors && "avatar" in actionData?.formErrors ? (
+                <Alert>
+                  <AlertTitle>Error</AlertTitle>
+                  <AlertDescription>
+                    {actionData.formErrors?.avatar?.join(", ")}
+                  </AlertDescription>
+                </Alert>
+              ) : null}
 
               <div className="text-xs text-muted-foreground space-y-1 text-center">
                 <p>Recommended: 400x400px</p>
@@ -193,12 +281,12 @@ export default function SettingsPage({
                 <p>Max size: 2MB</p>
               </div>
 
-              <Button type="button" className="w-full" size="sm">
+              <Button type="submit" className="w-full" size="sm">
                 Update avatar
               </Button>
             </div>
           </div>
-        </aside>
+        </Form>
       </div>
     </div>
   );

@@ -80,3 +80,16 @@ export const toggleUpvote = async (
       .eq("profile_id", userId);
   }
 };
+
+export const updateUserAvatar = async (
+  client: SupabaseClient<Database>,
+  { id, avatarUrl }: { id: string; avatarUrl: string }
+) => {
+  const { error } = await client
+    .from("profiles")
+    .update({ avatar_url: avatarUrl })
+    .eq("profile_id", id);
+  if (error) {
+    throw error;
+  }
+};
