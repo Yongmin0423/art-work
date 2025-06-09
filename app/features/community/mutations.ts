@@ -23,7 +23,6 @@ export const createPost = async (
   if (categoryError) {
     throw categoryError;
   }
-
   const { data, error } = await client
     .from("posts")
     .insert({
@@ -34,26 +33,6 @@ export const createPost = async (
     })
     .select()
     .single();
-
-  // 중복 키 오류 처리
-  if (error && error.code === "23505" && error.message.includes("posts_pkey")) {
-    console.error("Database sequence sync issue detected!");
-    console.error("Error details:", error);
-    console.error(
-      "This usually means the posts_post_id_seq is out of sync with existing data."
-    );
-    console.error("Please run this SQL in Supabase SQL Editor:");
-    console.error(
-      "SELECT setval('posts_post_id_seq', (SELECT MAX(post_id) FROM posts) + 1, false);"
-    );
-
-    // 더 구체적인 에러 메시지 제공
-    throw new Error(
-      "Database sequence synchronization error. The auto-increment sequence for posts is out of sync. " +
-        "Please contact your database administrator or run the sequence fix query in Supabase SQL Editor."
-    );
-  }
-
   if (error) {
     throw error;
   }
@@ -62,12 +41,42 @@ export const createPost = async (
 
 export const createReply = async (
   client: SupabaseClient<Database>,
-  { postId, reply, userId }: { postId: string; reply: string; userId: string }
+  {
+    postId,
+    reply,
+    userId,
+    topLevelId,
+  }: { postId: string; reply: string; userId: string; topLevelId?: number }
 ) => {
-  const { data, error } = await client
-    .from("post_replies")
-    .insert({ post_id: Number(postId), reply, profile_id: userId });
+  const { error } = await client.from("post_replies").insert({
+    ...(topLevelId ? { parent_id: topLevelId } : { post_id: Number(postId) }),
+    reply,
+    profile_id: userId,
+  });
   if (error) {
     throw error;
+  }
+};
+
+export const toggleUpvote = async (
+  client: SupabaseClient<Database>,
+  { postId, userId }: { postId: string; userId: string }
+) => {
+  const { count } = await client
+    .from("post_upvotes")
+    .select("*", { count: "exact", head: true })
+    .eq("post_id", Number(postId))
+    .eq("profile_id", userId);
+  if (count === 0) {
+    await client.from("post_upvotes").insert({
+      post_id: Number(postId),
+      profile_id: userId,
+    });
+  } else {
+    await client
+      .from("post_upvotes")
+      .delete()
+      .eq("post_id", Number(postId))
+      .eq("profile_id", userId);
   }
 };

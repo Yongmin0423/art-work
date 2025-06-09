@@ -4,7 +4,8 @@ import { Button } from "~/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar";
 import { useEffect, useState } from "react";
 import { Textarea } from "~/components/ui/textarea";
-import { action } from "../pages/post-page";
+import { DateTime } from "luxon";
+import type { action } from "../pages/post-page";
 
 interface ReplyProps {
   name: string;
@@ -54,22 +55,28 @@ export function Reply({
     }
   }, [actionData]);
   return (
-    <div className="flex flex-col gap-2">
-      <div className="flex items-start gap-5 w-2/3">
-        <Avatar className="size-14">
-          <AvatarFallback>{name[0]}</AvatarFallback>
-          {avatarUrl && <AvatarImage src={avatarUrl} />}
-        </Avatar>
-        <div className="flex flex-col gap-2 items-start">
+    <div className="flex flex-col gap-2 w-full">
+      <div className="flex items-start gap-5 md:w-2/3">
+        <Link to={`/users/${username}`}>
+          <Avatar className="size-14">
+            <AvatarFallback>{name[0]}</AvatarFallback>
+            {avatarUrl ? <AvatarImage src={avatarUrl} /> : null}
+          </Avatar>
+        </Link>
+        <div className="flex flex-col gap-2 items-start w-full">
           <div className="flex gap-2 items-center">
-            <Link to={`/users/@${name}`}>
+            <Link to={`/users/${username}`}>
               <h4 className="font-medium">{name}</h4>
             </Link>
             <DotIcon className="size-5" />
-            <span className="text-xs text-muted-foreground">{timestamp}</span>
+            <span className="text-xs text-muted-foreground">
+              {DateTime.fromISO(timestamp, {
+                zone: "utc",
+              }).toRelative()}
+            </span>
           </div>
           <p className="text-muted-foreground">{content}</p>
-          {isLoggedIn && (
+          {isLoggedIn ? (
             <Button
               variant="ghost"
               className="self-end"
@@ -78,11 +85,12 @@ export function Reply({
               <MessageCircleIcon className="size-4" />
               Reply
             </Button>
-          )}
+          ) : null}
         </div>
       </div>
       {replying && (
         <Form className="flex items-start gap-5 w-3/4" method="post">
+          <input type="hidden" name="topLevelId" value={topLevelId} />
           <Avatar className="size-14">
             <AvatarFallback>{loggedInName[0]}</AvatarFallback>
             <AvatarImage src={avatar} />

@@ -13,7 +13,7 @@ import { Textarea } from "~/components/ui/textarea";
 import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar";
 import { Badge } from "~/components/ui/badge";
 import { Reply } from "~/features/community/components/reply";
-import { getLoggedInUser, getPost, getReplies } from "../queries";
+import { getLoggedInUser, getPostById, getReplies } from "../queries";
 import { DateTime } from "luxon";
 import { makeSSRClient } from "~/supa-client";
 import { z } from "zod";
@@ -26,7 +26,7 @@ export const meta: Route.MetaFunction = ({ params }) => {
 
 export const loader = async ({ params, request }: Route.LoaderArgs) => {
   const { client, headers } = makeSSRClient(request);
-  const post = await getPost(client, { postId: params.postId });
+  const post = await getPostById(client, { postId: params.postId });
   const replies = await getReplies(client, { postId: params.postId });
 
   return { post, replies };
@@ -133,6 +133,7 @@ export default function PostPage({
                   </Avatar>
                   <div className="flex flex-col gap-5 items-end w-full">
                     <Textarea
+                      name="reply"
                       placeholder="Write a reply"
                       className="w-full resize-none"
                       rows={5}

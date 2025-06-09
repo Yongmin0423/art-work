@@ -30,7 +30,7 @@ export const getPosts = async (client: SupabaseClient<Database>) => {
   return data;
 };
 
-export const getPost = async (
+export const getPostById = async (
   client: SupabaseClient<Database>,
   { postId }: { postId: string }
 ) => {
@@ -126,7 +126,7 @@ export const getReplies = async (
     post_reply_id,
     reply,
     created_at,
-    user:profiles (
+    user:profiles!post_replies_profile_id_profiles_profile_id_fk (
       name,
       avatar_url,
       username
@@ -142,7 +142,7 @@ export const getReplies = async (
       )
       `
     )
-    .eq("post_id", parseInt(postId))
+    .eq("post_id", Number(postId))
     .order("created_at", { ascending: false });
   if (error) throw error;
   return data;
