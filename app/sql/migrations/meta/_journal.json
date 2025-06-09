@@ -43,6 +43,13 @@
       "when": 1748971545653,
       "tag": "0005_organic_veda",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1749487975530,
+      "tag": "0006_common_mister_fear",
+      "breakpoints": true
     }
   ]
 }

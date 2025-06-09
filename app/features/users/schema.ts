@@ -13,7 +13,7 @@ import {
   timestamp,
   uuid,
 } from "drizzle-orm/pg-core";
-import { commissionCategory } from "../commissions/schema";
+import { commissionCategory } from "../../common/category-enums";
 
 const users = pgSchema("auth").table("users", {
   id: uuid().primaryKey(),
@@ -72,7 +72,7 @@ export const follows = pgTable(
 
 // ===== PORTFOLIO =====
 export const artistPortfolio = pgTable("artist_portfolio", {
-  artist_id: uuid()
+  profile_id: uuid()
     .primaryKey()
     .references(() => profiles.profile_id, { onDelete: "cascade" }),
 

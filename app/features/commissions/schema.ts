@@ -6,43 +6,45 @@ import {
   jsonb,
   pgEnum,
   pgTable,
-  primaryKey,
   text,
   timestamp,
   uuid,
 } from "drizzle-orm/pg-core";
 import { profiles } from "../users/schema";
+import { commissionCategory } from "../../common/category-enums";
 
 export const commissionStatus = pgEnum("commission_status", [
   "available",
   "pending",
   "unavailable",
-  "paused", // 일시 중지 상태 추가
+  "paused",
 ]);
 
-export const commissionCategory = pgEnum("commission_category", [
-  "character",
-  "illustration",
-  "virtual-3d",
-  "live2d",
-  "design",
-  "video",
-  "animation", // 추가
-  "concept-art", // 추가
+// ===== ORDERS =====
+export const orderStatus = pgEnum("order_status", [
+  "pending",
+  "accepted",
+  "in_progress",
+  "revision_requested",
+  "completed",
+  "cancelled",
+  "refunded",
+  "disputed",
 ]);
 
 export const commission = pgTable("commission", {
   commission_id: bigint({ mode: "number" })
     .primaryKey()
     .generatedAlwaysAsIdentity(),
-  artist_id: uuid()
-    .references(() => profiles.profile_id, { onDelete: "cascade" }) // cascade 추가
+  profile_id: uuid()
+    .references(() => profiles.profile_id, { onDelete: "cascade" })
     .notNull(),
 
   title: text().notNull(),
   description: text().notNull(),
   category: commissionCategory().notNull(),
   tags: jsonb().notNull().default([]),
+  images: jsonb().notNull().default([]), // 포트폴리오 이미지 URL 배열
 
   price_start: integer().notNull(),
   price_options: jsonb().notNull().default([]),
@@ -60,42 +62,18 @@ export const commission = pgTable("commission", {
   updated_at: timestamp().notNull().defaultNow(),
 });
 
-export const commissionLike = pgTable(
-  "commission_like",
-  {
-    commission_id: bigint({ mode: "number" })
-      .references(() => commission.commission_id, { onDelete: "cascade" })
-      .notNull(),
-    profile_id: uuid()
-      .references(() => profiles.profile_id, { onDelete: "cascade" })
-      .notNull(),
-    created_at: timestamp().notNull().defaultNow(),
-  },
-  (table) => [primaryKey({ columns: [table.commission_id, table.profile_id] })]
-);
-
 // ===== ORDERS =====
-export const orderStatus = pgEnum("order_status", [
-  "pending",
-  "accepted",
-  "in_progress",
-  "revision_requested", // 수정 요청 상태 추가
-  "completed",
-  "cancelled",
-  "refunded",
-  "disputed", // 분쟁 상태 추가
-]);
 
 export const commissionOrder = pgTable("commission_order", {
   order_id: bigint({ mode: "number" }).primaryKey().generatedAlwaysAsIdentity(),
   commission_id: bigint({ mode: "number" })
-    .references(() => commission.commission_id, { onDelete: "restrict" }) // restrict로 변경
+    .references(() => commission.commission_id, { onDelete: "restrict" })
     .notNull(),
   client_id: uuid()
-    .references(() => profiles.profile_id, { onDelete: "restrict" }) // restrict로 변경
+    .references(() => profiles.profile_id, { onDelete: "restrict" })
     .notNull(),
-  artist_id: uuid()
-    .references(() => profiles.profile_id, { onDelete: "restrict" }) // restrict로 변경
+  profile_id: uuid()
+    .references(() => profiles.profile_id, { onDelete: "restrict" })
     .notNull(),
 
   selected_options: jsonb().notNull().default([]),
@@ -114,21 +92,4 @@ export const commissionOrder = pgTable("commission_order", {
   started_at: timestamp(), // 작업 시작 시간
   completed_at: timestamp(),
   updated_at: timestamp().notNull().defaultNow(),
-});
-
-// 주문 상태 변경 이력
-export const orderStatusHistory = pgTable("order_status_history", {
-  history_id: bigint({ mode: "number" })
-    .primaryKey()
-    .generatedAlwaysAsIdentity(),
-  order_id: bigint({ mode: "number" })
-    .references(() => commissionOrder.order_id, { onDelete: "cascade" })
-    .notNull(),
-  from_status: orderStatus(),
-  to_status: orderStatus().notNull(),
-  changed_by: uuid().references(() => profiles.profile_id, {
-    onDelete: "set null",
-  }),
-  reason: text(), // 상태 변경 사유
-  created_at: timestamp().notNull().defaultNow(),
 });

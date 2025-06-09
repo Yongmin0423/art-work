@@ -27,7 +27,7 @@ export const reviews = pgTable("reviews", {
   commission_id: bigint({ mode: "number" })
     .references(() => commission.commission_id, { onDelete: "cascade" })
     .notNull(),
-  artist_id: uuid()
+  profile_id: uuid()
     .references(() => profiles.profile_id, { onDelete: "cascade" })
     .notNull(),
   reviewer_id: uuid()

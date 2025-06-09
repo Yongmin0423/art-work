@@ -1,5 +1,6 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { Database } from "~/supa-client";
+import type { CommissionCategory } from "../../common/category-enums";
 
 export const updateUser = async (
   client: SupabaseClient<Database>,
@@ -60,14 +61,14 @@ export const updatePortfolio = async (
     title?: string;
     description?: string;
     images?: string[];
-    category?: string;
+    category?: CommissionCategory;
     tags?: string[];
   }
 ) => {
   const { data, error } = await client
     .from("artist_portfolio")
     .update(portfolioData)
-    .eq("artist_id", portfolioId)
+    .eq("profile_id", portfolioId)
     .select()
     .single();
 
@@ -82,7 +83,7 @@ export const deletePortfolio = async (
   const { error } = await client
     .from("artist_portfolio")
     .delete()
-    .eq("artist_id", portfolioId);
+    .eq("profile_id", portfolioId);
 
   if (error) throw error;
 };

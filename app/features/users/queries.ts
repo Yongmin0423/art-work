@@ -1,5 +1,6 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { Database } from "~/supa-client";
+import type { CommissionCategory } from "../../common/category-enums";
 
 export const getUserProfile = async (
   client: SupabaseClient<Database>,
@@ -73,7 +74,7 @@ export const getUserPortfolio = async (
   const { data, error } = await client
     .from("artist_portfolio")
     .select("*")
-    .eq("artist_id", profile.profile_id)
+    .eq("profile_id", profile.profile_id)
     .order("created_at", { ascending: false });
 
   if (error) throw error;
@@ -87,7 +88,7 @@ export const getMyPortfolio = async (
   const { data, error } = await client
     .from("artist_portfolio")
     .select("*")
-    .eq("artist_id", userId)
+    .eq("profile_id", userId)
     .order("created_at", { ascending: false });
 
   if (error) throw error;
@@ -101,7 +102,7 @@ export const getPortfolioById = async (
   const { data, error } = await client
     .from("artist_portfolio")
     .select("*")
-    .eq("artist_id", portfolioId)
+    .eq("profile_id", portfolioId)
     .single();
 
   if (error) throw error;
@@ -111,11 +112,11 @@ export const getPortfolioById = async (
 export const createPortfolio = async (
   client: SupabaseClient<Database>,
   portfolioData: {
-    artist_id: string;
+    profile_id: string;
     title: string;
     description?: string;
     images: string[];
-    category?: string;
+    category?: CommissionCategory;
     tags: string[];
   }
 ) => {

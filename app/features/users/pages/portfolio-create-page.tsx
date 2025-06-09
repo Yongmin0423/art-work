@@ -62,7 +62,7 @@ export const action = async ({ request }: Route.ActionArgs) => {
 
   try {
     await createPortfolio(client, {
-      artist_id: userId,
+      profile_id: userId,
       title,
       description: description || undefined,
       images,

@@ -41,10 +41,15 @@ interface CartItem {
   price: number;
 }
 
-interface PriceOption {
-  type: string;
+interface PriceChoice {
+  label: string;
   price: number;
   description?: string;
+}
+
+interface PriceOption {
+  type: string;
+  choices: PriceChoice[];
 }
 
 export default function Artist({ loaderData }: Route.ComponentProps) {
@@ -144,15 +149,22 @@ export default function Artist({ loaderData }: Route.ComponentProps) {
             <h4 className="text-2xl font-bold">커미션 타입 및 가격</h4>
             <ul className="text-lg list-disc list-inside">
               {priceOptions.map((option, index) => (
-                <li key={index}>
-                  {option.type} - {option.price.toLocaleString()}원
-                  {option.description && (
-                    <span className="text-sm text-gray-600">
-                      {" "}
-                      ({option.description})
-                    </span>
-                  )}
-                </li>
+                <div key={index} className="mb-3">
+                  <li className="font-semibold">{option.type}</li>
+                  <ul className="ml-6 text-base text-gray-600">
+                    {option.choices.map((choice, choiceIndex) => (
+                      <li key={choiceIndex} className="list-disc mb-1">
+                        {choice.label} - {choice.price.toLocaleString()}원
+                        {choice.description && (
+                          <span className="text-sm text-gray-500">
+                            {" "}
+                            ({choice.description})
+                          </span>
+                        )}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
               ))}
             </ul>
           </div>
@@ -245,18 +257,17 @@ export default function Artist({ loaderData }: Route.ComponentProps) {
                   <div key={index} className="w-full">
                     <PriceSelector
                       label={option.type}
-                      description={
-                        option.description ||
-                        `${option.type}으로 사용할 이러스트레이션`
-                      }
+                      description={`${option.type}으로 사용할 이러스트레이션`}
                       name={option.type}
                       placeholder="선택하세요"
-                      options={[
-                        {
-                          label: `${option.price.toLocaleString()}원`,
-                          value: `${option.price.toLocaleString()}원`,
-                        },
-                      ]}
+                      options={option.choices.map((choice) => ({
+                        label: `${
+                          choice.label
+                        } - ${choice.price.toLocaleString()}원`,
+                        value: `${
+                          choice.label
+                        } - ${choice.price.toLocaleString()}원`,
+                      }))}
                       onSelectionChange={(value) =>
                         handlePriceSelection(option.type, value)
                       }

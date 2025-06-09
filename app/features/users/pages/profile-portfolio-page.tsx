@@ -74,7 +74,7 @@ export default function ProfilePortfolioPage({
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {portfolio.map((item: any) => (
           <div
-            key={item.artist_id}
+            key={item.profile_id}
             className="group cursor-pointer rounded-lg overflow-hidden border shadow-sm hover:shadow-md transition-shadow"
           >
             <div className="aspect-square relative overflow-hidden">
@@ -107,7 +107,7 @@ export default function ProfilePortfolioPage({
                 {isOwner && (
                   <div className="flex items-center gap-1 ml-2">
                     <Button variant="ghost" size="sm" asChild>
-                      <Link to={`/my/portfolio/${item.artist_id}/edit`}>
+                      <Link to={`/my/portfolio/${item.profile_id}/edit`}>
                         <EditIcon className="w-3 h-3" />
                       </Link>
                     </Button>

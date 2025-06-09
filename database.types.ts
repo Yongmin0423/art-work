@@ -11,33 +11,33 @@ export type Database = {
     Tables: {
       artist_portfolio: {
         Row: {
-          artist_id: string
-          category: string | null
+          category: Database["public"]["Enums"]["commission_category"] | null
           created_at: string
           description: string | null
           images: Json
+          profile_id: string
           tags: Json
           title: string
           updated_at: string
           views_count: number
         }
         Insert: {
-          artist_id: string
-          category?: string | null
+          category?: Database["public"]["Enums"]["commission_category"] | null
           created_at?: string
           description?: string | null
           images?: Json
+          profile_id: string
           tags?: Json
           title: string
           updated_at?: string
           views_count?: number
         }
         Update: {
-          artist_id?: string
-          category?: string | null
+          category?: Database["public"]["Enums"]["commission_category"] | null
           created_at?: string
           description?: string | null
           images?: Json
+          profile_id?: string
           tags?: Json
           title?: string
           updated_at?: string
@@ -45,8 +45,8 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "artist_portfolio_artist_id_profiles_profile_id_fk"
-            columns: ["artist_id"]
+            foreignKeyName: "artist_portfolio_profile_id_profiles_profile_id_fk"
+            columns: ["profile_id"]
             isOneToOne: true
             referencedRelation: "profiles"
             referencedColumns: ["profile_id"]
@@ -88,16 +88,17 @@ export type Database = {
       }
       commission: {
         Row: {
-          artist_id: string
           base_size: string | null
           category: Database["public"]["Enums"]["commission_category"]
           commission_id: number
           created_at: string
           description: string
+          images: Json
           likes_count: number
           order_count: number
           price_options: Json
           price_start: number
+          profile_id: string
           revision_count: number
           status: Database["public"]["Enums"]["commission_status"]
           tags: Json
@@ -107,16 +108,17 @@ export type Database = {
           views_count: number
         }
         Insert: {
-          artist_id: string
           base_size?: string | null
           category: Database["public"]["Enums"]["commission_category"]
           commission_id?: never
           created_at?: string
           description: string
+          images?: Json
           likes_count?: number
           order_count?: number
           price_options?: Json
           price_start: number
+          profile_id: string
           revision_count?: number
           status?: Database["public"]["Enums"]["commission_status"]
           tags?: Json
@@ -126,16 +128,17 @@ export type Database = {
           views_count?: number
         }
         Update: {
-          artist_id?: string
           base_size?: string | null
           category?: Database["public"]["Enums"]["commission_category"]
           commission_id?: never
           created_at?: string
           description?: string
+          images?: Json
           likes_count?: number
           order_count?: number
           price_options?: Json
           price_start?: number
+          profile_id?: string
           revision_count?: number
           status?: Database["public"]["Enums"]["commission_status"]
           tags?: Json
@@ -146,47 +149,7 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "commission_artist_id_profiles_profile_id_fk"
-            columns: ["artist_id"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["profile_id"]
-          },
-        ]
-      }
-      commission_like: {
-        Row: {
-          commission_id: number
-          created_at: string
-          profile_id: string
-        }
-        Insert: {
-          commission_id: number
-          created_at?: string
-          profile_id: string
-        }
-        Update: {
-          commission_id?: number
-          created_at?: string
-          profile_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "commission_like_commission_id_commission_commission_id_fk"
-            columns: ["commission_id"]
-            isOneToOne: false
-            referencedRelation: "commission"
-            referencedColumns: ["commission_id"]
-          },
-          {
-            foreignKeyName: "commission_like_commission_id_commission_commission_id_fk"
-            columns: ["commission_id"]
-            isOneToOne: false
-            referencedRelation: "commission_with_artist"
-            referencedColumns: ["commission_id"]
-          },
-          {
-            foreignKeyName: "commission_like_profile_id_profiles_profile_id_fk"
+            foreignKeyName: "commission_profile_id_profiles_profile_id_fk"
             columns: ["profile_id"]
             isOneToOne: false
             referencedRelation: "profiles"
@@ -197,7 +160,6 @@ export type Database = {
       commission_order: {
         Row: {
           accepted_at: string | null
-          artist_id: string
           client_id: string
           commission_id: number
           completed_at: string | null
@@ -205,6 +167,7 @@ export type Database = {
           deadline: string | null
           final_image_url: string | null
           order_id: number
+          profile_id: string
           requirements: string | null
           revision_count_used: number
           selected_options: Json
@@ -215,7 +178,6 @@ export type Database = {
         }
         Insert: {
           accepted_at?: string | null
-          artist_id: string
           client_id: string
           commission_id: number
           completed_at?: string | null
@@ -223,6 +185,7 @@ export type Database = {
           deadline?: string | null
           final_image_url?: string | null
           order_id?: never
+          profile_id: string
           requirements?: string | null
           revision_count_used?: number
           selected_options?: Json
@@ -233,7 +196,6 @@ export type Database = {
         }
         Update: {
           accepted_at?: string | null
-          artist_id?: string
           client_id?: string
           commission_id?: number
           completed_at?: string | null
@@ -241,6 +203,7 @@ export type Database = {
           deadline?: string | null
           final_image_url?: string | null
           order_id?: never
+          profile_id?: string
           requirements?: string | null
           revision_count_used?: number
           selected_options?: Json
@@ -250,13 +213,6 @@ export type Database = {
           updated_at?: string
         }
         Relationships: [
-          {
-            foreignKeyName: "commission_order_artist_id_profiles_profile_id_fk"
-            columns: ["artist_id"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["profile_id"]
-          },
           {
             foreignKeyName: "commission_order_client_id_profiles_profile_id_fk"
             columns: ["client_id"]
@@ -277,6 +233,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "commission_with_artist"
             referencedColumns: ["commission_id"]
+          },
+          {
+            foreignKeyName: "commission_order_profile_id_profiles_profile_id_fk"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["profile_id"]
           },
         ]
       }
@@ -519,51 +482,6 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["profile_id"]
-          },
-        ]
-      }
-      order_status_history: {
-        Row: {
-          changed_by: string | null
-          created_at: string
-          from_status: Database["public"]["Enums"]["order_status"] | null
-          history_id: number
-          order_id: number
-          reason: string | null
-          to_status: Database["public"]["Enums"]["order_status"]
-        }
-        Insert: {
-          changed_by?: string | null
-          created_at?: string
-          from_status?: Database["public"]["Enums"]["order_status"] | null
-          history_id?: never
-          order_id: number
-          reason?: string | null
-          to_status: Database["public"]["Enums"]["order_status"]
-        }
-        Update: {
-          changed_by?: string | null
-          created_at?: string
-          from_status?: Database["public"]["Enums"]["order_status"] | null
-          history_id?: never
-          order_id?: number
-          reason?: string | null
-          to_status?: Database["public"]["Enums"]["order_status"]
-        }
-        Relationships: [
-          {
-            foreignKeyName: "order_status_history_changed_by_profiles_profile_id_fk"
-            columns: ["changed_by"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["profile_id"]
-          },
-          {
-            foreignKeyName: "order_status_history_order_id_commission_order_order_id_fk"
-            columns: ["order_id"]
-            isOneToOne: false
-            referencedRelation: "commission_order"
-            referencedColumns: ["order_id"]
           },
         ]
       }
@@ -931,7 +849,6 @@ export type Database = {
       }
       reviews: {
         Row: {
-          artist_id: string
           commission_id: number
           created_at: string
           description: string
@@ -939,6 +856,7 @@ export type Database = {
           is_featured: boolean
           likes_count: number
           order_id: number
+          profile_id: string
           rating: number
           review_id: number
           reviewer_id: string
@@ -947,7 +865,6 @@ export type Database = {
           views_count: number
         }
         Insert: {
-          artist_id: string
           commission_id: number
           created_at?: string
           description: string
@@ -955,6 +872,7 @@ export type Database = {
           is_featured?: boolean
           likes_count?: number
           order_id: number
+          profile_id: string
           rating: number
           review_id?: never
           reviewer_id: string
@@ -963,7 +881,6 @@ export type Database = {
           views_count?: number
         }
         Update: {
-          artist_id?: string
           commission_id?: number
           created_at?: string
           description?: string
@@ -971,6 +888,7 @@ export type Database = {
           is_featured?: boolean
           likes_count?: number
           order_id?: number
+          profile_id?: string
           rating?: number
           review_id?: never
           reviewer_id?: string
@@ -979,13 +897,6 @@ export type Database = {
           views_count?: number
         }
         Relationships: [
-          {
-            foreignKeyName: "reviews_artist_id_profiles_profile_id_fk"
-            columns: ["artist_id"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["profile_id"]
-          },
           {
             foreignKeyName: "reviews_commission_id_commission_commission_id_fk"
             columns: ["commission_id"]
@@ -1006,6 +917,13 @@ export type Database = {
             isOneToOne: true
             referencedRelation: "commission_order"
             referencedColumns: ["order_id"]
+          },
+          {
+            foreignKeyName: "reviews_profile_id_profiles_profile_id_fk"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["profile_id"]
           },
           {
             foreignKeyName: "reviews_reviewer_id_profiles_profile_id_fk"
@@ -1083,7 +1001,7 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "commission_artist_id_profiles_profile_id_fk"
+            foreignKeyName: "commission_profile_id_profiles_profile_id_fk"
             columns: ["artist_id"]
             isOneToOne: false
             referencedRelation: "profiles"
@@ -1112,6 +1030,7 @@ export type Database = {
         | "video"
         | "animation"
         | "concept-art"
+        | "mixed"
       commission_status: "available" | "pending" | "unavailable" | "paused"
       notification_type:
         | "follow"
@@ -1258,6 +1177,7 @@ export const Constants = {
         "video",
         "animation",
         "concept-art",
+        "mixed",
       ],
       commission_status: ["available", "pending", "unavailable", "paused"],
       notification_type: [

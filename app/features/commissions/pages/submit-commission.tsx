@@ -11,6 +11,7 @@ import { COMMISSION_CATEGORIES } from "../constants";
 import { makeSSRClient } from "~/supa-client";
 import { getLoggedInUser } from "~/features/community/queries";
 import { z } from "zod";
+import { createCommission } from "../mutations";
 import { Separator } from "~/components/ui/separator";
 import { Badge } from "~/components/ui/badge";
 
@@ -47,86 +48,121 @@ type PriceOption = {
 };
 
 export const action = async ({ request }: Route.ActionArgs) => {
-  const { client } = await makeSSRClient(request);
-  const userId = await getLoggedInUser(client);
-
-  const formData = await request.formData();
-  const { success, error, data } = formSchema.safeParse(
-    Object.fromEntries(formData)
-  );
-
-  if (!success) {
-    return {
-      fieldErrors: error.flatten().fieldErrors,
-    };
-  }
-
-  // 가격 옵션들 파싱 (formData에서 동적으로 수집)
-  const priceOptions: PriceOption[] = [];
-  const optionIndices = new Set<string>();
-
-  // 먼저 모든 옵션 인덱스 수집
-  for (const [key] of formData.entries()) {
-    if (key.startsWith("price_type_")) {
-      const index = key.split("_")[2];
-      optionIndices.add(index);
-    }
-  }
-
-  // 각 옵션별로 데이터 수집
-  for (const index of optionIndices) {
-    const type = formData.get(`price_type_${index}`) as string;
-    if (!type) continue;
-
-    const choices: PriceChoice[] = [];
-    let choiceIndex = 0;
-
-    // 해당 옵션의 모든 선택지 수집
-    while (formData.has(`choice_label_${index}_${choiceIndex}`)) {
-      const label = formData.get(
-        `choice_label_${index}_${choiceIndex}`
-      ) as string;
-      const price = parseInt(
-        formData.get(`choice_price_${index}_${choiceIndex}`) as string
-      );
-      const description = formData.get(
-        `choice_desc_${index}_${choiceIndex}`
-      ) as string;
-
-      if (label && price) {
-        choices.push({ label, price, description: description || undefined });
-      }
-      choiceIndex++;
-    }
-
-    if (choices.length > 0) {
-      priceOptions.push({ type, choices });
-    }
-  }
-
-  // 태그 처리
-  const tags = data.tags ? data.tags.split(",").map((tag) => tag.trim()) : [];
-
-  // 이미지 처리 (여러 파일)
-  const images: string[] = [];
-  for (const [key, value] of formData.entries()) {
-    if (key.startsWith("image_") && value instanceof File && value.size > 0) {
-      // 실제로는 파일 업로드 로직이 필요하지만, 여기서는 placeholder URL 사용
-      images.push(
-        `https://via.placeholder.com/600x400?text=Portfolio+${
-          images.length + 1
-        }`
-      );
-    }
-  }
+  console.log("🚀 Action started");
 
   try {
-    const { error: insertError } = await client.from("commission").insert({
-      artist_id: userId,
+    const { client } = await makeSSRClient(request);
+    const userId = await getLoggedInUser(client);
+    console.log("✅ User authenticated:", userId);
+
+    const formData = await request.formData();
+    console.log("📝 Form data received");
+
+    const formEntries = Object.fromEntries(formData);
+    console.log("📋 Form entries:", formEntries);
+
+    const { success, error, data } = formSchema.safeParse(formEntries);
+
+    if (!success) {
+      console.log("❌ Validation failed:", error.flatten().fieldErrors);
+      return {
+        fieldErrors: error.flatten().fieldErrors,
+      };
+    }
+
+    console.log("✅ Validation passed:", data);
+
+    // 가격 옵션들 파싱 (formData에서 동적으로 수집)
+    const priceOptions: PriceOption[] = [];
+    const optionIndices = new Set<string>();
+
+    // 먼저 모든 옵션 인덱스 수집
+    for (const [key] of formData.entries()) {
+      if (key.startsWith("price_type_")) {
+        const index = key.split("_")[2];
+        optionIndices.add(index);
+      }
+    }
+
+    // 각 옵션별로 데이터 수집
+    for (const index of optionIndices) {
+      const type = formData.get(`price_type_${index}`) as string;
+      if (!type) continue;
+
+      const choices: PriceChoice[] = [];
+      let choiceIndex = 0;
+
+      // 해당 옵션의 모든 선택지 수집
+      while (formData.has(`choice_label_${index}_${choiceIndex}`)) {
+        const label = formData.get(
+          `choice_label_${index}_${choiceIndex}`
+        ) as string;
+        const price = parseInt(
+          formData.get(`choice_price_${index}_${choiceIndex}`) as string
+        );
+        const description = formData.get(
+          `choice_desc_${index}_${choiceIndex}`
+        ) as string;
+
+        if (label && price) {
+          choices.push({ label, price, description: description || undefined });
+        }
+        choiceIndex++;
+      }
+
+      if (choices.length > 0) {
+        priceOptions.push({ type, choices });
+      }
+    }
+
+    // 태그 처리
+    const tags = data.tags
+      ? data.tags.split(",").map((tag: string) => tag.trim())
+      : [];
+
+    // 이미지 파일 수집
+    const imageFiles: File[] = [];
+    for (const [key, value] of formData.entries()) {
+      if (key.startsWith("image_") && value instanceof File && value.size > 0) {
+        imageFiles.push(value);
+      }
+    }
+
+    console.log("📸 Found image files:", imageFiles.length);
+
+    // 이미지 업로드 (settings-page.tsx 패턴 따라 직접 처리)
+    const images: string[] = [];
+    for (let i = 0; i < imageFiles.length; i++) {
+      const file = imageFiles[i];
+      if (file.size <= 5 * 1024 * 1024 && file.type.startsWith("image/")) {
+        console.log("⬆️ Uploading image:", file.name);
+        const { data: uploadData, error } = await client.storage
+          .from("commission-images")
+          .upload(`${userId}/${Date.now()}-${i}`, file, {
+            contentType: file.type,
+            upsert: false,
+          });
+        if (error) {
+          console.log("❌ Upload error:", error);
+          return { error: `Failed to upload image ${file.name}` };
+        }
+        const {
+          data: { publicUrl },
+        } = await client.storage
+          .from("commission-images")
+          .getPublicUrl(uploadData.path);
+        images.push(publicUrl);
+        console.log("✅ Image uploaded:", publicUrl);
+      }
+    }
+
+    console.log("🎨 Creating commission with data:", {
+      profile_id: userId,
       title: data.title,
       description: data.description,
-      category: data.category as any,
+      category: data.category,
       tags: tags,
+      images: images,
       price_start: data.price_start,
       price_options: priceOptions,
       turnaround_days: data.turnaround_days,
@@ -135,12 +171,28 @@ export const action = async ({ request }: Route.ActionArgs) => {
       status: "available",
     });
 
-    if (insertError) {
-      throw insertError;
-    }
+    // 커미션 생성
+    const commission = await createCommission(client, {
+      profile_id: userId,
+      title: data.title,
+      description: data.description,
+      category: data.category as any,
+      tags: tags,
+      images: images,
+      price_start: data.price_start,
+      price_options: priceOptions,
+      turnaround_days: data.turnaround_days,
+      revision_count: data.revision_count,
+      base_size: data.base_size,
+      status: "available",
+    });
+
+    console.log("✅ Commission created:", commission);
+    console.log("🔄 Redirecting to /commissions");
 
     return redirect("/commissions");
   } catch (err) {
+    console.error("💥 Action error:", err);
     return {
       error: "Failed to create commission. Please try again.",
     };
@@ -314,24 +366,38 @@ export default function SubmitCommissionPage({
             )}
 
             <div className="grid grid-cols-2 gap-4">
-              <InputPair
-                label="Turnaround Days"
-                description="How many days to complete"
-                id="turnaround_days"
-                name="turnaround_days"
-                type="number"
-                required
-                placeholder="7"
-              />
-              <InputPair
-                label="Free Revisions"
-                description="Number of free revisions"
-                id="revision_count"
-                name="revision_count"
-                type="number"
-                required
-                placeholder="3"
-              />
+              <div>
+                <InputPair
+                  label="Turnaround Days"
+                  description="How many days to complete"
+                  id="turnaround_days"
+                  name="turnaround_days"
+                  type="number"
+                  required
+                  placeholder="7"
+                />
+                {actionData?.fieldErrors?.turnaround_days && (
+                  <div className="text-red-500 text-sm">
+                    {actionData.fieldErrors.turnaround_days.join(", ")}
+                  </div>
+                )}
+              </div>
+              <div>
+                <InputPair
+                  label="Free Revisions"
+                  description="Number of free revisions"
+                  id="revision_count"
+                  name="revision_count"
+                  type="number"
+                  required
+                  placeholder="3"
+                />
+                {actionData?.fieldErrors?.revision_count && (
+                  <div className="text-red-500 text-sm">
+                    {actionData.fieldErrors.revision_count.join(", ")}
+                  </div>
+                )}
+              </div>
             </div>
 
             <InputPair
