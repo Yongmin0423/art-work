@@ -117,3 +117,33 @@ export const getPostsByUsername = async (
   if (error) throw error;
   return data;
 };
+
+export const getReplies = async (
+  client: SupabaseClient<Database>,
+  { postId }: { postId: string }
+) => {
+  const replyQuery = `
+    post_reply_id,
+    reply,
+    created_at,
+    user:profiles (
+      name,
+      avatar_url,
+      username
+    )
+  `;
+  const { data, error } = await client
+    .from("post_replies")
+    .select(
+      `
+      ${replyQuery},
+      post_replies (
+        ${replyQuery}
+      )
+      `
+    )
+    .eq("post_id", parseInt(postId))
+    .order("created_at", { ascending: false });
+  if (error) throw error;
+  return data;
+};

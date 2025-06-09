@@ -6,16 +6,19 @@ import {
   BreadcrumbSeparator,
 } from "~/components/ui/breadcrumb";
 import type { Route } from "./+types/post-page";
-import { Form, Link } from "react-router";
+import { Form, Link, useOutletContext } from "react-router";
 import { ChevronUpIcon, DotIcon } from "lucide-react";
 import { Button } from "~/components/ui/button";
 import { Textarea } from "~/components/ui/textarea";
 import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar";
 import { Badge } from "~/components/ui/badge";
 import { Reply } from "~/features/community/components/reply";
-import { getPost } from "../queries";
+import { getLoggedInUser, getPost, getReplies } from "../queries";
 import { DateTime } from "luxon";
 import { makeSSRClient } from "~/supa-client";
+import { z } from "zod";
+import { createReply } from "../mutations";
+import { useEffect, useRef } from "react";
 
 export const meta: Route.MetaFunction = ({ params }) => {
   return [{ title: `${params.postId} | wemake` }];
@@ -24,11 +27,48 @@ export const meta: Route.MetaFunction = ({ params }) => {
 export const loader = async ({ params, request }: Route.LoaderArgs) => {
   const { client, headers } = makeSSRClient(request);
   const post = await getPost(client, { postId: params.postId });
+  const replies = await getReplies(client, { postId: params.postId });
 
-  return { post };
+  return { post, replies };
 };
 
-export default function PostPage({ loaderData }: Route.ComponentProps) {
+const formSchema = z.object({
+  reply: z.string().min(1),
+  topLevelId: z.number().optional(),
+});
+
+export const action = async ({ request, params }: Route.ActionArgs) => {
+  const { client } = makeSSRClient(request);
+  const userId = await getLoggedInUser(client);
+  const formData = await request.formData();
+  const { success, data, error } = formSchema.safeParse(
+    Object.fromEntries(formData)
+  );
+  if (!success) {
+    return { formErrors: error?.flatten().fieldErrors };
+  }
+  const { reply, topLevelId } = data;
+  await createReply(client, { postId: params.postId, reply, userId });
+  return { ok: true };
+};
+
+export default function PostPage({
+  loaderData,
+  actionData,
+}: Route.ComponentProps) {
+  const { isLoggedIn, name, username, avatarUrl } = useOutletContext<{
+    isLoggedIn: boolean;
+    name: string;
+    username: string;
+    avatarUrl: string;
+  }>();
+  const formRef = useRef<HTMLFormElement>(null);
+  useEffect(() => {
+    if (actionData?.ok) {
+      formRef.current?.reset();
+    }
+  }, [actionData?.ok]);
+
   return (
     <div className="space-y-10">
       <Breadcrumb>
@@ -81,31 +121,42 @@ export default function PostPage({ loaderData }: Route.ComponentProps) {
                   {loaderData.post.content}
                 </p>
               </div>
-              <Form className="flex items-start gap-5 w-3/4">
-                <Avatar className="size-14">
-                  <AvatarFallback>N</AvatarFallback>
-                  <AvatarImage src="https://github.com/serranoarevalo.png" />
-                </Avatar>
-                <div className="flex flex-col gap-5 items-end w-full">
-                  <Textarea
-                    placeholder="Write a reply"
-                    className="w-full resize-none"
-                    rows={5}
-                  />
-                  <Button>Reply</Button>
-                </div>
-              </Form>
+              {isLoggedIn ? (
+                <Form
+                  ref={formRef}
+                  className="flex items-start gap-5 w-3/4"
+                  method="post"
+                >
+                  <Avatar className="size-14">
+                    <AvatarFallback>{name?.[0]}</AvatarFallback>
+                    <AvatarImage src={avatarUrl} />
+                  </Avatar>
+                  <div className="flex flex-col gap-5 items-end w-full">
+                    <Textarea
+                      placeholder="Write a reply"
+                      className="w-full resize-none"
+                      rows={5}
+                    />
+                    <Button>Reply</Button>
+                  </div>
+                </Form>
+              ) : null}
               <div className="space-y-10">
-                <h4 className="font-semibold">10 Replies</h4>
-                <div className="flex flex-col gap-5">
+                <h4 className="font-semibold">
+                  {loaderData.post.replies_count} Replies
+                </h4>
+                {loaderData.replies.map((reply) => (
                   <Reply
-                    username="Nicolas"
-                    avatarUrl="https://github.com/serranoarevalo.png"
-                    content="I've been using Todoist for a while now, and it's really great. It's simple, easy to use, and has a lot of features."
-                    timestamp="12 hours ago"
-                    topLevel
+                    name={reply.user.name}
+                    username={reply.user.username}
+                    avatarUrl={reply.user.avatar_url}
+                    content={reply.reply}
+                    timestamp={reply.created_at}
+                    topLevel={true}
+                    topLevelId={reply.post_reply_id}
+                    replies={reply.post_replies}
                   />
-                </div>
+                ))}
               </div>
             </div>
           </div>

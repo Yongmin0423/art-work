@@ -122,12 +122,14 @@ export default function SettingsPage({
               name="bio"
               placeholder="Passionate about creating beautiful and functional designs..."
               textArea
+              defaultValue={loaderData.user?.bio ?? ""}
             />
             <SelectPair
               label="Work Status"
               description="Your current availability for work"
               name="workStatus"
               placeholder="Select your status"
+              defaultValue={loaderData.user?.work_status ?? "available"}
               options={[
                 { label: "Available for work", value: "available" },
                 { label: "Busy", value: "busy" },
@@ -141,6 +143,7 @@ export default function SettingsPage({
                 id="location"
                 name="location"
                 placeholder="Seoul, South Korea"
+                defaultValue={loaderData.user?.location ?? ""}
               />
               <InputPair
                 label="Website"
@@ -149,6 +152,7 @@ export default function SettingsPage({
                 name="website"
                 type="url"
                 placeholder="https://johndoe.com"
+                defaultValue={loaderData.user?.website ?? ""}
               />
             </div>
             <Button type="submit" className="w-full">
