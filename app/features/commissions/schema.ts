@@ -62,6 +62,7 @@ export const commission = pgTable(
     likes_count: integer().notNull().default(0),
     order_count: integer().notNull().default(0),
     views_count: integer().notNull().default(0),
+    is_featured_weekly: boolean().notNull().default(false), // 주간 추천 아티스트 여부
 
     created_at: timestamp().notNull().defaultNow(),
     updated_at: timestamp().notNull().defaultNow(),

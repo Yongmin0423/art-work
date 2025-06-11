@@ -182,6 +182,45 @@ export const getTopCommissionsByCategory = async (
   );
 };
 
+// 주간 추천 아티스트 가져오기 (임시로 랜덤 8개 선택)
+export const getFeaturedWeeklyCommissions = async (
+  client: SupabaseClient<Database>
+) => {
+  const { data, error } = await client
+    .from("commission_with_artist")
+    .select(
+      `
+      commission_id,
+      title,
+      category,
+      tags,
+      images,
+      price_start,
+      likes_count,
+      status,
+      artist_name,
+      artist_username,
+      artist_avatar_url,
+      artist_avg_rating
+    `
+    )
+    .eq("is_featured_weekly", true)
+    .eq("status", "available")
+    .limit(8);
+
+  if (error) {
+    throw new Error(error.message);
+  }
+
+  return (
+    data?.map((commission) => ({
+      ...commission,
+      tags: [commission.category, ...toStringArray(commission.tags)],
+      images: toStringArray(commission.images),
+    })) || []
+  );
+};
+
 export const getImagesByCategory = async (
   client: SupabaseClient<Database>,
   {

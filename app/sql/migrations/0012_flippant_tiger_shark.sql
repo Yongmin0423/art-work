@@ -1,0 +1,1 @@
+ALTER TABLE "commission" ADD COLUMN "is_featured_weekly" boolean DEFAULT false NOT NULL;

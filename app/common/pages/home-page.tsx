@@ -5,7 +5,7 @@ import { Input } from "~/components/ui/input";
 import ArtistCard from "~/features/commissions/components/artist-card";
 import { BentoDemo } from "../components/bento-grid";
 import type { Route } from "./+types/home-page";
-import { getCommissions } from "~/features/commissions/queries";
+import { getFeaturedWeeklyCommissions } from "~/features/commissions/queries";
 import { getActiveLogo, getCategoryShowcase } from "~/common/queries";
 import { makeSSRClient } from "~/supa-client";
 
@@ -23,17 +23,17 @@ export const meta = () => {
 
 export const loader = async ({ request }: Route.LoaderArgs) => {
   const { client, headers } = makeSSRClient(request);
-  const [commissions, logo, categoryShowcase] = await Promise.all([
-    getCommissions(client),
+  const [featuredCommissions, logo, categoryShowcase] = await Promise.all([
+    getFeaturedWeeklyCommissions(client),
     getActiveLogo(client),
     getCategoryShowcase(client),
   ]);
 
-  return { commissions, logo, categoryShowcase };
+  return { featuredCommissions, logo, categoryShowcase };
 };
 
 export default function HomePage({ loaderData }: Route.ComponentProps) {
-  const { commissions, logo, categoryShowcase } = loaderData;
+  const { featuredCommissions, logo, categoryShowcase } = loaderData;
 
   return (
     <div>
@@ -71,9 +71,9 @@ export default function HomePage({ loaderData }: Route.ComponentProps) {
         </div>
       </div> */}
       <div>
-        <h1 className="font-bold text-3xl mb-5">Famous Artist</h1>
+        <h1 className="font-bold text-3xl mb-5">Artist of the Week</h1>
         <div className="grid grid-cols-4 gap-10 ">
-          {commissions.map((commission) => (
+          {featuredCommissions.map((commission) => (
             <ArtistCard
               key={commission.commission_id}
               id={commission.commission_id}
