@@ -4,7 +4,7 @@ DROP VIEW IF EXISTS commission_with_artist;
 CREATE VIEW commission_with_artist AS
 SELECT 
     c.commission_id,
-    c.artist_id,
+    c.profile_id,
     c.title,
     c.description,
     c.category,
@@ -20,6 +20,7 @@ SELECT
     c.views_count,
     c.created_at,
     c.updated_at,
+    c.is_featured_weekly,
     -- Artist information
     p.name as artist_name,
     p.username as artist_username,
@@ -36,11 +37,11 @@ SELECT
     COALESCE(
         (SELECT ROUND(AVG(r.rating)::numeric, 1)
          FROM reviews r
-         WHERE r.artist_id = c.artist_id),
+         WHERE r.profile_id = c.profile_id),
         0
     ) as artist_avg_rating,
     -- Portfolio images directly from artist_portfolio
     COALESCE(ap.images, '[]'::jsonb) as images
 FROM commission c
-LEFT JOIN profiles p ON c.artist_id = p.profile_id
-LEFT JOIN artist_portfolio ap ON c.artist_id = ap.artist_id; 
+LEFT JOIN profiles p ON c.profile_id = p.profile_id
+LEFT JOIN artist_portfolio ap ON c.profile_id = ap.profile_id; 

@@ -41,6 +41,9 @@ export const createCommission = async (
     .select()
     .single();
 
+  console.log("[createCommission] data:", data);
+  console.log("[createCommission] error:", error);
+
   if (error) throw error;
   return data;
 };
@@ -71,6 +74,9 @@ export const updateCommission = async (
     .eq("commission_id", commissionId)
     .select()
     .single();
+
+  console.log("[updateCommission] data:", data);
+  console.log("[updateCommission] error:", error);
 
   if (error) throw error;
   return data;

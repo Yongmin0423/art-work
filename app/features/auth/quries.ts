@@ -10,6 +10,9 @@ export const checkUsernameExist = async (
     .select("profile_id")
     .eq("username", username)
     .single();
+
+  console.log("[checkUsernameExist] error:", error);
+
   if (error) {
     return false;
   }

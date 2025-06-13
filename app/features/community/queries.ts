@@ -63,6 +63,10 @@ export const getPostById = async (
     )
     .eq("post_id", parseInt(postId))
     .single();
+
+  console.log("[getPostById] data:", data);
+  console.log("[getPostById] error:", error);
+
   if (error) throw error;
   return data;
 };

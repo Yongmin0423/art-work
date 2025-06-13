@@ -13,7 +13,7 @@ export const getReviews = async (client: SupabaseClient<Database>) => {
       rating,
       image_url,
       description,
-      artist_profile:profiles!reviews_artist_id_profiles_profile_id_fk(name),
+      artist_profile:profiles!reviews_profile_id_profiles_profile_id_fk(name),
       reviewer_profile:profiles!reviews_reviewer_id_profiles_profile_id_fk(name)
     `
     )
@@ -40,8 +40,8 @@ export const getReview = async (
       likes_count,
       views_count,
       created_at,
-      artist_id,
-      artist_profile:profiles!reviews_artist_id_profiles_profile_id_fk(
+      profile_id,
+      artist_profile:profiles!reviews_profile_id_profiles_profile_id_fk(
         name,
         avatar_url,
         bio,
@@ -62,6 +62,10 @@ export const getReview = async (
     )
     .eq("review_id", reviewId)
     .single();
+
+  console.log("[getReview] data:", data);
+  console.log("[getReview] error:", error);
+
   if (error) {
     throw error;
   }
@@ -70,11 +74,14 @@ export const getReview = async (
   const { data: portfolioData, error: portfolioError } = await client
     .from("artist_portfolio")
     .select("images")
-    .eq("artist_id", data.artist_id)
+    .eq("profile_id", data.profile_id)
     .single();
 
+  console.log("[getReview - portfolio] data:", portfolioData);
+  console.log("[getReview - portfolio] error:", portfolioError);
+
   // 아티스트 평균 평점 가져오기
-  const avgRating = await getArtistAvgRating(client, data.artist_id);
+  const avgRating = await getArtistAvgRating(client, data.profile_id);
 
   return {
     ...data,
@@ -91,7 +98,7 @@ export const getArtistAvgRating = async (
   const { data, error } = await client
     .from("reviews")
     .select("rating")
-    .eq("artist_id", artistId);
+    .eq("profile_id", artistId);
 
   if (error) {
     console.error("Error fetching artist ratings:", error);
@@ -139,7 +146,7 @@ export const getReviewsByUsername = async (
         avatar_url,
         username
       ),
-      artist:profiles!reviews_artist_id_profiles_profile_id_fk(
+      artist:profiles!reviews_profile_id_profiles_profile_id_fk(
         name,
         avatar_url,
         username

@@ -47,6 +47,9 @@ export const updateUser = async (
     .select()
     .single();
 
+  console.log("[updateUser] data:", data);
+  console.log("[updateUser] error:", error);
+
   if (error) throw error;
   return data;
 };
@@ -99,4 +102,23 @@ export const updateUserAvatar = async (
   if (error) {
     throw error;
   }
+};
+
+export const getUserById = async (
+  client: SupabaseClient<Database>,
+  { id }: { id: string }
+) => {
+  console.log("[getUserById] Looking for user ID:", id);
+
+  const { data, error } = await client
+    .from("profiles")
+    .select("...")
+    .eq("profile_id", id)
+    .maybeSingle();
+
+  console.log("[getUserById] data:", data);
+  console.log("[getUserById] error:", error);
+
+  if (error) throw error;
+  return data;
 };

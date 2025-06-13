@@ -67,6 +67,7 @@ export default [
       route("/portfolio", "features/users/pages/profile-portfolio-page.tsx"),
       route("/reviews", "features/users/pages/profile-reviews-page.tsx"),
       route("/posts", "features/users/pages/profile-posts-page.tsx"),
+      route("/welcome", "features/users/pages/welcome-page.tsx"),
     ]),
   ]),
   ...prefix("/community", [

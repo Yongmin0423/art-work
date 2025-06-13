@@ -62,6 +62,9 @@ export const getCommissionById = async (
     .eq("commission_id", commissionId)
     .single();
 
+  console.log("[getCommissionById] data:", data);
+  console.log("[getCommissionById] error:", error);
+
   if (error) {
     throw new Error(error.message);
   }

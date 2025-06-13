@@ -8,7 +8,10 @@ export async function getActiveLogo(client: SupabaseClient<Database>) {
     .select("*")
     .eq("is_active", "true")
     .limit(1)
-    .single();
+    .maybeSingle();
+
+  console.log("[getActiveLogo] data:", data);
+  console.log("[getActiveLogo] error:", error);
 
   if (error) {
     console.error("Error fetching active logo:", error);
