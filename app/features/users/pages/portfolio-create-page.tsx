@@ -14,6 +14,7 @@ import { COMMISSION_CATEGORIES } from "~/features/commissions/constants";
 import type { Route } from "./+types/portfolio-create-page";
 import { getLoggedInUser } from "~/features/community/queries";
 import { z } from "zod";
+import type { CommissionCategory } from "~/common/category-enums";
 
 export const loader = async ({ request }: Route.LoaderArgs) => {
   const { client } = await makeSSRClient(request);
@@ -57,21 +58,63 @@ export const action = async ({ request }: Route.ActionArgs) => {
         .filter(Boolean)
     : [];
 
-  // 이미지 처리 (임시로 빈 배열, 실제로는 파일 업로드 처리 필요)
+  // 이미지 파일 수집
   const images: string[] = [];
+  const imageFiles: File[] = [];
+
+  // FormData에서 이미지 파일 추출
+  for (let pair of formData.entries()) {
+    if (
+      pair[0].startsWith("image_") &&
+      pair[1] instanceof File &&
+      pair[1].size > 0
+    ) {
+      imageFiles.push(pair[1] as File);
+    }
+  }
 
   try {
+    // 이미지 업로드 처리
+    for (let i = 0; i < imageFiles.length; i++) {
+      const file = imageFiles[i];
+      if (file.size <= 5 * 1024 * 1024 && file.type.startsWith("image/")) {
+        console.log("⬆️ Uploading portfolio image:", file.name);
+        const { data: uploadData, error: uploadError } = await client.storage
+          .from("portfolio-images")
+          .upload(`${userId}/${Date.now()}-${i}`, file, {
+            contentType: file.type,
+            upsert: false,
+          });
+
+        if (uploadError) {
+          console.log("❌ Upload error:", uploadError);
+          return { error: `Failed to upload image ${file.name}` };
+        }
+
+        const {
+          data: { publicUrl },
+        } = await client.storage
+          .from("portfolio-images")
+          .getPublicUrl(uploadData.path);
+
+        images.push(publicUrl);
+        console.log("✅ Portfolio image uploaded:", publicUrl);
+      }
+    }
+
+    // 포트폴리오 생성
     await createPortfolio(client, {
       profile_id: userId,
       title,
       description: description || undefined,
       images,
-      category: category || undefined,
+      category: (category as CommissionCategory) || undefined,
       tags,
     });
 
     return redirect("/my/profile");
   } catch (error) {
+    console.error("Portfolio creation error:", error);
     return {
       error: "Failed to create portfolio. Please try again.",
     };

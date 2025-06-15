@@ -8,6 +8,7 @@ import type { Route } from "./+types/home-page";
 import { getFeaturedWeeklyCommissions } from "~/features/commissions/queries";
 import { getActiveLogo, getCategoryShowcase } from "~/common/queries";
 import { makeSSRClient } from "~/supa-client";
+import { BlurFade } from "components/magicui/blur-fade";
 
 export const meta = () => {
   return [
@@ -35,25 +36,36 @@ export const loader = async ({ request }: Route.LoaderArgs) => {
 export default function HomePage({ loaderData }: Route.ComponentProps) {
   const { featuredCommissions, logo, categoryShowcase } = loaderData;
 
+  const images = Array.from({ length: 6 }, (_, i) => {
+    const isLandscape = i % 2 === 0;
+    const width = isLandscape ? 800 : 600;
+    const height = isLandscape ? 600 : 800;
+    return `https://picsum.photos/seed/${i + 1}/${width}/${height}`;
+  });
+
   return (
     <div>
       <div className="grid grid-cols-6 h-full">
-        <div className="flex flex-col  h-full col-span-4">
+        <div className="flex flex-col  h-full col-span-6">
           <Hero
-            title="Make a your own art with the best Artist"
-            subtitle="find your favorite artist and make a your own art"
+            title="최고의 아티스트와 함께 나만의 작품을 만들어보세요"
+            subtitle="마음에 드는 아티스트를 찾아 당신만의 특별한 작품을 제작하세요"
           />
         </div>
-        <div className="col-span-2">
-          <img
-            src={
-              logo?.image_url ||
-              "https://cdn.gameinsight.co.kr/news/photo/202211/25171_64125_5958.jpg"
-            }
-            alt={logo?.alt_text || "home page img"}
-            className="w-full h-full object-cover"
-          />
-        </div>
+        <section id="photos" className="col-span-6">
+          <div className="columns-2 gap-4 sm:columns-3">
+            {images.map((imageUrl, idx) => (
+              <BlurFade key={imageUrl} delay={0.25 + idx * 0.05} inView>
+                <img
+                  className="mb-4 size-full rounded-lg object-contain"
+                  src={imageUrl}
+                  alt={`Random stock image ${idx + 1}`}
+                />
+              </BlurFade>
+            ))}
+          </div>
+        </section>
+
         <div className="col-span-6">
           <BentoDemo categoryShowcase={categoryShowcase} />
         </div>
@@ -70,8 +82,8 @@ export default function HomePage({ loaderData }: Route.ComponentProps) {
           ))}
         </div>
       </div> */}
-      <div>
-        <h1 className="font-bold text-3xl mb-5">Artist of the Week</h1>
+      {/* <div>
+        <h1 className="font-bold text-3xl my-5">Artist of the Week</h1>
         <div className="grid grid-cols-4 gap-10 ">
           {featuredCommissions.map((commission) => (
             <ArtistCard
@@ -94,7 +106,7 @@ export default function HomePage({ loaderData }: Route.ComponentProps) {
             />
           ))}
         </div>
-      </div>
+      </div> */}
     </div>
   );
 }

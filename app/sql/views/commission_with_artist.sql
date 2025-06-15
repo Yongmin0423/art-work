@@ -21,6 +21,7 @@ SELECT
     c.created_at,
     c.updated_at,
     c.is_featured_weekly,
+    c.images, -- 커미션의 이미지를 직접 사용
     -- Artist information
     p.name as artist_name,
     p.username as artist_username,
@@ -39,9 +40,6 @@ SELECT
          FROM reviews r
          WHERE r.profile_id = c.profile_id),
         0
-    ) as artist_avg_rating,
-    -- Portfolio images directly from artist_portfolio
-    COALESCE(ap.images, '[]'::jsonb) as images
+    ) as artist_avg_rating
 FROM commission c
-LEFT JOIN profiles p ON c.profile_id = p.profile_id
-LEFT JOIN artist_portfolio ap ON c.profile_id = ap.profile_id; 
+LEFT JOIN profiles p ON c.profile_id = p.profile_id; 
