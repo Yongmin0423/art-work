@@ -17,8 +17,8 @@ export const loader = async ({ params, request }: Route.LoaderArgs) => {
 
 export default function Category({ loaderData }: Route.ComponentProps) {
   return (
-    <>
-      <div className="grid grid-cols-4 gap-10 w-full  ">
+    <div className="space-y-8 md:space-y-10">
+      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-4 md:gap-6 xl:gap-8">
         {loaderData.commissions.map((commission) => (
           <ArtistCard
             key={commission.commission_id}
@@ -40,9 +40,9 @@ export default function Category({ loaderData }: Route.ComponentProps) {
           />
         ))}
       </div>
-      <div className="mt-5">
+      <div className="flex justify-center mt-8 md:mt-10">
         <CommissionsPagination totalPages={10} />
       </div>
-    </>
+    </div>
   );
 }

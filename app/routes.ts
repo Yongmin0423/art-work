@@ -13,7 +13,6 @@ export default [
     route("artist/:id", "features/commissions/pages/artist.tsx"),
     layout("features/commissions/layouts/commissions-layout.tsx", [
       route(":category", "features/commissions/pages/category.tsx"),
-      route("recommended", "features/commissions/pages/recommended.tsx"),
     ]),
     route("submit", "features/commissions/pages/submit-commission.tsx"),
   ]),

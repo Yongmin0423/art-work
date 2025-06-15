@@ -44,13 +44,13 @@ export default function CommissionsLayout({
   const [isSwitchOn, setIsSwitchOn] = useState(true);
 
   return (
-    <div>
-      <div className="flex flex-col items-center mb-5">
+    <div className="container mx-auto px-4 md:px-6">
+      <div className="flex flex-col items-center mb-3 md:mb-5">
         <Marquee3D images={loaderData.categoryImages} />
       </div>
-      <div className="grid grid-cols-8 gap-10">
-        <div className="col-span-2">
-          <div className="border w-3/4 p-10 sticky top-20">
+      <div className="flex flex-col lg:grid lg:grid-cols-8 gap-5 lg:gap-8">
+        <div className="w-full lg:col-span-2">
+          <div className="border rounded-lg p-4 md:p-6 lg:p-8 lg:sticky lg:top-20 space-y-6">
             <div className="flex items-center gap-2">
               <span className="text-sm">지금 바로 접수 가능한 작가만 보기</span>
               <Switch
@@ -59,13 +59,25 @@ export default function CommissionsLayout({
               />
             </div>
             <div>
-              <Accordion type="single" collapsible defaultValue="category">
+              <Accordion
+                type="single"
+                collapsible
+                defaultValue="category"
+                className="space-y-2"
+              >
                 <AccordionItem value="category">
-                  <AccordionTrigger>Category</AccordionTrigger>
+                  <AccordionTrigger className="text-base">
+                    Category
+                  </AccordionTrigger>
                   <AccordionContent>
-                    <div className="flex flex-col gap-2">
+                    <div className="flex flex-col gap-2 pt-2">
                       {COMMISSION_CATEGORIES.map((category) => (
-                        <Button key={category.value} asChild variant="outline">
+                        <Button
+                          key={category.value}
+                          asChild
+                          variant="outline"
+                          className="justify-start"
+                        >
                           <Link to={`/commissions/${category.value}`}>
                             {category.label}
                           </Link>
@@ -77,11 +89,13 @@ export default function CommissionsLayout({
               </Accordion>
             </div>
             <div>
-              <Accordion type="single" collapsible>
+              <Accordion type="single" collapsible className="space-y-2">
                 <AccordionItem value="price">
-                  <AccordionTrigger>Price</AccordionTrigger>
+                  <AccordionTrigger className="text-base">
+                    Price
+                  </AccordionTrigger>
                   <AccordionContent>
-                    <Form className="flex flex-col gap-5">
+                    <Form className="flex flex-col gap-4 pt-2">
                       <div className="space-y-4">
                         <div className="flex items-center gap-2">
                           <Input
@@ -98,8 +112,8 @@ export default function CommissionsLayout({
                           <span>원</span>
                         </div>
                       </div>
-                      <div className="flex justify-center gap-5">
-                        <Button>Apply</Button>
+                      <div className="flex justify-end">
+                        <Button size="sm">Apply</Button>
                       </div>
                     </Form>
                   </AccordionContent>
@@ -108,7 +122,7 @@ export default function CommissionsLayout({
             </div>
           </div>
         </div>
-        <div className="col-span-6">
+        <div className="lg:col-span-6">
           <Outlet />
         </div>
       </div>

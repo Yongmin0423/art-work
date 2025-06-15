@@ -104,7 +104,7 @@ export const action = async ({ request }: Route.ActionArgs) => {
 
     // 포트폴리오 생성
     await createPortfolio(client, {
-      profile_id: userId,
+      profile_id: userId?.profile_id,
       title,
       description: description || undefined,
       images,

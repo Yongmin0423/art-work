@@ -44,21 +44,26 @@ export default function commissions({ loaderData }: Route.ComponentProps) {
   } = loaderData;
 
   return (
-    <div className="space-y-20">
+    <div className="space-y-10 md:space-y-16 xl:space-y-20 font-pretendard">
       <Hero
         title="Leaderboards"
         subtitle="The most popular Artist on artwork"
+        className="font-inter"
       />
-      <div className="grid grid-cols-4 gap-4">
-        <div>
-          <h2 className="text-3xl font-bold leading-tight tracking-tight">
+      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-5">
+        <div className="space-y-2">
+          <h2 className="text-2xl md:text-2xl xl:text-3xl font-bold tracking-tight font-inter">
             Character-Illustration
           </h2>
-          <p className="text-xl font-light text-foreground">
-            The most popular Character-Illustrator on artwork.
+          <p className="text-sm md:text-md text-gray-500 font-medium">
+            artwork에서 가장 인기있는 캐릭터 일러스트레이터입니다.
           </p>
-          <Button variant="link" asChild className="text-3xl mt-5">
-            <Link to="/commissions/character">Explore all products &rarr;</Link>
+          <Button
+            variant="link"
+            asChild
+            className="text-xl md:text-xl xl:text-2xl mt-3 md:mt-4 xl:mt-5 font-medium hover:text-primary/90"
+          >
+            <Link to="/commissions/character">전체 작품 보기 &rarr;</Link>
           </Button>
         </div>
         {characterCommissions.map((commission) => (
@@ -76,19 +81,20 @@ export default function commissions({ loaderData }: Route.ComponentProps) {
           />
         ))}
       </div>
-      <div className="grid grid-cols-4 gap-4">
-        <div>
-          <h2 className="text-3xl font-bold leading-tight tracking-tight">
+      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-5">
+        <div className="space-y-2">
+          <h2 className="text-2xl md:text-2xl xl:text-3xl font-bold tracking-tight font-inter">
             Virtual-3D
           </h2>
-          <p className="text-xl font-light text-foreground">
-            The most popular Virtual-3D Artist on artwork.
+          <p className="text-sm md:text-md text-gray-500 font-medium">
+            artwork에서 가장 인기있는 버츄얼-3D 아티스트입니다.
           </p>
-
-          <Button variant="link" asChild className="text-3xl mt-5">
-            <Link to="/commissions/virtual-3d">
-              Explore all products &rarr;
-            </Link>
+          <Button
+            variant="link"
+            asChild
+            className="text-xl md:text-xl xl:text-2xl mt-3 md:mt-4 xl:mt-5 font-medium hover:text-primary/90"
+          >
+            <Link to="/commissions/virtual-3d">전체 작품 보기 &rarr;</Link>
           </Button>
         </div>
         {virtual3dCommissions.map((commission) => (
@@ -106,17 +112,20 @@ export default function commissions({ loaderData }: Route.ComponentProps) {
           />
         ))}
       </div>
-      <div className="grid grid-cols-4 gap-4">
-        <div>
-          <h2 className="text-3xl font-bold leading-tight tracking-tight">
+      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-5">
+        <div className="space-y-2">
+          <h2 className="text-2xl md:text-2xl xl:text-3xl font-bold tracking-tight font-inter">
             Design
           </h2>
-          <p className="text-xl font-light text-foreground">
-            The most popular Designer on artwork.
+          <p className="text-sm md:text-md text-gray-500 font-medium">
+            artwork에서 가장 인기있는 디자이너입니다.
           </p>
-
-          <Button variant="link" asChild className="text-3xl mt-5">
-            <Link to="/commissions/design">Explore all products &rarr;</Link>
+          <Button
+            variant="link"
+            asChild
+            className="text-xl md:text-xl xl:text-2xl mt-3 md:mt-4 xl:mt-5 font-medium hover:text-primary/90"
+          >
+            <Link to="/commissions/design">전체 작품 보기 &rarr;</Link>
           </Button>
         </div>
         {designCommissions.map((commission) => (
@@ -134,17 +143,20 @@ export default function commissions({ loaderData }: Route.ComponentProps) {
           />
         ))}
       </div>
-      <div className="grid grid-cols-4 gap-4">
-        <div>
-          <h2 className="text-3xl font-bold leading-tight tracking-tight">
+      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-5">
+        <div className="space-y-2">
+          <h2 className="text-2xl md:text-2xl xl:text-3xl font-bold tracking-tight font-inter">
             Live2D
           </h2>
-          <p className="text-xl font-light text-foreground">
-            The most popular Live2D Artist on artwork.
+          <p className="text-sm md:text-md text-gray-500 font-medium">
+            artwork에서 가장 인기있는 Live2D 아티스트입니다.
           </p>
-
-          <Button variant="link" asChild className="text-3xl mt-5">
-            <Link to="/commissions/live2d">Explore all products &rarr;</Link>
+          <Button
+            variant="link"
+            asChild
+            className="text-xl md:text-xl xl:text-2xl mt-3 md:mt-4 xl:mt-5 font-medium hover:text-primary/90"
+          >
+            <Link to="/commissions/live2d">전체 작품 보기 &rarr;</Link>
           </Button>
         </div>
         {live2dCommissions.map((commission) => (

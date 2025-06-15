@@ -49,7 +49,7 @@ export const commission = pgTable(
     description: text().notNull(),
     category: commissionCategory().notNull(),
     tags: jsonb().notNull().default([]),
-    images: jsonb().notNull().default([]), // 포트폴리오 이미지 URL 배열
+    images: jsonb().notNull().default([]), // 포트폴리오 이미지 URL 배열 (유지)
 
     price_start: integer().notNull(),
     price_options: jsonb().notNull().default([]),
@@ -62,7 +62,7 @@ export const commission = pgTable(
     likes_count: integer().notNull().default(0),
     order_count: integer().notNull().default(0),
     views_count: integer().notNull().default(0),
-    is_featured_weekly: boolean().notNull().default(false), // 주간 추천 아티스트 여부
+    is_featured_weekly: boolean().notNull().default(false),
 
     created_at: timestamp().notNull().defaultNow(),
     updated_at: timestamp().notNull().defaultNow(),
@@ -92,6 +92,62 @@ export const commission = pgTable(
       for: "delete",
       to: authenticatedRole,
       using: sql`profile_id = auth.uid()::uuid`,
+    }),
+  ]
+);
+
+// ===== COMMISSION IMAGES =====
+export const commissionImages = pgTable(
+  "commission_images",
+  {
+    image_id: bigint({ mode: "number" })
+      .primaryKey()
+      .generatedAlwaysAsIdentity(),
+    commission_id: bigint({ mode: "number" })
+      .references(() => commission.commission_id, { onDelete: "cascade" })
+      .notNull(),
+    image_url: text().notNull(),
+    display_order: integer().notNull().default(0),
+    created_at: timestamp().notNull().defaultNow(),
+    updated_at: timestamp().notNull().defaultNow(),
+  },
+  (table) => [
+    pgPolicy("commission-images-select-policy", {
+      for: "select",
+      to: anonRole,
+      using: sql`true`,
+    }),
+    pgPolicy("commission-images-insert-policy", {
+      for: "insert",
+      to: authenticatedRole,
+      withCheck: sql`EXISTS (
+        SELECT 1 FROM commission c 
+        WHERE c.commission_id = commission_images.commission_id 
+        AND c.profile_id = auth.uid()::uuid
+      )`,
+    }),
+    pgPolicy("commission-images-update-policy", {
+      for: "update",
+      to: authenticatedRole,
+      using: sql`EXISTS (
+        SELECT 1 FROM commission c 
+        WHERE c.commission_id = commission_images.commission_id 
+        AND c.profile_id = auth.uid()::uuid
+      )`,
+      withCheck: sql`EXISTS (
+        SELECT 1 FROM commission c 
+        WHERE c.commission_id = commission_images.commission_id 
+        AND c.profile_id = auth.uid()::uuid
+      )`,
+    }),
+    pgPolicy("commission-images-delete-policy", {
+      for: "delete",
+      to: authenticatedRole,
+      using: sql`EXISTS (
+        SELECT 1 FROM commission c 
+        WHERE c.commission_id = commission_images.commission_id 
+        AND c.profile_id = auth.uid()::uuid
+      )`,
     }),
   ]
 );

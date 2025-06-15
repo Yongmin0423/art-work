@@ -72,11 +72,19 @@ export const getPostById = async (
 };
 
 export const getLoggedInUser = async (client: SupabaseClient<Database>) => {
-  const { data, error } = await client.auth.getUser();
-  if (error || data.user === null) {
+  const { data: authData, error: authError } = await client.auth.getUser();
+  if (authError || authData.user === null) {
     throw redirect("/auth/login");
   }
-  return data.user.id;
+
+  const { data: profile, error: profileError } = await client
+    .from("profiles")
+    .select("*")
+    .eq("profile_id", authData.user.id)
+    .single();
+
+  if (profileError) throw profileError;
+  return profile;
 };
 
 export const getPostsByUsername = async (

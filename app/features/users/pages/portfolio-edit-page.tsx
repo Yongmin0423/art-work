@@ -15,6 +15,7 @@ import type { Route } from "./+types/portfolio-edit-page";
 import { getLoggedInUser } from "~/features/community/queries";
 import { COMMISSION_CATEGORIES } from "~/features/commissions/constants";
 import { z } from "zod";
+import type { CommissionCategory } from "~/common/category-enums";
 
 export const meta: Route.MetaFunction = () => {
   return [{ title: "Edit Portfolio | wemake" }];
@@ -65,7 +66,7 @@ export const action = async ({ request, params }: Route.ActionArgs) => {
       portfolioId: params.portfolioId as string,
       title,
       description: description || undefined,
-      category: category || undefined,
+      category: (category as CommissionCategory) || undefined,
       tags,
     });
 

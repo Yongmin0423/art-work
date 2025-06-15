@@ -72,7 +72,7 @@ export default function App({ loaderData }: Route.ComponentProps) {
 
   return (
     <>
-      <div className={pathname.includes("/auth/") ? "" : "p-28"}>
+      <div className={pathname.includes("/auth/") ? "" : "lg:p-28"}>
         {pathname.includes("/auth") ? null : (
           <Navigation
             isLoggedIn={isLoggedIn}

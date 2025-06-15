@@ -13,8 +13,9 @@ import {
   ImageIcon,
   SettingsIcon,
   BellIcon,
-} from 'lucide-react';
-import { Link, Outlet, useLocation } from 'react-router';
+  MenuIcon,
+} from "lucide-react";
+import { Link, Outlet, useLocation } from "react-router";
 import {
   Sidebar,
   SidebarContent,
@@ -24,17 +25,27 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarProvider,
-} from '~/components/ui/sidebar';
+  SidebarTrigger,
+} from "~/components/ui/sidebar";
+import { Button } from "~/components/ui/button";
 
 export default function DashboardLayout() {
   const location = useLocation();
 
   return (
-    <SidebarProvider className="flex min-h-full">
-      <Sidebar
-        className="pt-16"
-        variant="floating"
-      >
+    <SidebarProvider className="flex min-h-full w-full">
+      <div className="fixed top-0 left-0 right-0 z-50 flex h-16 items-center justify-between border-b bg-background px-4 lg:px-6">
+        <div className="flex items-center gap-4">
+          <SidebarTrigger className="lg:hidden">
+            <MenuIcon className="size-5" />
+          </SidebarTrigger>
+        </div>
+        <div className="absolute left-1/2 -translate-x-1/2 font-semibold">
+          artwork
+        </div>
+        <div className="w-10" /> {/* 우측 여백 맞추기용 */}
+      </div>
+      <Sidebar className="pt-16" variant="floating">
         <SidebarContent>
           {/* 대시보드 홈 */}
           <SidebarGroup>
@@ -42,7 +53,7 @@ export default function DashboardLayout() {
               <SidebarMenuItem>
                 <SidebarMenuButton
                   asChild
-                  isActive={location.pathname === '/my/dashboard'}
+                  isActive={location.pathname === "/my/dashboard"}
                 >
                   <Link to="/my/dashboard">
                     <HomeIcon className="size-4" />
@@ -60,7 +71,7 @@ export default function DashboardLayout() {
               <SidebarMenuItem>
                 <SidebarMenuButton
                   asChild
-                  isActive={location.pathname === '/my/commissions/requested'}
+                  isActive={location.pathname === "/my/commissions/requested"}
                 >
                   <Link to="/my/commissions/requested">
                     <ShoppingCartIcon className="size-4" />
@@ -71,7 +82,7 @@ export default function DashboardLayout() {
               <SidebarMenuItem>
                 <SidebarMenuButton
                   asChild
-                  isActive={location.pathname === '/my/reviews'}
+                  isActive={location.pathname === "/my/reviews"}
                 >
                   <Link to="/my/reviews">
                     <StarIcon className="size-4" />
@@ -82,7 +93,7 @@ export default function DashboardLayout() {
               <SidebarMenuItem>
                 <SidebarMenuButton
                   asChild
-                  isActive={location.pathname === '/my/favorites'}
+                  isActive={location.pathname === "/my/favorites"}
                 >
                   <Link to="/my/favorites">
                     <HeartIcon className="size-4" />
@@ -100,7 +111,7 @@ export default function DashboardLayout() {
               <SidebarMenuItem>
                 <SidebarMenuButton
                   asChild
-                  isActive={location.pathname === '/my/commissions/received'}
+                  isActive={location.pathname === "/my/commissions/received"}
                 >
                   <Link to="/my/commissions/received">
                     <ClipboardListIcon className="size-4" />
@@ -111,7 +122,7 @@ export default function DashboardLayout() {
               <SidebarMenuItem>
                 <SidebarMenuButton
                   asChild
-                  isActive={location.pathname === '/my/artworks'}
+                  isActive={location.pathname === "/my/artworks"}
                 >
                   <Link to="/my/artworks">
                     <ImageIcon className="size-4" />
@@ -122,7 +133,7 @@ export default function DashboardLayout() {
               <SidebarMenuItem>
                 <SidebarMenuButton
                   asChild
-                  isActive={location.pathname === '/my/earnings'}
+                  isActive={location.pathname === "/my/earnings"}
                 >
                   <Link to="/my/earnings">
                     <CreditCardIcon className="size-4" />
@@ -133,7 +144,7 @@ export default function DashboardLayout() {
               <SidebarMenuItem>
                 <SidebarMenuButton
                   asChild
-                  isActive={location.pathname === '/my/artist/reviews'}
+                  isActive={location.pathname === "/my/artist/reviews"}
                 >
                   <Link to="/my/artist/reviews">
                     <MessageSquareIcon className="size-4" />
@@ -151,7 +162,7 @@ export default function DashboardLayout() {
               <SidebarMenuItem>
                 <SidebarMenuButton
                   asChild
-                  isActive={location.pathname === '/my/profile'}
+                  isActive={location.pathname === "/my/profile"}
                 >
                   <Link to="/my/profile">
                     <UserIcon className="size-4" />
@@ -162,7 +173,7 @@ export default function DashboardLayout() {
               <SidebarMenuItem>
                 <SidebarMenuButton
                   asChild
-                  isActive={location.pathname === '/my/notifications'}
+                  isActive={location.pathname === "/my/notifications"}
                 >
                   <Link to="/my/notifications">
                     <BellIcon className="size-4" />
@@ -173,7 +184,7 @@ export default function DashboardLayout() {
               <SidebarMenuItem>
                 <SidebarMenuButton
                   asChild
-                  isActive={location.pathname === '/my/settings'}
+                  isActive={location.pathname === "/my/settings"}
                 >
                   <Link to="/my/settings">
                     <SettingsIcon className="size-4" />
@@ -185,7 +196,7 @@ export default function DashboardLayout() {
           </SidebarGroup>
         </SidebarContent>
       </Sidebar>
-      <div className="w-full h-full">
+      <div className="w-full h-full pt-16">
         <Outlet />
       </div>
     </SidebarProvider>

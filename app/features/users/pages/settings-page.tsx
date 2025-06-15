@@ -21,7 +21,7 @@ export const meta: Route.MetaFunction = () => {
 export const loader = async ({ request }: Route.LoaderArgs) => {
   const { client } = await makeSSRClient(request);
   const userId = await getLoggedInUser(client);
-  const user = await getUserById(client, { id: userId });
+  const user = await getUserById(client, { id: userId?.profile_id || "" });
   return { user };
 };
 
@@ -56,7 +56,7 @@ export const action = async ({ request }: Route.ActionArgs) => {
         data: { publicUrl },
       } = await client.storage.from("avatars").getPublicUrl(data.path);
       await updateUserAvatar(client, {
-        id: userId,
+        id: userId?.profile_id,
         avatarUrl: publicUrl,
       });
     }
@@ -70,7 +70,7 @@ export const action = async ({ request }: Route.ActionArgs) => {
     const { name, username, job_title, bio, work_status, location, website } =
       data;
     const user = await updateUser(client, {
-      id: userId,
+      id: userId?.profile_id,
       name,
       username,
       job_title,
@@ -90,7 +90,7 @@ export default function SettingsPage({
   actionData,
 }: Route.ComponentProps) {
   const [avatar, setAvatar] = useState<string | null>(
-    loaderData.user.avatar_url
+    loaderData.user?.avatar_url || null
   );
 
   const onChange = (event: React.ChangeEvent<HTMLInputElement>) => {

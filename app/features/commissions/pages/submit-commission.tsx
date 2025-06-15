@@ -11,7 +11,7 @@ import { COMMISSION_CATEGORIES } from "../constants";
 import { makeSSRClient } from "~/supa-client";
 import { getLoggedInUser } from "~/features/community/queries";
 import { z } from "zod";
-import { createCommission } from "../mutations";
+import { createCommission, createCommissionImage } from "../mutations";
 import { Separator } from "~/components/ui/separator";
 import { Badge } from "~/components/ui/badge";
 
@@ -48,155 +48,88 @@ type PriceOption = {
 };
 
 export const action = async ({ request }: Route.ActionArgs) => {
-  console.log("🚀 Action started");
+  const { client, headers } = makeSSRClient(request);
+  const formData = await request.formData();
 
-  try {
-    const { client } = await makeSSRClient(request);
-    const userId = await getLoggedInUser(client);
-    console.log("✅ User authenticated:", userId);
+  // Form validation
+  const result = formSchema.safeParse({
+    title: formData.get("title"),
+    description: formData.get("description"),
+    category: formData.get("category"),
+    price_start: formData.get("price_start"),
+    turnaround_days: formData.get("turnaround_days"),
+    revision_count: formData.get("revision_count"),
+    base_size: formData.get("base_size"),
+  });
 
-    const formData = await request.formData();
-    console.log("📝 Form data received");
-
-    const formEntries = Object.fromEntries(formData);
-    console.log("📋 Form entries:", formEntries);
-
-    const { success, error, data } = formSchema.safeParse(formEntries);
-
-    if (!success) {
-      console.log("❌ Validation failed:", error.flatten().fieldErrors);
-      return {
-        fieldErrors: error.flatten().fieldErrors,
-      };
-    }
-
-    console.log("✅ Validation passed:", data);
-
-    // 가격 옵션들 파싱 (formData에서 동적으로 수집)
-    const priceOptions: PriceOption[] = [];
-    const optionIndices = new Set<string>();
-
-    // 먼저 모든 옵션 인덱스 수집
-    for (const [key] of formData.entries()) {
-      if (key.startsWith("price_type_")) {
-        const index = key.split("_")[2];
-        optionIndices.add(index);
-      }
-    }
-
-    // 각 옵션별로 데이터 수집
-    for (const index of optionIndices) {
-      const type = formData.get(`price_type_${index}`) as string;
-      if (!type) continue;
-
-      const choices: PriceChoice[] = [];
-      let choiceIndex = 0;
-
-      // 해당 옵션의 모든 선택지 수집
-      while (formData.has(`choice_label_${index}_${choiceIndex}`)) {
-        const label = formData.get(
-          `choice_label_${index}_${choiceIndex}`
-        ) as string;
-        const price = parseInt(
-          formData.get(`choice_price_${index}_${choiceIndex}`) as string
-        );
-        const description = formData.get(
-          `choice_desc_${index}_${choiceIndex}`
-        ) as string;
-
-        if (label && price) {
-          choices.push({ label, price, description: description || undefined });
-        }
-        choiceIndex++;
-      }
-
-      if (choices.length > 0) {
-        priceOptions.push({ type, choices });
-      }
-    }
-
-    // 태그 처리
-    const tags = data.tags
-      ? data.tags.split(",").map((tag: string) => tag.trim())
-      : [];
-
-    // 이미지 파일 수집
-    const imageFiles: File[] = [];
-    for (const [key, value] of formData.entries()) {
-      if (key.startsWith("image_") && value instanceof File && value.size > 0) {
-        imageFiles.push(value);
-      }
-    }
-
-    console.log("📸 Found image files:", imageFiles.length);
-
-    // 이미지 업로드 (settings-page.tsx 패턴 따라 직접 처리)
-    const images: string[] = [];
-    for (let i = 0; i < imageFiles.length; i++) {
-      const file = imageFiles[i];
-      if (file.size <= 5 * 1024 * 1024 && file.type.startsWith("image/")) {
-        console.log("⬆️ Uploading image:", file.name);
-        const { data: uploadData, error } = await client.storage
-          .from("commission-images")
-          .upload(`${userId}/${Date.now()}-${i}`, file, {
-            contentType: file.type,
-            upsert: false,
-          });
-        if (error) {
-          console.log("❌ Upload error:", error);
-          return { error: `Failed to upload image ${file.name}` };
-        }
-        const {
-          data: { publicUrl },
-        } = await client.storage
-          .from("commission-images")
-          .getPublicUrl(uploadData.path);
-        images.push(publicUrl);
-        console.log("✅ Image uploaded:", publicUrl);
-      }
-    }
-
-    console.log("🎨 Creating commission with data:", {
-      profile_id: userId,
-      title: data.title,
-      description: data.description,
-      category: data.category,
-      tags: tags,
-      images: images,
-      price_start: data.price_start,
-      price_options: priceOptions,
-      turnaround_days: data.turnaround_days,
-      revision_count: data.revision_count,
-      base_size: data.base_size,
-      status: "available",
-    });
-
-    // 커미션 생성
-    const commission = await createCommission(client, {
-      profile_id: userId,
-      title: data.title,
-      description: data.description,
-      category: data.category as any,
-      tags: tags,
-      images: images,
-      price_start: data.price_start,
-      price_options: priceOptions,
-      turnaround_days: data.turnaround_days,
-      revision_count: data.revision_count,
-      base_size: data.base_size,
-      status: "available",
-    });
-
-    console.log("✅ Commission created:", commission);
-    console.log("🔄 Redirecting to /commissions");
-
-    return redirect("/commissions");
-  } catch (err) {
-    console.error("💥 Action error:", err);
-    return {
-      error: "Failed to create commission. Please try again.",
-    };
+  if (!result.success) {
+    return { fieldErrors: result.error.flatten().fieldErrors };
   }
+
+  const data = result.data;
+  const tags = formData.getAll("tags") as string[];
+  const priceOptions = JSON.parse(formData.get("price_options") as string);
+
+  const user = await getLoggedInUser(client);
+  if (!user) {
+    return { error: "로그인이 필요합니다." };
+  }
+  const userId = user.profile_id;
+
+  // 이미지 업로드
+  const images: string[] = [];
+  const imageFiles = Array.from({ length: 10 })
+    .map((_, i) => formData.get(`image_${i}`) as File | null)
+    .filter(Boolean);
+
+  for (let i = 0; i < imageFiles.length; i++) {
+    const file = imageFiles[i];
+    if (
+      file &&
+      file.size <= 5 * 1024 * 1024 &&
+      file.type.startsWith("image/")
+    ) {
+      console.log("⬆️ Uploading image:", file.name);
+      const { data: uploadData, error } = await client.storage
+        .from("commission-images")
+        .upload(`${userId}/${Date.now()}-${i}`, file, {
+          contentType: file.type,
+          upsert: false,
+        });
+      if (error) {
+        console.log("❌ Upload error:", error);
+        return { error: `Failed to upload image ${file.name}` };
+      }
+      const {
+        data: { publicUrl },
+      } = await client.storage
+        .from("commission-images")
+        .getPublicUrl(uploadData.path);
+      images.push(publicUrl);
+      console.log("✅ Image uploaded:", publicUrl);
+    }
+  }
+
+  // 커미션 생성 (이미지 포함)
+  const commission = await createCommission(client, {
+    profile_id: userId,
+    title: data.title,
+    description: data.description,
+    category: data.category as any,
+    tags: tags,
+    price_start: data.price_start,
+    price_options: priceOptions,
+    turnaround_days: data.turnaround_days,
+    revision_count: data.revision_count,
+    base_size: data.base_size,
+    status: "available",
+    images: images, // 이미지 URL 배열 전달
+  });
+
+  console.log("✅ Commission created:", commission);
+  console.log("🔄 Redirecting to /commissions");
+
+  return redirect("/commissions");
 };
 
 export default function SubmitCommissionPage({
@@ -282,11 +215,18 @@ export default function SubmitCommissionPage({
       />
 
       <Form
-        className="max-w-screen-lg mx-auto space-y-10"
+        className="max-w-screen-lg mx-auto space-y-10 px-4 sm:px-6 lg:px-8"
         method="post"
         encType="multipart/form-data"
       >
-        <div className="grid grid-cols-2 gap-20">
+        {/* Hidden input for price_options */}
+        <input
+          type="hidden"
+          name="price_options"
+          value={JSON.stringify(priceOptions)}
+        />
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-10 md:gap-20">
           {/* 왼쪽 컬럼 - 기본 정보 */}
           <div className="space-y-6">
             <h3 className="text-2xl font-bold">Basic Information</h3>
@@ -365,7 +305,7 @@ export default function SubmitCommissionPage({
               </div>
             )}
 
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <InputPair
                   label="Turnaround Days"
@@ -588,7 +528,7 @@ export default function SubmitCommissionPage({
             ))}
           </div>
 
-          <div className="text-sm text-gray-600 bg-blue-50 p-4 rounded-lg">
+          <div className="text-sm text-gray-600 bg-blue-50 p-4 rounded-lg space-y-1">
             <p>
               <strong>Example:</strong>
             </p>
@@ -617,7 +557,7 @@ export default function SubmitCommissionPage({
             </Button>
           </div>
 
-          <div className="grid grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
             {Array.from({
               length: Math.max(3, portfolioImages.length + 1),
             }).map((_, index) => (
@@ -646,7 +586,7 @@ export default function SubmitCommissionPage({
             ))}
           </div>
 
-          <div className="text-sm text-gray-600">
+          <div className="text-sm text-gray-600 bg-blue-50 p-4 rounded-lg space-y-1">
             <p>• Upload high-quality examples of your work</p>
             <p>• Recommended: 1200x1200px or larger</p>
             <p>• Formats: PNG, JPEG, WebP</p>

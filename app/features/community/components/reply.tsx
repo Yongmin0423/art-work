@@ -39,7 +39,10 @@ export function Reply({
 }: ReplyProps) {
   const actionData = useActionData<typeof action>();
   const [replying, setReplying] = useState(false);
-  const toggleReplying = () => setReplying((prev) => !prev);
+  const toggleReplying = () => {
+    console.log("Reply button clicked, current state:", replying);
+    setReplying((prev) => !prev);
+  };
   const {
     isLoggedIn,
     name: loggedInName,
@@ -49,7 +52,13 @@ export function Reply({
     name: string;
     avatar: string;
   }>();
+
   useEffect(() => {
+    console.log("Replying state changed to:", replying);
+  }, [replying]);
+
+  useEffect(() => {
+    console.log("Action data changed:", actionData);
     if (actionData?.ok) {
       setReplying(false);
     }
@@ -112,6 +121,7 @@ export function Reply({
         <div className="pl-20 w-full">
           {replies.map((reply) => (
             <Reply
+              key={reply.post_reply_id}
               name={reply.user.name}
               username={reply.user.username}
               avatarUrl={reply.user.avatar_url}

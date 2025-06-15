@@ -21,7 +21,6 @@ SELECT
     c.created_at,
     c.updated_at,
     c.is_featured_weekly,
-    c.images, -- 커미션의 이미지를 직접 사용
     -- Artist information
     p.name as artist_name,
     p.username as artist_username,
@@ -34,6 +33,15 @@ SELECT
     p.followers_count as artist_followers_count,
     p.following_count as artist_following_count,
     p.views_count as artist_views_count,
+    -- Commission images (ordered by display_order)
+    COALESCE(
+        (
+            SELECT jsonb_agg(ci.image_url ORDER BY ci.display_order)
+            FROM commission_images ci
+            WHERE ci.commission_id = c.commission_id
+        ),
+        '[]'::jsonb
+    ) as images,
     -- Artist average rating (calculated from reviews)
     COALESCE(
         (SELECT ROUND(AVG(r.rating)::numeric, 1)

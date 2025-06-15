@@ -28,7 +28,10 @@ const formSchema = z.object({
 
 export const action = async ({ request }: Route.ActionArgs) => {
   const { client } = await makeSSRClient(request);
-  const userId = await getLoggedInUser(client);
+  const user = await getLoggedInUser(client);
+  if (!user) {
+    return redirect("/auth/login");
+  }
   const formData = await request.formData();
   const { success, error, data } = formSchema.safeParse(
     Object.fromEntries(formData)
@@ -43,7 +46,7 @@ export const action = async ({ request }: Route.ActionArgs) => {
     title,
     category,
     content,
-    userId,
+    userId: user.profile_id,
   });
   return redirect(`/community/${post_id}`);
 };

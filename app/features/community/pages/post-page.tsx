@@ -34,12 +34,18 @@ export const loader = async ({ params, request }: Route.LoaderArgs) => {
 
 const formSchema = z.object({
   reply: z.string().min(1),
-  topLevelId: z.number().optional(),
+  topLevelId: z
+    .string()
+    .transform((val) => (val ? Number(val) : undefined))
+    .optional(),
 });
 
 export const action = async ({ request, params }: Route.ActionArgs) => {
   const { client } = makeSSRClient(request);
-  const userId = await getLoggedInUser(client);
+  const user = await getLoggedInUser(client);
+  if (!user) {
+    return { error: "로그인이 필요합니다." };
+  }
   const formData = await request.formData();
   const { success, data, error } = formSchema.safeParse(
     Object.fromEntries(formData)
@@ -48,7 +54,12 @@ export const action = async ({ request, params }: Route.ActionArgs) => {
     return { formErrors: error?.flatten().fieldErrors };
   }
   const { reply, topLevelId } = data;
-  await createReply(client, { postId: params.postId, reply, userId });
+  await createReply(client, {
+    postId: params.postId,
+    reply,
+    userId: user.profile_id,
+    topLevelId: topLevelId,
+  });
   return { ok: true };
 };
 
@@ -72,7 +83,7 @@ export default function PostPage({
   return (
     <div className="space-y-10">
       <Breadcrumb>
-        <BreadcrumbList>
+        <BreadcrumbList className="flex-wrap">
           <BreadcrumbItem>
             <BreadcrumbLink asChild>
               <Link to="/community">Community</Link>
@@ -96,17 +107,19 @@ export default function PostPage({
           </BreadcrumbItem>
         </BreadcrumbList>
       </Breadcrumb>
-      <div className="grid grid-cols-6 gap-40 items-start">
-        <div className="col-span-4 space-y-10">
-          <div className="flex w-full items-start gap-10">
+      <div className="grid grid-cols-1 lg:grid-cols-6 gap-10 lg:gap-40 items-start">
+        <div className="col-span-1 lg:col-span-4 space-y-10">
+          <div className="flex w-full items-start gap-4 sm:gap-10">
             <Button variant="outline" className="flex flex-col h-14">
               <ChevronUpIcon className="size-4 shrink-0" />
               <span>10</span>
             </Button>
-            <div className="space-y-20">
+            <div className="w-full space-y-10 sm:space-y-20">
               <div className="space-y-2">
-                <h2 className="text-3xl font-bold">{loaderData.post.title}</h2>
-                <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                <h2 className="text-2xl sm:text-3xl font-bold">
+                  {loaderData.post.title}
+                </h2>
+                <div className="flex flex-wrap items-center gap-2 text-sm text-muted-foreground">
                   <span>{loaderData.post.profiles.name}</span>
                   <DotIcon className="size-5" />
                   <span>
@@ -117,17 +130,17 @@ export default function PostPage({
                   <DotIcon className="size-5" />
                   <span>{loaderData.post.replies_count} replies</span>
                 </div>
-                <p className="text-muted-foreground w-3/4">
+                <p className="text-muted-foreground w-full sm:w-3/4">
                   {loaderData.post.content}
                 </p>
               </div>
               {isLoggedIn ? (
                 <Form
                   ref={formRef}
-                  className="flex items-start gap-5 w-3/4"
+                  className="flex flex-col sm:flex-row items-start gap-5 w-full sm:w-3/4"
                   method="post"
                 >
-                  <Avatar className="size-14">
+                  <Avatar className="size-10 sm:size-14">
                     <AvatarFallback>{name?.[0]}</AvatarFallback>
                     <AvatarImage src={avatarUrl} />
                   </Avatar>
@@ -148,6 +161,7 @@ export default function PostPage({
                 </h4>
                 {loaderData.replies.map((reply) => (
                   <Reply
+                    key={reply.post_reply_id}
                     name={reply.user.name}
                     username={reply.user.username}
                     avatarUrl={reply.user.avatar_url}
@@ -162,9 +176,9 @@ export default function PostPage({
             </div>
           </div>
         </div>
-        <aside className="col-span-2 space-y-5 border rounded-lg p-6 shadow-sm">
+        <aside className="col-span-1 lg:col-span-2 space-y-5 order-first lg:order-last bg-muted/10 p-5 rounded-lg lg:bg-transparent lg:p-0">
           <div className="flex gap-5">
-            <Avatar className="size-14">
+            <Avatar className="size-10 sm:size-14">
               <AvatarFallback>
                 {loaderData.post.profiles.name?.[0] || "U"}
               </AvatarFallback>
@@ -202,7 +216,7 @@ export default function PostPage({
                   href={loaderData.post.profiles.website}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-blue-600 hover:underline"
+                  className="text-blue-600 hover:underline break-all"
                 >
                   {loaderData.post.profiles.website}
                 </a>
@@ -219,7 +233,6 @@ export default function PostPage({
           </Button>
         </aside>
       </div>
-      <aside className="col-span-2"></aside>
     </div>
   );
 }

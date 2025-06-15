@@ -1,35 +1,35 @@
-import { Line } from 'recharts';
-import { ChartTooltipContent, type ChartConfig } from '~/components/ui/chart';
-import { ChartTooltip } from '~/components/ui/chart';
-import { Card, CardContent, CardHeader, CardTitle } from '~/components/ui/card';
-import { ChartContainer } from '~/components/ui/chart';
-import { CartesianGrid, LineChart, XAxis } from 'recharts';
-import type { Route } from './+types/dashboard-page';
+import { Line } from "recharts";
+import { ChartTooltipContent, type ChartConfig } from "~/components/ui/chart";
+import { ChartTooltip } from "~/components/ui/chart";
+import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
+import { ChartContainer } from "~/components/ui/chart";
+import { CartesianGrid, LineChart, XAxis } from "recharts";
+import type { Route } from "./+types/dashboard-page";
 
 export const meta: Route.MetaFunction = () => {
-  return [{ title: 'Dashboard | wemake' }];
+  return [{ title: "Dashboard | wemake" }];
 };
 
 const chartData = [
-  { month: 'January', views: 186 },
-  { month: 'February', views: 305 },
-  { month: 'March', views: 237 },
-  { month: 'April', views: 73 },
-  { month: 'May', views: 209 },
-  { month: 'June', views: 214 },
+  { month: "January", views: 186 },
+  { month: "February", views: 305 },
+  { month: "March", views: 237 },
+  { month: "April", views: 73 },
+  { month: "May", views: 209 },
+  { month: "June", views: 214 },
 ];
 const chartConfig = {
   views: {
-    label: '👁️',
-    color: 'var(--primary)',
+    label: "👁️",
+    color: "var(--primary)",
   },
 } satisfies ChartConfig;
 
 export default function DashboardPage() {
   return (
-    <div className="space-y-5">
+    <div className="w-full space-y-5">
       <h1 className="text-2xl font-semibold mb-6">Dashboard</h1>
-      <Card className="w-1/2">
+      <Card className="w-full    md:w-1/2 ">
         <CardHeader>
           <CardTitle>Profile views</CardTitle>
         </CardHeader>

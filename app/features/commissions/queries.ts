@@ -1,5 +1,20 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { Database } from "~/supa-client";
+import type { CommissionCategory } from "../../common/category-enums";
+
+export const getCommissionImages = async (
+  client: SupabaseClient<Database>,
+  { commissionId }: { commissionId: number }
+) => {
+  const { data, error } = await client
+    .from("commission_images")
+    .select("*")
+    .eq("commission_id", commissionId)
+    .order("display_order", { ascending: true });
+
+  if (error) throw error;
+  return data;
+};
 
 type CategoryType = Database["public"]["Enums"]["commission_category"];
 
@@ -17,44 +32,41 @@ const toStringArray = (jsonValue: unknown): string[] => {
   return [];
 };
 
-export const getCommissions = async (client: SupabaseClient<Database>) => {
-  const { data, error } = await client.from("commission_with_artist").select(`
-      commission_id,
-      title,
-      category,
-      tags,
-      images,
-      price_start,
-      likes_count,
-      status,
-      artist_name,
-      artist_username,
-      artist_avatar_url,
-      artist_avg_rating
-    `);
+export const getCommissions = async (
+  client: SupabaseClient<Database>,
+  {
+    category,
+    limit = 10,
+    offset = 0,
+    orderBy = "created_at",
+    ascending = false,
+  }: {
+    category?: CommissionCategory;
+    limit?: number;
+    offset?: number;
+    orderBy?: string;
+    ascending?: boolean;
+  } = {}
+) => {
+  let query = client
+    .from("commission_with_artist")
+    .select("*")
+    .order(orderBy, { ascending })
+    .range(offset, offset + limit - 1);
 
-  if (error) {
-    throw new Error(error.message);
+  if (category) {
+    query = query.eq("category", category);
   }
 
-  // tags가 jsonb이므로 string[]로 안전하게 변환하고, category도 포함
-  return (
-    data?.map((commission) => ({
-      ...commission,
-      tags: [commission.category, ...toStringArray(commission.tags)],
-      images: toStringArray(commission.images), // jsonb 배열을 string[]로 안전하게 변환
-    })) || []
-  );
+  const { data, error } = await query;
+  if (error) throw error;
+  return data;
 };
 
 // 특정 commission 조회 (artist 정보 포함)
 export const getCommissionById = async (
   client: SupabaseClient<Database>,
-  {
-    commissionId,
-  }: {
-    commissionId: number;
-  }
+  { commissionId }: { commissionId: number }
 ) => {
   const { data, error } = await client
     .from("commission_with_artist")
@@ -62,12 +74,7 @@ export const getCommissionById = async (
     .eq("commission_id", commissionId)
     .single();
 
-  console.log("[getCommissionById] data:", data);
-  console.log("[getCommissionById] error:", error);
-
-  if (error) {
-    throw new Error(error.message);
-  }
+  if (error) throw error;
   return data;
 };
 
@@ -251,4 +258,23 @@ export const getImagesByCategory = async (
     }, []) || [];
 
   return allImages.slice(0, 20); // Marquee용으로 20개 정도만
+};
+
+// 마켓플레이스 메인 페이지용 이미지 가져오기
+export const getMarketplaceImages = async (
+  client: SupabaseClient<Database>
+) => {
+  const { data: commissions, error } = await client
+    .from("commission_with_artist")
+    .select("images")
+    .limit(20);
+
+  if (error) throw error;
+
+  // 모든 이미지 URL을 하나의 배열로 합치기
+  const allImages = commissions.flatMap(
+    (commission) => (commission.images as string[]) || []
+  );
+
+  return allImages;
 };

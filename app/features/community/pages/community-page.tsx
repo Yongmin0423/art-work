@@ -36,11 +36,11 @@ export default function CommunityPage({ loaderData }: Route.ComponentProps) {
         title="Community"
         subtitle="Ask questions, share ideas, and connect with other developers"
       />
-      <div className="grid grid-cols-6 items-start gap-40">
-        <div className="col-span-4 space-y-10">
-          <div className="flex justify-between">
+      <div className="grid grid-cols-1 lg:grid-cols-6 items-start gap-10 lg:gap-40">
+        <div className="col-span-1 lg:col-span-4 space-y-10">
+          <div className="flex flex-col sm:flex-row justify-between gap-5">
             <div className="space-y-5 w-full">
-              <div className="flex items-center gap-5">
+              <div className="flex flex-wrap items-center gap-5">
                 <DropdownMenu>
                   <DropdownMenuTrigger className="flex items-center gap-1">
                     <span className="text-sm capitalize">{sorting}</span>
@@ -88,7 +88,7 @@ export default function CommunityPage({ loaderData }: Route.ComponentProps) {
                   </DropdownMenu>
                 )}
               </div>
-              <Form className="w-2/3">
+              <Form className="w-full sm:w-2/3">
                 <Input
                   type="text"
                   name="search"
@@ -96,7 +96,7 @@ export default function CommunityPage({ loaderData }: Route.ComponentProps) {
                 />
               </Form>
             </div>
-            <Button asChild>
+            <Button asChild className="w-full sm:w-auto">
               <Link to={`/community/create`}>Create Discussion</Link>
             </Button>
           </div>
@@ -116,11 +116,11 @@ export default function CommunityPage({ loaderData }: Route.ComponentProps) {
             ))}
           </div>
         </div>
-        <aside className="col-span-2 space-y-5">
+        <aside className="col-span-1 lg:col-span-2 space-y-5 order-first lg:order-last bg-muted/10 p-5 rounded-lg lg:bg-transparent lg:p-0">
           <span className="text-sm font-bold text-muted-foreground uppercase">
             Topics
           </span>
-          <div className="flex flex-col gap-2 items-start">
+          <div className="flex flex-row flex-wrap lg:flex-col gap-2 items-start">
             {loaderData.topics.map((category) => (
               <Button
                 asChild

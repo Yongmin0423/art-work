@@ -93,7 +93,7 @@ export type Database = {
           commission_id: number
           created_at: string
           description: string
-          images: Json
+          is_featured_weekly: boolean
           likes_count: number
           order_count: number
           price_options: Json
@@ -113,7 +113,7 @@ export type Database = {
           commission_id?: never
           created_at?: string
           description: string
-          images?: Json
+          is_featured_weekly?: boolean
           likes_count?: number
           order_count?: number
           price_options?: Json
@@ -133,7 +133,7 @@ export type Database = {
           commission_id?: never
           created_at?: string
           description?: string
-          images?: Json
+          is_featured_weekly?: boolean
           likes_count?: number
           order_count?: number
           price_options?: Json
@@ -154,6 +154,48 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["profile_id"]
+          },
+        ]
+      }
+      commission_images: {
+        Row: {
+          commission_id: number
+          created_at: string
+          display_order: number
+          image_id: number
+          image_url: string
+          updated_at: string
+        }
+        Insert: {
+          commission_id: number
+          created_at?: string
+          display_order?: number
+          image_id?: never
+          image_url: string
+          updated_at?: string
+        }
+        Update: {
+          commission_id?: number
+          created_at?: string
+          display_order?: number
+          image_id?: never
+          image_url?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "commission_images_commission_id_commission_commission_id_fk"
+            columns: ["commission_id"]
+            isOneToOne: false
+            referencedRelation: "commission"
+            referencedColumns: ["commission_id"]
+          },
+          {
+            foreignKeyName: "commission_images_commission_id_commission_commission_id_fk"
+            columns: ["commission_id"]
+            isOneToOne: false
+            referencedRelation: "commission_with_artist"
+            referencedColumns: ["commission_id"]
           },
         ]
       }
@@ -681,6 +723,7 @@ export type Database = {
           location: string | null
           name: string
           profile_id: string
+          role: Database["public"]["Enums"]["user_role"]
           specialties: string[]
           updated_at: string
           username: string
@@ -699,6 +742,7 @@ export type Database = {
           location?: string | null
           name: string
           profile_id: string
+          role?: Database["public"]["Enums"]["user_role"]
           specialties?: string[]
           updated_at?: string
           username: string
@@ -717,6 +761,7 @@ export type Database = {
           location?: string | null
           name?: string
           profile_id?: string
+          role?: Database["public"]["Enums"]["user_role"]
           specialties?: string[]
           updated_at?: string
           username?: string
@@ -973,7 +1018,6 @@ export type Database = {
           artist_bio: string | null
           artist_followers_count: number | null
           artist_following_count: number | null
-          artist_id: string | null
           artist_job_title: string | null
           artist_location: string | null
           artist_name: string | null
@@ -987,10 +1031,12 @@ export type Database = {
           created_at: string | null
           description: string | null
           images: Json | null
+          is_featured_weekly: boolean | null
           likes_count: number | null
           order_count: number | null
           price_options: Json | null
           price_start: number | null
+          profile_id: string | null
           revision_count: number | null
           status: Database["public"]["Enums"]["commission_status"] | null
           tags: Json | null
@@ -1002,7 +1048,7 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "commission_profile_id_profiles_profile_id_fk"
-            columns: ["artist_id"]
+            columns: ["profile_id"]
             isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["profile_id"]
@@ -1053,6 +1099,7 @@ export type Database = {
         | "cancelled"
         | "refunded"
         | "disputed"
+      user_role: "user" | "admin"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -1203,6 +1250,7 @@ export const Constants = {
         "refunded",
         "disputed",
       ],
+      user_role: ["user", "admin"],
     },
   },
 } as const
