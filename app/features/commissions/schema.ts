@@ -215,3 +215,45 @@ export const commissionOrder = pgTable(
     }),
   ]
 );
+
+export const commissionLikes = pgTable(
+  "commission_likes",
+  {
+    like_id: bigint({ mode: "number" })
+      .primaryKey()
+      .generatedAlwaysAsIdentity(),
+    commission_id: bigint({ mode: "number" })
+      .references(() => commission.commission_id, { onDelete: "cascade" })
+      .notNull(),
+    liker_id: uuid()
+      .references(() => profiles.profile_id, { onDelete: "cascade" })
+      .notNull(),
+    created_at: timestamp().notNull().defaultNow(),
+  },
+  (table) => [
+    // 비인증 사용자도 좋아요 수를 볼 수 있음
+    pgPolicy("commission-likes-select-policy-anon", {
+      for: "select",
+      to: anonRole,
+      using: sql`true`,
+    }),
+    // 인증된 사용자도 좋아요 수를 볼 수 있음
+    pgPolicy("commission-likes-select-policy-auth", {
+      for: "select",
+      to: authenticatedRole,
+      using: sql`true`,
+    }),
+    // 인증된 사용자만 좋아요 추가 가능
+    pgPolicy("commission-likes-insert-policy", {
+      for: "insert",
+      to: authenticatedRole,
+      withCheck: sql`liker_id = auth.uid()::uuid`,
+    }),
+    // 사용자는 자신의 좋아요만 삭제 가능
+    pgPolicy("commission-likes-delete-policy", {
+      for: "delete",
+      to: authenticatedRole,
+      using: sql`liker_id = auth.uid()::uuid`,
+    }),
+  ]
+);

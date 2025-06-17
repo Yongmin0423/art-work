@@ -21,12 +21,14 @@ import {
   ImageIcon,
   InfoIcon,
   LogOutIcon,
+  MenuIcon,
   MessageCircleIcon,
   MessageSquareIcon,
   SettingsIcon,
   ShoppingCartIcon,
   StarIcon,
   UserIcon,
+  XIcon,
 } from "lucide-react";
 import {
   DropdownMenu,
@@ -38,6 +40,9 @@ import {
 } from "./ui/dropdown-menu";
 import { DropdownMenuTrigger } from "@radix-ui/react-dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
+import { useIsMobile } from "~/hooks/use-mobile";
+import { Sheet, SheetContent, SheetTrigger } from "./ui/sheet";
+import { useState } from "react";
 
 const menus = [
   {
@@ -175,65 +180,112 @@ export default function Navigation({
   username?: string;
   name?: string;
 }) {
+  const isMobile = useIsMobile();
+  const [isOpen, setIsOpen] = useState(false);
+
   return (
-    <nav className="flex px-20 h-16 items-center justify-between backdrop-blur fixed top-0 left-0 right-0 z-50 bg-background/50">
+    <nav className="flex px-4 md:px-8 lg:px-20 h-16 items-center justify-between backdrop-blur fixed top-0 left-0 right-0 z-50 bg-background/50">
       <div className="flex items-center">
         <Link to="/" className="font-bold tracking-tighter text-lg">
           Arkwork
         </Link>
-        <Separator orientation="vertical" className="h-6 mx-4" />
-        <NavigationMenu>
-          <NavigationMenuList>
-            {menus.map((menu) => (
-              <NavigationMenuItem key={menu.name}>
-                {menu.items ? (
-                  <>
-                    <Link to={menu.to}>
-                      <NavigationMenuTrigger>{menu.name}</NavigationMenuTrigger>
+        <Separator
+          orientation="vertical"
+          className="h-6 mx-4 hidden md:block"
+        />
+        {isMobile ? (
+          <Sheet open={isOpen} onOpenChange={setIsOpen}>
+            <SheetTrigger asChild>
+              <Button variant="ghost" size="icon">
+                <MenuIcon className="size-5" />
+              </Button>
+            </SheetTrigger>
+            <SheetContent side="left" className="w-[300px] p-0">
+              <div className="flex flex-col p-6 space-y-4">
+                {menus.map((menu) => (
+                  <div key={menu.name} className="space-y-3">
+                    <Link
+                      to={menu.to}
+                      className="text-lg font-medium"
+                      onClick={() => setIsOpen(false)}
+                    >
+                      {menu.name}
                     </Link>
-                    <NavigationMenuContent>
-                      <ul className="grid w-[600px] font-light gap-3 p-4 grid-cols-2">
-                        {menu.items?.map((item) => (
-                          <NavigationMenuItem
+                    {menu.items && (
+                      <div className="grid gap-2 pl-4">
+                        {menu.items.map((item) => (
+                          <Link
                             key={item.name}
-                            className={cn([
-                              "select-none rounded-md transition-colors focus:bg-accent  hover:bg-accent",
-                              item.to === "/products/promote" &&
-                                "col-span-2 bg-primary/10 hover:bg-primary/20 focus:bg-primary/20",
-                              item.to === "/jobs/submit" &&
-                                "col-span-2 bg-primary/10 hover:bg-primary/20 focus:bg-primary/20",
-                            ])}
+                            to={item.to}
+                            className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                            onClick={() => setIsOpen(false)}
                           >
-                            <NavigationMenuLink asChild>
-                              <Link
-                                className="p-3 space-y-1 block leading-none no-underline outline-none"
-                                to={item.to}
-                              >
-                                <span className="text-sm font-medium leading-none">
-                                  {item.name}
-                                </span>
-                                <p className="text-sm leading-snug text-muted-foreground">
-                                  {item.description}
-                                </p>
-                              </Link>
-                            </NavigationMenuLink>
-                          </NavigationMenuItem>
+                            {item.name}
+                          </Link>
                         ))}
-                      </ul>
-                    </NavigationMenuContent>
-                  </>
-                ) : (
-                  <Link className={navigationMenuTriggerStyle()} to={menu.to}>
-                    {menu.name}
-                  </Link>
-                )}
-              </NavigationMenuItem>
-            ))}
-          </NavigationMenuList>
-        </NavigationMenu>
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </SheetContent>
+          </Sheet>
+        ) : (
+          <NavigationMenu>
+            <NavigationMenuList>
+              {menus.map((menu) => (
+                <NavigationMenuItem key={menu.name}>
+                  {menu.items ? (
+                    <>
+                      <Link to={menu.to}>
+                        <NavigationMenuTrigger>
+                          {menu.name}
+                        </NavigationMenuTrigger>
+                      </Link>
+                      <NavigationMenuContent>
+                        <ul className="grid w-[600px] font-light gap-3 p-4 md:grid-cols-1 lg:grid-cols-2">
+                          {menu.items?.map((item) => (
+                            <NavigationMenuItem
+                              key={item.name}
+                              className={cn([
+                                "select-none rounded-md transition-colors focus:bg-accent hover:bg-accent",
+                                item.to === "/products/promote" &&
+                                  "col-span-2 bg-primary/10 hover:bg-primary/20 focus:bg-primary/20",
+                                item.to === "/jobs/submit" &&
+                                  "col-span-2 bg-primary/10 hover:bg-primary/20 focus:bg-primary/20",
+                              ])}
+                            >
+                              <NavigationMenuLink asChild>
+                                <Link
+                                  className="p-3 space-y-1 block leading-none no-underline outline-none"
+                                  to={item.to}
+                                >
+                                  <span className="text-sm font-medium leading-none">
+                                    {item.name}
+                                  </span>
+                                  <p className="text-sm leading-snug text-muted-foreground">
+                                    {item.description}
+                                  </p>
+                                </Link>
+                              </NavigationMenuLink>
+                            </NavigationMenuItem>
+                          ))}
+                        </ul>
+                      </NavigationMenuContent>
+                    </>
+                  ) : (
+                    <Link className={navigationMenuTriggerStyle()} to={menu.to}>
+                      {menu.name}
+                    </Link>
+                  )}
+                </NavigationMenuItem>
+              ))}
+            </NavigationMenuList>
+          </NavigationMenu>
+        )}
       </div>
       {isLoggedIn ? (
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-2 md:gap-4">
           <Button size="icon" variant="ghost" asChild className="relative">
             <Link to="/my/notifications">
               <BellIcon className="size-4" />
@@ -242,7 +294,12 @@ export default function Navigation({
               )}
             </Link>
           </Button>
-          <Button size="icon" variant="ghost" asChild className="relative">
+          <Button
+            size="icon"
+            variant="ghost"
+            asChild
+            className="relative md:block hidden"
+          >
             <Link to="/my/messages">
               <MessageCircleIcon className="size-4" />
               {hasMessages && (
@@ -252,12 +309,12 @@ export default function Navigation({
           </Button>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Avatar>
+              <Avatar className="size-8 md:size-9">
                 {avatarUrl && <AvatarImage src={avatarUrl} />}
                 <AvatarFallback>{name?.[0]}</AvatarFallback>
               </Avatar>
             </DropdownMenuTrigger>
-            <DropdownMenuContent className="w-56">
+            <DropdownMenuContent className="w-56" align="end">
               <DropdownMenuLabel className="flex flex-col">
                 <span className="font-medium">{name}</span>
                 <span className="text-xs text-muted-foreground">
@@ -381,11 +438,15 @@ export default function Navigation({
           </DropdownMenu>
         </div>
       ) : (
-        <div className="flex items-center gap-4">
-          <Button asChild variant="secondary">
+        <div className="flex items-center gap-2 md:gap-4">
+          <Button
+            asChild
+            variant="secondary"
+            size={isMobile ? "sm" : "default"}
+          >
             <Link to="/auth/login">Login</Link>
           </Button>
-          <Button asChild>
+          <Button asChild size={isMobile ? "sm" : "default"}>
             <Link to="/auth/join">Join</Link>
           </Button>
         </div>

@@ -278,3 +278,45 @@ export const getMarketplaceImages = async (
 
   return allImages;
 };
+
+export const getCommissionLikesCount = async (
+  client: SupabaseClient<Database>,
+  { commissionId }: { commissionId: number }
+) => {
+  const { count, error } = await client
+    .from("commission_likes")
+    .select("*", { count: "exact", head: true })
+    .eq("commission_id", commissionId);
+
+  if (error) throw error;
+  return count || 0;
+};
+
+export const getUserLikeStatus = async (
+  client: SupabaseClient<Database>,
+  { commissionId, userId }: { commissionId: number; userId: string }
+) => {
+  const { data, error } = await client
+    .from("commission_likes")
+    .select("*")
+    .eq("commission_id", commissionId)
+    .eq("liker_id", userId)
+    .single();
+
+  if (error && error.code !== "PGRST116") throw error; // PGRST116는 결과가 없을 때의 에러
+  return !!data;
+};
+
+export const getCommissionLikes = async (
+  client: SupabaseClient<Database>,
+  { commissionId }: { commissionId: number }
+) => {
+  const { data, error } = await client
+    .from("commission_likes")
+    .select("liker_id, created_at")
+    .eq("commission_id", commissionId)
+    .order("created_at", { ascending: false });
+
+  if (error) throw error;
+  return data || [];
+};

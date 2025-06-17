@@ -44,11 +44,18 @@ export default function HomePage({ loaderData }: Route.ComponentProps) {
   });
 
   return (
-    <div>
+    <div className="px-5 md:px-0">
       <div className="grid grid-cols-6 h-full">
         <div className="flex flex-col  h-full col-span-6">
           <Hero
-            title="최고의 아티스트와 함께 나만의 작품을 만들어보세요"
+            title={
+              <>
+                <span className="hidden md:inline">
+                  최고의 아티스트와 함께 나만의 작품을 만들어보세요
+                </span>
+                <span className="md:hidden">나만의 작품을 만들어보세요</span>
+              </>
+            }
             subtitle="마음에 드는 아티스트를 찾아 당신만의 특별한 작품을 제작하세요"
           />
         </div>

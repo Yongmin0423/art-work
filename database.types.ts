@@ -93,6 +93,7 @@ export type Database = {
           commission_id: number
           created_at: string
           description: string
+          images: Json
           is_featured_weekly: boolean
           likes_count: number
           order_count: number
@@ -113,6 +114,7 @@ export type Database = {
           commission_id?: never
           created_at?: string
           description: string
+          images?: Json
           is_featured_weekly?: boolean
           likes_count?: number
           order_count?: number
@@ -133,6 +135,7 @@ export type Database = {
           commission_id?: never
           created_at?: string
           description?: string
+          images?: Json
           is_featured_weekly?: boolean
           likes_count?: number
           order_count?: number
@@ -196,6 +199,49 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "commission_with_artist"
             referencedColumns: ["commission_id"]
+          },
+        ]
+      }
+      commission_likes: {
+        Row: {
+          commission_id: number
+          created_at: string
+          like_id: number
+          liker_id: string
+        }
+        Insert: {
+          commission_id: number
+          created_at?: string
+          like_id?: never
+          liker_id: string
+        }
+        Update: {
+          commission_id?: number
+          created_at?: string
+          like_id?: never
+          liker_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "commission_likes_commission_id_commission_commission_id_fk"
+            columns: ["commission_id"]
+            isOneToOne: false
+            referencedRelation: "commission"
+            referencedColumns: ["commission_id"]
+          },
+          {
+            foreignKeyName: "commission_likes_commission_id_commission_commission_id_fk"
+            columns: ["commission_id"]
+            isOneToOne: false
+            referencedRelation: "commission_with_artist"
+            referencedColumns: ["commission_id"]
+          },
+          {
+            foreignKeyName: "commission_likes_liker_id_profiles_profile_id_fk"
+            columns: ["liker_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["profile_id"]
           },
         ]
       }

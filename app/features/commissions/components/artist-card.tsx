@@ -9,7 +9,8 @@ import {
 import { Button } from "~/components/ui/button";
 import { Heart } from "lucide-react";
 import { Badge } from "~/components/ui/badge";
-import { Link } from "react-router";
+import { Link, Form } from "react-router";
+import { useState } from "react";
 
 interface ArtistCardProps {
   id: number;
@@ -21,6 +22,8 @@ interface ArtistCardProps {
   tags: string[];
   commissionStatus: "가능" | "대기 중" | "불가";
   priceStart: number;
+  isLiked?: boolean;
+  isLoggedIn?: boolean;
 }
 
 export default function ArtistCard({
@@ -33,7 +36,19 @@ export default function ArtistCard({
   tags,
   commissionStatus,
   priceStart,
+  isLiked = false,
+  isLoggedIn = false,
 }: ArtistCardProps) {
+  // 좋아요 상태와 카운트를 로컬 state로 관리
+  const [isLikedState, setIsLikedState] = useState(isLiked);
+  const [likesCount, setLikesCount] = useState(likes);
+
+  // 좋아요 버튼 클릭 핸들러 - 낙관적 UI 업데이트
+  const handleLikeClick = () => {
+    setIsLikedState(!isLikedState);
+    setLikesCount((prev) => (isLikedState ? prev - 1 : prev + 1));
+  };
+
   return (
     <Card className="w-full max-w-md shadow-xl">
       <Link to={`/commissions/artist/${id}`} className="cursor-pointer">
@@ -57,7 +72,7 @@ export default function ArtistCard({
       <CardFooter className="flex flex-col items-start gap-2 text-sm text-muted-foreground">
         <div className="flex items-center gap-4">
           <span>⭐ {rating.toFixed(1)}</span>
-          <span>❤️ {likes}</span>
+          <span>❤️ {likesCount}</span>
         </div>
 
         <div className="flex flex-wrap gap-1">
@@ -84,9 +99,24 @@ export default function ArtistCard({
             </p>
           </div>
 
-          <Button variant="ghost" size="icon">
-            <Heart className="w-5 h-5 text-red-500" />
-          </Button>
+          {isLoggedIn ? (
+            <Form method="post">
+              <input type="hidden" name="action" value="like" />
+              <input type="hidden" name="commissionId" value={id} />
+              <Button
+                variant="ghost"
+                size="icon"
+                type="submit"
+                onClick={handleLikeClick}
+              >
+                <Heart
+                  className={`w-5 h-5 ${
+                    isLikedState ? "text-red-500 fill-current" : "text-red-500"
+                  }`}
+                />
+              </Button>
+            </Form>
+          ) : null}
         </div>
       </CardFooter>
     </Card>

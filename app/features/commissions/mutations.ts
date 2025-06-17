@@ -181,3 +181,68 @@ export const deleteCommission = async (
 
   if (error) throw error;
 };
+
+export const toggleCommissionLike = async (
+  client: SupabaseClient<Database>,
+  { commissionId, userId }: { commissionId: number; userId: string }
+) => {
+  // 먼저 현재 좋아요 상태 확인
+  const { data: existingLike, error: checkError } = await client
+    .from("commission_likes")
+    .select("*")
+    .eq("commission_id", commissionId)
+    .eq("liker_id", userId)
+    .single();
+
+  if (checkError && checkError.code !== "PGRST116") throw checkError;
+
+  // 현재 likes_count 가져오기
+  const { data: commission, error: commissionError } = await client
+    .from("commission")
+    .select("likes_count")
+    .eq("commission_id", commissionId)
+    .single();
+
+  if (commissionError) throw commissionError;
+
+  if (existingLike) {
+    // 좋아요가 이미 있으면 삭제
+    const { error: deleteError } = await client
+      .from("commission_likes")
+      .delete()
+      .eq("commission_id", commissionId)
+      .eq("liker_id", userId);
+
+    if (deleteError) throw deleteError;
+
+    // commission 테이블의 likes_count 감소
+    const { error: updateError } = await client
+      .from("commission")
+      .update({ likes_count: (commission.likes_count || 0) - 1 })
+      .eq("commission_id", commissionId);
+
+    if (updateError) throw updateError;
+
+    return { liked: false };
+  } else {
+    // 좋아요가 없으면 추가
+    const { error: insertError } = await client
+      .from("commission_likes")
+      .insert({
+        commission_id: commissionId,
+        liker_id: userId,
+      });
+
+    if (insertError) throw insertError;
+
+    // commission 테이블의 likes_count 증가
+    const { error: updateError } = await client
+      .from("commission")
+      .update({ likes_count: (commission.likes_count || 0) + 1 })
+      .eq("commission_id", commissionId);
+
+    if (updateError) throw updateError;
+
+    return { liked: true };
+  }
+};
