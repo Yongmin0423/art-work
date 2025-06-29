@@ -1,4 +1,6 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
+import { redirect } from "react-router";
+import { getLoggedInUser } from "~/features/community/queries";
 import type { Database } from "~/supa-client";
 
 // 현재 활성화된 로고 가져오기
@@ -35,4 +37,16 @@ export async function getCategoryShowcase(client: SupabaseClient<Database>) {
   }
 
   return data;
+}
+
+export async function requireAdmin(
+  client: SupabaseClient<Database>,
+  request: Request
+) {
+  const user = await getLoggedInUser(client);
+
+  if (user.role !== "admin") {
+    throw redirect("/");
+  }
+  return user; // 관리자 정보 반환
 }

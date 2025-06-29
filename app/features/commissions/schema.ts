@@ -17,10 +17,12 @@ import { profiles } from "../users/schema";
 import { commissionCategory } from "../../common/category-enums";
 
 export const commissionStatus = pgEnum("commission_status", [
+  "pending_approval", // 관리자 승인 대기
   "available",
   "pending",
   "unavailable",
   "paused",
+  "rejected", // 관리자에 의해 거부됨
 ]);
 
 // ===== ORDERS =====
@@ -58,11 +60,16 @@ export const commission = pgTable(
     revision_count: integer().notNull().default(3),
     base_size: text().default("3000x3000"),
 
-    status: commissionStatus().notNull().default("available"),
+    status: commissionStatus().notNull().default("pending_approval"),
     likes_count: integer().notNull().default(0),
     order_count: integer().notNull().default(0),
     views_count: integer().notNull().default(0),
     is_featured_weekly: boolean().notNull().default(false),
+
+    // 관리자 승인 관련 필드
+    approved_by: uuid().references(() => profiles.profile_id),
+    approved_at: timestamp(),
+    rejection_reason: text(),
 
     created_at: timestamp().notNull().defaultNow(),
     updated_at: timestamp().notNull().defaultNow(),
@@ -80,12 +87,20 @@ export const commission = pgTable(
       to: authenticatedRole,
       withCheck: sql`profile_id = auth.uid()::uuid`,
     }),
-    // 커미션 작성자만 수정 가능
+    // 커미션 작성자나 관리자만 수정 가능
     pgPolicy("commission-update-policy", {
       for: "update",
       to: authenticatedRole,
-      using: sql`profile_id = auth.uid()::uuid`,
-      withCheck: sql`profile_id = auth.uid()::uuid`,
+      using: sql`profile_id = auth.uid()::uuid OR EXISTS (
+        SELECT 1 FROM profiles 
+        WHERE profile_id = auth.uid()::uuid 
+        AND role = 'admin'
+      )`,
+      withCheck: sql`profile_id = auth.uid()::uuid OR EXISTS (
+        SELECT 1 FROM profiles 
+        WHERE profile_id = auth.uid()::uuid 
+        AND role = 'admin'
+      )`,
     }),
     // 커미션 작성자만 삭제 가능
     pgPolicy("commission-delete-policy", {

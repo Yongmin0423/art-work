@@ -110,7 +110,7 @@ export const action = async ({ request }: Route.ActionArgs) => {
     }
   }
 
-  // 커미션 생성 (이미지 포함)
+  // 커미션 생성 (이미지 포함) - status는 기본값 pending_approval 사용
   const commission = await createCommission(client, {
     profile_id: userId,
     title: data.title,
@@ -122,7 +122,7 @@ export const action = async ({ request }: Route.ActionArgs) => {
     turnaround_days: data.turnaround_days,
     revision_count: data.revision_count,
     base_size: data.base_size,
-    status: "available",
+    // status 필드 제거 - 기본값 pending_approval 사용
     images: images, // 이미지 URL 배열 전달
   });
 

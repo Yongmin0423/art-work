@@ -57,7 +57,7 @@ export const getUserById = async (
   const { data, error } = await client
     .from("profiles")
     .select(
-      "profile_id,username,avatar_url,name,bio,job_title,work_status,location,website"
+      "profile_id,username,avatar_url,name,bio,job_title,work_status,location,website,role"
     )
     .eq("profile_id", id)
     .maybeSingle();

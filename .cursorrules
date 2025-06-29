@@ -46,3 +46,4 @@ Key Conventions
 - `json` does not exists anymore. Return plain objects i.e `export function loader({ request }: Route.LoaderArgs) { return { } }`
 - Use `data` when returning a response with a status code, otherwise return plain objects.
 - Do not use 'any' for fix the type errors.
+- Don't just agree with what I say, but present your opinion based on facts.

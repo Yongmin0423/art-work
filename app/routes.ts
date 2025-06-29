@@ -79,4 +79,14 @@ export default [
     route("/:reviewId", "features/reviews/pages/review-page.tsx"),
     route("/submit", "features/reviews/pages/submit-review-page.tsx"),
   ]),
+  ...prefix("/admin", [
+    layout("features/admin/layout/admin-layout.tsx", [
+      index("features/admin/pages/admin-dashboard-page.tsx"),
+      route("commissions", "features/admin/pages/admin-commissions-page.tsx"),
+      route(
+        "commissions/:id",
+        "features/admin/pages/admin-commission-detail-page.tsx"
+      ),
+    ]),
+  ]),
 ] satisfies RouteConfig;

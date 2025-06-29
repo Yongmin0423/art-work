@@ -5,7 +5,10 @@ import { Input } from "~/components/ui/input";
 import ArtistCard from "~/features/commissions/components/artist-card";
 import { BentoDemo } from "../components/bento-grid";
 import type { Route } from "./+types/home-page";
-import { getFeaturedWeeklyCommissions } from "~/features/commissions/queries";
+import {
+  getFeaturedWeeklyCommissions,
+  getMarketplaceImages,
+} from "~/features/commissions/queries";
 import { getActiveLogo, getCategoryShowcase } from "~/common/queries";
 import { makeSSRClient } from "~/supa-client";
 import { BlurFade } from "components/magicui/blur-fade";
@@ -24,24 +27,31 @@ export const meta = () => {
 
 export const loader = async ({ request }: Route.LoaderArgs) => {
   const { client, headers } = makeSSRClient(request);
-  const [featuredCommissions, logo, categoryShowcase] = await Promise.all([
-    getFeaturedWeeklyCommissions(client),
-    getActiveLogo(client),
-    getCategoryShowcase(client),
-  ]);
+  const [featuredCommissions, logo, categoryShowcase, marketplaceImages] =
+    await Promise.all([
+      getFeaturedWeeklyCommissions(client),
+      getActiveLogo(client),
+      getCategoryShowcase(client),
+      getMarketplaceImages(client),
+    ]);
 
-  return { featuredCommissions, logo, categoryShowcase };
+  return { featuredCommissions, logo, categoryShowcase, marketplaceImages };
 };
 
 export default function HomePage({ loaderData }: Route.ComponentProps) {
-  const { featuredCommissions, logo, categoryShowcase } = loaderData;
+  const { featuredCommissions, logo, categoryShowcase, marketplaceImages } =
+    loaderData;
 
-  const images = Array.from({ length: 6 }, (_, i) => {
-    const isLandscape = i % 2 === 0;
-    const width = isLandscape ? 800 : 600;
-    const height = isLandscape ? 600 : 800;
-    return `https://picsum.photos/seed/${i + 1}/${width}/${height}`;
-  });
+  // 데이터베이스에서 가져온 이미지들을 사용, 만약 없으면 기본 이미지들 사용
+  const images =
+    marketplaceImages && marketplaceImages.length > 0
+      ? marketplaceImages.slice(0, 6) // 처음 6개 이미지만 사용
+      : Array.from({ length: 6 }, (_, i) => {
+          const isLandscape = i % 2 === 0;
+          const width = isLandscape ? 800 : 600;
+          const height = isLandscape ? 600 : 800;
+          return `https://picsum.photos/seed/${i + 1}/${width}/${height}`;
+        });
 
   return (
     <div className="px-5 md:px-0">
@@ -66,7 +76,7 @@ export default function HomePage({ loaderData }: Route.ComponentProps) {
                 <img
                   className="mb-4 size-full rounded-lg object-contain"
                   src={imageUrl}
-                  alt={`Random stock image ${idx + 1}`}
+                  alt={`Commission artwork ${idx + 1}`}
                 />
               </BlurFade>
             ))}

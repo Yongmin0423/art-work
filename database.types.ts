@@ -88,6 +88,8 @@ export type Database = {
       }
       commission: {
         Row: {
+          approved_at: string | null
+          approved_by: string | null
           base_size: string | null
           category: Database["public"]["Enums"]["commission_category"]
           commission_id: number
@@ -100,6 +102,7 @@ export type Database = {
           price_options: Json
           price_start: number
           profile_id: string
+          rejection_reason: string | null
           revision_count: number
           status: Database["public"]["Enums"]["commission_status"]
           tags: Json
@@ -109,6 +112,8 @@ export type Database = {
           views_count: number
         }
         Insert: {
+          approved_at?: string | null
+          approved_by?: string | null
           base_size?: string | null
           category: Database["public"]["Enums"]["commission_category"]
           commission_id?: never
@@ -121,6 +126,7 @@ export type Database = {
           price_options?: Json
           price_start: number
           profile_id: string
+          rejection_reason?: string | null
           revision_count?: number
           status?: Database["public"]["Enums"]["commission_status"]
           tags?: Json
@@ -130,6 +136,8 @@ export type Database = {
           views_count?: number
         }
         Update: {
+          approved_at?: string | null
+          approved_by?: string | null
           base_size?: string | null
           category?: Database["public"]["Enums"]["commission_category"]
           commission_id?: never
@@ -142,6 +150,7 @@ export type Database = {
           price_options?: Json
           price_start?: number
           profile_id?: string
+          rejection_reason?: string | null
           revision_count?: number
           status?: Database["public"]["Enums"]["commission_status"]
           tags?: Json
@@ -151,6 +160,13 @@ export type Database = {
           views_count?: number
         }
         Relationships: [
+          {
+            foreignKeyName: "commission_approved_by_profiles_profile_id_fk"
+            columns: ["approved_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["profile_id"]
+          },
           {
             foreignKeyName: "commission_profile_id_profiles_profile_id_fk"
             columns: ["profile_id"]
@@ -1059,6 +1075,8 @@ export type Database = {
     Views: {
       commission_with_artist: {
         Row: {
+          approved_at: string | null
+          approved_by: string | null
           artist_avatar_url: string | null
           artist_avg_rating: number | null
           artist_bio: string | null
@@ -1083,6 +1101,7 @@ export type Database = {
           price_options: Json | null
           price_start: number | null
           profile_id: string | null
+          rejection_reason: string | null
           revision_count: number | null
           status: Database["public"]["Enums"]["commission_status"] | null
           tags: Json | null
@@ -1092,6 +1111,13 @@ export type Database = {
           views_count: number | null
         }
         Relationships: [
+          {
+            foreignKeyName: "commission_approved_by_profiles_profile_id_fk"
+            columns: ["approved_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["profile_id"]
+          },
           {
             foreignKeyName: "commission_profile_id_profiles_profile_id_fk"
             columns: ["profile_id"]
@@ -1123,7 +1149,13 @@ export type Database = {
         | "animation"
         | "concept-art"
         | "mixed"
-      commission_status: "available" | "pending" | "unavailable" | "paused"
+      commission_status:
+        | "available"
+        | "pending"
+        | "unavailable"
+        | "paused"
+        | "pending_approval"
+        | "rejected"
       notification_type:
         | "follow"
         | "commission_request"
@@ -1272,7 +1304,14 @@ export const Constants = {
         "concept-art",
         "mixed",
       ],
-      commission_status: ["available", "pending", "unavailable", "paused"],
+      commission_status: [
+        "available",
+        "pending",
+        "unavailable",
+        "paused",
+        "pending_approval",
+        "rejected",
+      ],
       notification_type: [
         "follow",
         "commission_request",

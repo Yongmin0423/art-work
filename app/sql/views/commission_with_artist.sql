@@ -21,6 +21,10 @@ SELECT
     c.created_at,
     c.updated_at,
     c.is_featured_weekly,
+    -- 관리자 승인 관련 필드
+    c.approved_by,
+    c.approved_at,
+    c.rejection_reason,
     -- Artist information
     p.name as artist_name,
     p.username as artist_username,

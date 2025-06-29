@@ -172,6 +172,7 @@ export default function Navigation({
   avatarUrl,
   username,
   name,
+  isAdmin = false,
 }: {
   isLoggedIn: boolean;
   hasNotifications: boolean;
@@ -179,6 +180,7 @@ export default function Navigation({
   avatarUrl?: string | null;
   username?: string;
   name?: string;
+  isAdmin?: boolean;
 }) {
   const isMobile = useIsMobile();
   const [isOpen, setIsOpen] = useState(false);
@@ -383,6 +385,27 @@ export default function Navigation({
                 </DropdownMenuItem>
               </DropdownMenuGroup>
               <DropdownMenuSeparator />
+
+              {/* 관리자 메뉴 - 관리자만 보임 */}
+              {isAdmin && (
+                <>
+                  <DropdownMenuGroup>
+                    <DropdownMenuItem asChild className="cursor-pointer">
+                      <Link to="/admin">
+                        <SettingsIcon className="size-4 mr-2" />
+                        관리자 대시보드
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem asChild className="cursor-pointer">
+                      <Link to="/admin/commissions">
+                        <ClipboardListIcon className="size-4 mr-2" />
+                        커미션 관리
+                      </Link>
+                    </DropdownMenuItem>
+                  </DropdownMenuGroup>
+                  <DropdownMenuSeparator />
+                </>
+              )}
 
               {/* 계정 */}
               <DropdownMenuGroup>
