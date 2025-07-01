@@ -245,6 +245,7 @@ export const getImagesByCategory = async (
     .from("commission_with_artist")
     .select("images")
     .eq("category", category as CategoryType)
+    .eq("status", "available")
     .not("images", "is", null)
     .limit(10);
 
@@ -269,6 +270,7 @@ export const getMarketplaceImages = async (
   const { data: commissions, error } = await client
     .from("commission_with_artist")
     .select("images")
+    .eq("status", "available")
     .limit(20);
 
   if (error) throw error;
