@@ -51,6 +51,7 @@ export const getCommissions = async (
   let query = client
     .from("commission_with_artist")
     .select("*")
+    .eq("status", "available")
     .order(orderBy, { ascending })
     .range(offset, offset + limit - 1);
 
@@ -117,7 +118,8 @@ export const getCommissionsByCategory = async (
       artist_avg_rating
     `
     )
-    .eq("category", category as CategoryType);
+    .eq("category", category as CategoryType)
+    .eq("status", "available");
 
   if (error) {
     throw new Error(error.message);
@@ -317,6 +319,77 @@ export const getCommissionLikes = async (
     .eq("commission_id", commissionId)
     .order("created_at", { ascending: false });
 
+  if (error) throw error;
+  return data || [];
+};
+
+// 관리자용: 승인 대기 중인 커미션들 조회
+export const getPendingCommissions = async (
+  client: SupabaseClient<Database>
+) => {
+  const { data, error } = await client
+    .from("commission_with_artist")
+    .select(
+      `
+      commission_id,
+      title,
+      category,
+      price_start,
+      status,
+      created_at,
+      artist_name,
+      artist_username,
+      profile_id
+    `
+    )
+    .eq("status", "pending_approval")
+    .order("created_at", { ascending: false });
+
+  if (error) {
+    throw new Error(error.message);
+  }
+
+  return data || [];
+};
+
+// 관리자용: 모든 커미션 조회 (상태별 필터링 가능)
+export const getAllCommissionsForAdmin = async (
+  client: SupabaseClient<Database>,
+  {
+    status,
+    limit = 50,
+    offset = 0,
+  }: {
+    status?: "pending_approval" | "available" | "rejected";
+    limit?: number;
+    offset?: number;
+  } = {}
+) => {
+  let query = client
+    .from("commission_with_artist")
+    .select(
+      `
+      commission_id,
+      title,
+      category,
+      price_start,
+      status,
+      created_at,
+      approved_at,
+      rejection_reason,
+      artist_name,
+      artist_username,
+      profile_id
+    `
+    )
+    .order("created_at", { ascending: false })
+    .range(offset, offset + limit - 1);
+
+  if (status) {
+    query = query.eq("status", status);
+  }
+
+  const { data, error } = await query;
   if (error) throw error;
   return data || [];
 };

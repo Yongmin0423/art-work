@@ -1,6 +1,7 @@
 "use client";
 import type { ColumnDef } from "@tanstack/react-table";
 import { ArrowUpDown, MoreHorizontal } from "lucide-react";
+import { Link } from "react-router";
 import { Button } from "~/components/ui/button";
 import { Checkbox } from "~/components/ui/checkbox";
 import {
@@ -84,6 +85,8 @@ export const columns: ColumnDef<Commission>[] = [
 
       const commission = row.original;
 
+      console.log("여기?", commission);
+
       return (
         <div className="text-right font-medium">
           {formatted}
@@ -106,7 +109,11 @@ export const columns: ColumnDef<Commission>[] = [
                 Copy commission ID
               </DropdownMenuItem>
               <DropdownMenuSeparator />
-              <DropdownMenuItem>View details</DropdownMenuItem>
+              <DropdownMenuItem>
+                <Link to={`/admin/commissions/${commission.commission_id}`}>
+                  View details
+                </Link>
+              </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
         </div>

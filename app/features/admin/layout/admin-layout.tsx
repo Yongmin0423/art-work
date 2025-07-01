@@ -22,7 +22,7 @@ export default function AdminLayout() {
           </SidebarTrigger>
         </div>
         <div className="absolute left-1/2 -translate-x-1/2 font-semibold">
-          artwork
+          <Link to="/">artwork</Link>
         </div>
         <div className="w-10" /> {/* 우측 여백 맞추기용 */}
       </div>
