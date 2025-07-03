@@ -395,3 +395,159 @@ export const getAllCommissionsForAdmin = async (
   if (error) throw error;
   return data || [];
 };
+
+export const getAllOrders = async (
+  client: SupabaseClient<Database>,
+  {
+    status,
+    limit = 50,
+    offset = 0,
+  }: {
+    status?: Database["public"]["Enums"]["order_status"];
+    limit?: number;
+    offset?: number;
+  } = {}
+) => {
+  let query = client
+    .from("commission_order")
+    .select(
+      `
+      order_id,
+      status,
+      total_price,
+      created_at,
+      commission:commission_id (title, category),
+      client:profiles!commission_order_client_id_profiles_profile_id_fk (name),
+      artist:profiles!commission_order_profile_id_profiles_profile_id_fk (name)
+    `
+    )
+    .order("created_at", { ascending: false })
+    .range(offset, offset + limit - 1);
+
+  if (status) {
+    query = query.eq("status", status);
+  }
+
+  const { data, error } = await query;
+  if (error) throw error;
+  return data;
+};
+
+export const getOrderById = async (
+  client: SupabaseClient<Database>,
+  { orderId }: { orderId: number }
+) => {
+  const { data, error } = await client
+    .from("commission_order")
+    .select(
+      `
+      *,
+      commission:commission_id (
+        commission_id,
+        title,
+        category,
+        description,
+        price_start,
+        images,
+        tags
+      ),
+      client:profiles!commission_order_client_id_profiles_profile_id_fk (
+        profile_id,
+        name,
+        username,
+        avatar_url
+      ),
+      artist:profiles!commission_order_profile_id_profiles_profile_id_fk (
+        profile_id,
+        name,
+        username,
+        avatar_url
+      )
+    `
+    )
+    .eq("order_id", orderId)
+    .single();
+
+  if (error) throw error;
+  return data;
+};
+
+// 받은 주문들 조회 (아티스트 관점)
+export const getReceivedOrders = async (
+  client: SupabaseClient<Database>,
+  {
+    profileId,
+    status,
+    limit = 50,
+    offset = 0,
+  }: {
+    profileId: string;
+    status?: Database["public"]["Enums"]["order_status"];
+    limit?: number;
+    offset?: number;
+  }
+) => {
+  let query = client
+    .from("commission_order")
+    .select(
+      `
+      order_id,
+      status,
+      total_price,
+      created_at,
+      commission:commission_id (title, category),
+      client:profiles!commission_order_client_id_profiles_profile_id_fk (name, username, avatar_url)
+    `
+    )
+    .eq("profile_id", profileId)
+    .order("created_at", { ascending: false })
+    .range(offset, offset + limit - 1);
+
+  if (status) {
+    query = query.eq("status", status);
+  }
+
+  const { data, error } = await query;
+  if (error) throw error;
+  return data;
+};
+
+// 의뢰한 주문들 조회 (클라이언트 관점)
+export const getRequestedOrders = async (
+  client: SupabaseClient<Database>,
+  {
+    profileId,
+    status,
+    limit = 50,
+    offset = 0,
+  }: {
+    profileId: string;
+    status?: Database["public"]["Enums"]["order_status"];
+    limit?: number;
+    offset?: number;
+  }
+) => {
+  let query = client
+    .from("commission_order")
+    .select(
+      `
+      order_id,
+      status,
+      total_price,
+      created_at,
+      commission:commission_id (title, category),
+      artist:profiles!commission_order_profile_id_profiles_profile_id_fk (name, username, avatar_url)
+    `
+    )
+    .eq("client_id", profileId)
+    .order("created_at", { ascending: false })
+    .range(offset, offset + limit - 1);
+
+  if (status) {
+    query = query.eq("status", status);
+  }
+
+  const { data, error } = await query;
+  if (error) throw error;
+  return data;
+};

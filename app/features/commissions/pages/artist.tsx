@@ -13,6 +13,27 @@ import { getCommissionById } from "../queries";
 import { makeSSRClient } from "~/supa-client";
 import { getLoggedInUser } from "~/features/community/queries";
 import { toggleCommissionLike } from "../mutations";
+import { Form, redirect } from "react-router";
+import { Textarea } from "~/components/ui/textarea";
+import { Label } from "~/components/ui/label";
+import { createCommissionOrder } from "../mutations";
+
+interface CartItem {
+  category: string;
+  option: string;
+  price: number;
+}
+
+interface PriceChoice {
+  label: string;
+  price: number;
+  description?: string;
+}
+
+interface PriceOption {
+  type: string;
+  choices: PriceChoice[];
+}
 
 export const meta: Route.MetaFunction = ({ params }) => {
   return [
@@ -37,22 +58,74 @@ export async function loader({ params, request }: Route.LoaderArgs) {
   return { commission };
 }
 
-interface CartItem {
-  category: string;
-  option: string;
-  price: number;
-}
+export const action = async ({ request, params }: Route.ActionArgs) => {
+  const formData = await request.formData();
+  const actionType = formData.get("action");
+  const { client } = makeSSRClient(request);
 
-interface PriceChoice {
-  label: string;
-  price: number;
-  description?: string;
-}
+  // 먼저 로그인 확인 (공통)
+  let user;
+  try {
+    user = await getLoggedInUser(client);
+  } catch (error) {
+    return { error: "로그인이 필요합니다." };
+  }
 
-interface PriceOption {
-  type: string;
-  choices: PriceChoice[];
-}
+  if (actionType === "order") {
+    // 커미션 정보 가져오기
+    const commission = await getCommissionById(client, {
+      commissionId: Number(params.id),
+    });
+
+    // 폼 데이터 파싱
+    const selectedOptions = JSON.parse(
+      formData.get("selected_options") as string
+    );
+    const totalPrice = Number(formData.get("total_price"));
+    const requirements = formData.get("requirements") as string;
+
+    try {
+      // 주문 생성
+      await createCommissionOrder(client, {
+        commission_id: Number(params.id),
+        client_id: user.profile_id,
+        profile_id: commission.profile_id,
+        selected_options: selectedOptions,
+        total_price: totalPrice,
+        requirements: requirements,
+      });
+
+      // 성공 시 일단은 현재 페이지를 새로고침
+      return redirect(`/commissions/artist/${params.id}`);
+    } catch (error) {
+      console.error("주문 생성 중 오류 발생:", error);
+      return { error: "주문 생성 중 오류가 발생했습니다." };
+    }
+  }
+
+  if (actionType === "like") {
+    const commissionId = Number(formData.get("commissionId"));
+
+    if (!commissionId) {
+      return { error: "커미션 ID가 필요합니다." };
+    }
+
+    try {
+      // 좋아요 토글
+      const result = await toggleCommissionLike(client, {
+        commissionId,
+        userId: user.profile_id,
+      });
+
+      return result;
+    } catch (error) {
+      console.error("좋아요 처리 중 오류 발생:", error);
+      return { error: "좋아요 처리 중 오류가 발생했습니다." };
+    }
+  }
+
+  return null;
+};
 
 export default function Artist({ loaderData }: Route.ComponentProps) {
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
@@ -81,9 +154,9 @@ export default function Artist({ loaderData }: Route.ComponentProps) {
   };
 
   const handlePriceSelection = (category: string, selectedOption: string) => {
-    // 가격 추출 (숫자만)
-    const priceMatch = selectedOption.match(/(\d+,?\d*)/);
-    const price = priceMatch ? parseInt(priceMatch[1].replace(",", "")) : 0;
+    // 가격 추출 (- 뒤의 숫자,숫자원 패턴)
+    const priceMatch = selectedOption.match(/- ([\d,]+)원/);
+    const price = priceMatch ? parseInt(priceMatch[1].replace(/,/g, "")) : 0;
 
     // 같은 카테고리의 기존 항목 제거
     const filteredItems = cartItems.filter(
@@ -189,7 +262,10 @@ export default function Artist({ loaderData }: Route.ComponentProps) {
           </div>
         </div>
         <div className="lg:col-span-2 space-y-5 mt-8 lg:mt-32 lg:sticky lg:top-20">
-          <div className="border rounded-lg p-4 md:p-6 space-y-5">
+          <Form
+            method="post"
+            className="border rounded-lg p-4 md:p-6 space-y-5"
+          >
             <div className="flex gap-4 md:gap-5">
               <Avatar className="size-12 md:size-14">
                 <AvatarFallback>
@@ -334,47 +410,38 @@ export default function Artist({ loaderData }: Route.ComponentProps) {
                 </div>
               </>
             )}
-            <Button className="w-full">결제하기</Button>
-          </div>
+
+            {/* 주문 요구사항 입력 */}
+            <Separator />
+            <div className="space-y-2">
+              <Label htmlFor="requirements">주문 요구사항</Label>
+              <Textarea
+                id="requirements"
+                name="requirements"
+                placeholder="작업에 대한 구체적인 요구사항을 입력해주세요..."
+                rows={4}
+              />
+            </div>
+
+            {/* 숨겨진 데이터 */}
+            <input type="hidden" name="action" value="order" />
+            <input
+              type="hidden"
+              name="selected_options"
+              value={JSON.stringify(cartItems)}
+            />
+            <input type="hidden" name="total_price" value={totalPrice} />
+
+            <Button
+              type="submit"
+              className="w-full"
+              disabled={cartItems.length === 0}
+            >
+              주문하기 ({totalPrice.toLocaleString()}원)
+            </Button>
+          </Form>
         </div>
       </div>
     </div>
   );
 }
-
-export const action = async ({ request }: Route.ActionArgs) => {
-  const formData = await request.formData();
-  const action = formData.get("action");
-
-  if (action === "like") {
-    const commissionId = Number(formData.get("commissionId"));
-    const { client } = makeSSRClient(request);
-
-    // 로그인 확인
-    let user;
-    try {
-      user = await getLoggedInUser(client);
-    } catch (error) {
-      return { error: "로그인이 필요합니다." };
-    }
-
-    if (!commissionId) {
-      return { error: "커미션 ID가 필요합니다." };
-    }
-
-    try {
-      // 좋아요 토글
-      const result = await toggleCommissionLike(client, {
-        commissionId,
-        userId: user.profile_id,
-      });
-
-      return result;
-    } catch (error) {
-      console.error("좋아요 처리 중 오류 발생:", error);
-      return { error: "좋아요 처리 중 오류가 발생했습니다." };
-    }
-  }
-
-  return null;
-};

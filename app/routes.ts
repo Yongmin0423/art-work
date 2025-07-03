@@ -87,6 +87,11 @@ export default [
         "commissions/:id",
         "features/admin/pages/admin-commission-detail-page.tsx"
       ),
+      route("orders", "features/admin/pages/admin-orders-page.tsx"),
+      route(
+        "orders/:orderId",
+        "features/admin/pages/admin-order-detail-page.tsx"
+      ),
     ]),
   ]),
 ] satisfies RouteConfig;

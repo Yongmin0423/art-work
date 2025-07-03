@@ -28,6 +28,19 @@ type CreateCommissionData = {
   images?: string[];
 };
 
+type CreateCommissionOrderData = {
+  commission_id: number;
+  client_id: string;
+  profile_id: string;
+  selected_options: Array<{
+    type: string;
+    choice: string;
+    price: number;
+  }>;
+  total_price: number;
+  requirements?: string;
+};
+
 export const createCommission = async (
   client: SupabaseClient<Database>,
   commissionData: CreateCommissionData
@@ -245,4 +258,55 @@ export const toggleCommissionLike = async (
 
     return { liked: true };
   }
+};
+
+export const createCommissionOrder = async (
+  client: SupabaseClient<Database>,
+  orderData: CreateCommissionOrderData
+) => {
+  const { data, error } = await client
+    .from("commission_order")
+    .insert({
+      commission_id: orderData.commission_id,
+      client_id: orderData.client_id,
+      profile_id: orderData.profile_id,
+      selected_options: orderData.selected_options,
+      total_price: orderData.total_price,
+      requirements: orderData.requirements,
+      status: "pending",
+    })
+    .select()
+    .single();
+
+  if (error) throw error;
+  return data;
+};
+
+export const updateOrderStatus = async (
+  client: SupabaseClient<Database>,
+  {
+    orderId,
+    status,
+  }: {
+    orderId: number;
+    status:
+      | "pending"
+      | "accepted"
+      | "in_progress"
+      | "revision_requested"
+      | "completed"
+      | "cancelled"
+      | "refunded"
+      | "disputed";
+  }
+) => {
+  const { data, error } = await client
+    .from("commission_order")
+    .update({ status })
+    .eq("order_id", orderId)
+    .select()
+    .single();
+
+  if (error) throw error;
+  return data;
 };
