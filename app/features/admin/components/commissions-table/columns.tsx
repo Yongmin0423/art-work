@@ -85,8 +85,6 @@ export const columns: ColumnDef<Commission>[] = [
 
       const commission = row.original;
 
-      console.log("여기?", commission);
-
       return (
         <div className="text-right font-medium">
           {formatted}

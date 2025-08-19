@@ -97,7 +97,6 @@ export const action = async ({ request }: Route.ActionArgs) => {
           upsert: false,
         });
       if (error) {
-        console.log("❌ Upload error:", error);
         return { error: `Failed to upload image ${file.name}` };
       }
       const {
@@ -106,7 +105,6 @@ export const action = async ({ request }: Route.ActionArgs) => {
         .from("commission-images")
         .getPublicUrl(uploadData.path);
       images.push(publicUrl);
-      console.log("✅ Image uploaded:", publicUrl);
     }
   }
 

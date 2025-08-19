@@ -44,6 +44,12 @@ export default [
           "features/users/pages/dashboard-product-page.tsx"
         ),
       ]),
+      ...prefix("/commissions", [
+        route(
+          "/received",
+          "features/users/pages/received-commissions-page.tsx"
+        ),
+      ]),
     ]),
     route("profile", "features/users/pages/my-profile-page.tsx"),
     route("settings", "features/users/pages/settings-page.tsx"),

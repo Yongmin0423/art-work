@@ -45,14 +45,10 @@ export const getUserById = async (
   client: SupabaseClient<Database>,
   { id }: { id: string }
 ) => {
-  console.log("[getUserById] Looking for user ID:", id);
-
   // 임시: 전체 profiles 데이터 확인
   const { data: allProfiles, error: allError } = await client
     .from("profiles")
     .select("profile_id, username, name");
-  console.log("[getUserById] All profiles:", allProfiles);
-  console.log("[getUserById] All profiles error:", allError);
 
   const { data, error } = await client
     .from("profiles")
@@ -61,9 +57,6 @@ export const getUserById = async (
     )
     .eq("profile_id", id)
     .maybeSingle();
-
-  console.log("[getUserById] data:", data);
-  console.log("[getUserById] error:", error);
 
   if (error) throw error;
   return data;
@@ -117,9 +110,6 @@ export const getPortfolioById = async (
     .select("*")
     .eq("profile_id", portfolioId)
     .single();
-
-  console.log("[getPortfolioById] data:", data);
-  console.log("[getPortfolioById] error:", error);
 
   if (error) throw error;
   return data;

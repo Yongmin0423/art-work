@@ -11,7 +11,6 @@ export const checkUsernameExist = async (
     .eq("username", username)
     .single();
 
-  console.log("[checkUsernameExist] error:", error);
 
   if (error) {
     return false;

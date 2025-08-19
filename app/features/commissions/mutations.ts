@@ -99,9 +99,6 @@ export const createCommissionImage = async (
     .select()
     .single();
 
-  console.log("[createCommissionImage] data:", data);
-  console.log("[createCommissionImage] error:", error);
-
   if (error) throw error;
   return data;
 };
@@ -127,8 +124,6 @@ export const updateCommissionImage = async (
     .select()
     .single();
 
-  console.log("[updateCommissionImage] data:", data);
-  console.log("[updateCommissionImage] error:", error);
 
   if (error) throw error;
   return data;
@@ -143,7 +138,6 @@ export const deleteCommissionImage = async (
     .delete()
     .eq("image_id", imageId);
 
-  console.log("[deleteCommissionImage] error:", error);
 
   if (error) throw error;
 };
@@ -174,9 +168,6 @@ export const updateCommission = async (
     .select()
     .single();
 
-  console.log("[updateCommission] data:", data);
-  console.log("[updateCommission] error:", error);
-
   if (error) throw error;
   return data;
 };
@@ -190,7 +181,6 @@ export const deleteCommission = async (
     .delete()
     .eq("commission_id", commissionId);
 
-  console.log("[deleteCommission] error:", error);
 
   if (error) throw error;
 };

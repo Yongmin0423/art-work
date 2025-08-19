@@ -12,8 +12,6 @@ export async function getActiveLogo(client: SupabaseClient<Database>) {
     .limit(1)
     .maybeSingle();
 
-  console.log("[getActiveLogo] data:", data);
-  console.log("[getActiveLogo] error:", error);
 
   if (error) {
     console.error("Error fetching active logo:", error);

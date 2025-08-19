@@ -63,9 +63,6 @@ export const getReview = async (
     .eq("review_id", reviewId)
     .single();
 
-  console.log("[getReview] data:", data);
-  console.log("[getReview] error:", error);
-
   if (error) {
     throw error;
   }
@@ -77,8 +74,6 @@ export const getReview = async (
     .eq("profile_id", data.profile_id)
     .single();
 
-  console.log("[getReview - portfolio] data:", portfolioData);
-  console.log("[getReview - portfolio] error:", portfolioError);
 
   // 아티스트 평균 평점 가져오기
   const avgRating = await getArtistAvgRating(client, data.profile_id);

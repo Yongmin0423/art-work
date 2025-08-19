@@ -40,7 +40,6 @@ export function Reply({
   const actionData = useActionData<typeof action>();
   const [replying, setReplying] = useState(false);
   const toggleReplying = () => {
-    console.log("Reply button clicked, current state:", replying);
     setReplying((prev) => !prev);
   };
   const {
@@ -54,11 +53,9 @@ export function Reply({
   }>();
 
   useEffect(() => {
-    console.log("Replying state changed to:", replying);
   }, [replying]);
 
   useEffect(() => {
-    console.log("Action data changed:", actionData);
     if (actionData?.ok) {
       setReplying(false);
     }
