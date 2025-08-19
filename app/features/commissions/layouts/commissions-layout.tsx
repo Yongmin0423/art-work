@@ -51,13 +51,13 @@ export default function CommissionsLayout({
       <div className="flex flex-col lg:grid lg:grid-cols-8 gap-5 lg:gap-8">
         <div className="w-full lg:col-span-2">
           <div className="border rounded-lg p-4 md:p-6 lg:p-8 lg:sticky lg:top-20 space-y-6">
-            <div className="flex items-center gap-2">
+            {/* <div className="flex items-center gap-2">
               <span className="text-sm">지금 바로 접수 가능한 작가만 보기</span>
               <Switch
                 checked={isSwitchOn}
                 onCheckedChange={(checked) => setIsSwitchOn(checked)}
               />
-            </div>
+            </div> */}
             <div>
               <Accordion
                 type="single"
@@ -88,7 +88,7 @@ export default function CommissionsLayout({
                 </AccordionItem>
               </Accordion>
             </div>
-            <div>
+            {/* <div>
               <Accordion type="single" collapsible className="space-y-2">
                 <AccordionItem value="price">
                   <AccordionTrigger className="text-base">
@@ -119,7 +119,7 @@ export default function CommissionsLayout({
                   </AccordionContent>
                 </AccordionItem>
               </Accordion>
-            </div>
+            </div> */}
           </div>
         </div>
         <div className="lg:col-span-6">
