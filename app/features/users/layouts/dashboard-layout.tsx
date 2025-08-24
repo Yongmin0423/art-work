@@ -40,9 +40,12 @@ export default function DashboardLayout() {
             <MenuIcon className="size-5" />
           </SidebarTrigger>
         </div>
-        <div className="absolute left-1/2 -translate-x-1/2 font-semibold">
+        <Link
+          to="/"
+          className="absolute left-1/2 -translate-x-1/2 font-semibold"
+        >
           artwork
-        </div>
+        </Link>
         <div className="w-10" /> {/* 우측 여백 맞추기용 */}
       </div>
       <Sidebar className="pt-16" variant="floating">

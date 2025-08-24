@@ -49,6 +49,10 @@ export default [
           "/received",
           "features/users/pages/received-commissions-page.tsx"
         ),
+        route(
+          "/requested",
+          "features/users/pages/requested-commissions-page.tsx"
+        ),
       ]),
     ]),
     route("profile", "features/users/pages/my-profile-page.tsx"),
