@@ -166,7 +166,7 @@ export default function commissions({ loaderData }: Route.ComponentProps) {
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-5">
         <div className="space-y-2">
           <h2 className="text-2xl md:text-2xl xl:text-3xl font-bold tracking-tight font-inter">
-            Character-Illustration
+            캐릭터 일러스트레이션
           </h2>
           <p className="text-sm md:text-md text-gray-500 font-medium">
             artwork에서 가장 인기있는 캐릭터 일러스트레이터입니다.
@@ -199,7 +199,7 @@ export default function commissions({ loaderData }: Route.ComponentProps) {
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-5">
         <div className="space-y-2">
           <h2 className="text-2xl md:text-2xl xl:text-3xl font-bold tracking-tight font-inter">
-            Virtual-3D
+            버츄얼-3D
           </h2>
           <p className="text-sm md:text-md text-gray-500 font-medium">
             artwork에서 가장 인기있는 버츄얼-3D 아티스트입니다.
@@ -232,7 +232,7 @@ export default function commissions({ loaderData }: Route.ComponentProps) {
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-5">
         <div className="space-y-2">
           <h2 className="text-2xl md:text-2xl xl:text-3xl font-bold tracking-tight font-inter">
-            Design
+            디자인
           </h2>
           <p className="text-sm md:text-md text-gray-500 font-medium">
             artwork에서 가장 인기있는 디자이너입니다.
@@ -265,7 +265,7 @@ export default function commissions({ loaderData }: Route.ComponentProps) {
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-5">
         <div className="space-y-2">
           <h2 className="text-2xl md:text-2xl xl:text-3xl font-bold tracking-tight font-inter">
-            Live2D
+            라이브2D
           </h2>
           <p className="text-sm md:text-md text-gray-500 font-medium">
             artwork에서 가장 인기있는 Live2D 아티스트입니다.

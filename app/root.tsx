@@ -92,6 +92,7 @@ export default function App({ loaderData }: Route.ComponentProps) {
             username: loaderData.profile?.username,
             avatar: loaderData.profile?.avatar_url,
             email: loaderData.user?.email,
+            isAdmin: loaderData.profile?.role === "admin",
           }}
         />
       </div>

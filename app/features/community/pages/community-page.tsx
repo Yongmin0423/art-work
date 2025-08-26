@@ -33,8 +33,8 @@ export default function CommunityPage({ loaderData }: Route.ComponentProps) {
   return (
     <div className="px-10 pb-10 md:px-0 md:pb-0 space-y-20">
       <Hero
-        title="Community"
-        subtitle="Ask questions, share ideas, and connect with other developers"
+        title="커뮤니티"
+        subtitle="다른 사람들과 소통하고, 받은 작품을 공유해보세요."
       />
       <div className="grid grid-cols-1 lg:grid-cols-6 items-start gap-10 lg:gap-40">
         <div className="col-span-1 lg:col-span-4 space-y-10">
@@ -97,7 +97,7 @@ export default function CommunityPage({ loaderData }: Route.ComponentProps) {
               </Form>
             </div>
             <Button asChild className="w-full sm:w-auto">
-              <Link to={`/community/create`}>Create Discussion</Link>
+              <Link to={`/community/create`}>새로운 글 작성하기</Link>
             </Button>
           </div>
           <div className="space-y-5">

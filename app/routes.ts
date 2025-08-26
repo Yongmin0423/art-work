@@ -14,7 +14,7 @@ export default [
     layout("features/commissions/layouts/commissions-layout.tsx", [
       route(":category", "features/commissions/pages/category.tsx"),
     ]),
-    route("submit", "features/commissions/pages/submit-commission.tsx"),
+    route("create", "features/commissions/pages/submit-commission.tsx"),
   ]),
   ...prefix("/auth", [
     layout("features/auth/layouts/auth-layout.tsx", [
@@ -54,6 +54,18 @@ export default [
           "features/users/pages/requested-commissions-page.tsx"
         ),
       ]),
+      ...prefix("/admin", [
+        route("commissions", "features/admin/pages/admin-commissions-page.tsx"),
+        route(
+          "commissions/:id",
+          "features/admin/pages/admin-commission-detail-page.tsx"
+        ),
+        route("orders", "features/admin/pages/admin-orders-page.tsx"),
+        route(
+          "orders/:orderId",
+          "features/admin/pages/admin-order-detail-page.tsx"
+        ),
+      ]),
     ]),
     route("profile", "features/users/pages/my-profile-page.tsx"),
     route("settings", "features/users/pages/settings-page.tsx"),
@@ -88,20 +100,5 @@ export default [
     index("features/reviews/pages/reviews.tsx"),
     route("/:reviewId", "features/reviews/pages/review-page.tsx"),
     route("/submit", "features/reviews/pages/submit-review-page.tsx"),
-  ]),
-  ...prefix("/admin", [
-    layout("features/admin/layout/admin-layout.tsx", [
-      index("features/admin/pages/admin-dashboard-page.tsx"),
-      route("commissions", "features/admin/pages/admin-commissions-page.tsx"),
-      route(
-        "commissions/:id",
-        "features/admin/pages/admin-commission-detail-page.tsx"
-      ),
-      route("orders", "features/admin/pages/admin-orders-page.tsx"),
-      route(
-        "orders/:orderId",
-        "features/admin/pages/admin-order-detail-page.tsx"
-      ),
-    ]),
   ]),
 ] satisfies RouteConfig;

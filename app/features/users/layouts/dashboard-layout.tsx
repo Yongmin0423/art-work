@@ -14,8 +14,9 @@ import {
   SettingsIcon,
   BellIcon,
   MenuIcon,
+  ShieldIcon,
 } from "lucide-react";
-import { Link, Outlet, useLocation } from "react-router";
+import { Link, Outlet, useLocation, useOutletContext } from "react-router";
 import {
   Sidebar,
   SidebarContent,
@@ -29,8 +30,20 @@ import {
 } from "~/components/ui/sidebar";
 import { Button } from "~/components/ui/button";
 
+type OutletContext = {
+  isLoggedIn: boolean;
+  name?: string;
+  userId?: string;
+  username?: string;
+  avatar?: string;
+  email?: string;
+  isAdmin?: boolean;
+};
+
 export default function DashboardLayout() {
   const location = useLocation();
+  const context = useOutletContext<OutletContext>();
+  const isAdmin = context?.isAdmin ?? false;
 
   return (
     <SidebarProvider className="flex min-h-full w-full">
@@ -157,6 +170,37 @@ export default function DashboardLayout() {
               </SidebarMenuItem>
             </SidebarMenu>
           </SidebarGroup>
+
+          {/* 관리자 메뉴 */}
+          {isAdmin && (
+            <SidebarGroup>
+              <SidebarGroupLabel>관리자</SidebarGroupLabel>
+              <SidebarMenu>
+                <SidebarMenuItem>
+                  <SidebarMenuButton
+                    asChild
+                    isActive={location.pathname.startsWith("/my/admin/commissions")}
+                  >
+                    <Link to="/my/admin/commissions">
+                      <ClipboardListIcon className="size-4" />
+                      <span>커미션 승인 관리</span>
+                    </Link>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+                <SidebarMenuItem>
+                  <SidebarMenuButton
+                    asChild
+                    isActive={location.pathname.startsWith("/my/admin/orders")}
+                  >
+                    <Link to="/my/admin/orders">
+                      <PackageIcon className="size-4" />
+                      <span>주문 관리</span>
+                    </Link>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              </SidebarMenu>
+            </SidebarGroup>
+          )}
 
           {/* 계정 관리 */}
           <SidebarGroup>

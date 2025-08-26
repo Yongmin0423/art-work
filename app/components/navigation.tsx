@@ -98,9 +98,9 @@ const menus = [
         to: "/commissions/recommended",
       },
       {
-        name: "작가로 참여하기",
-        description: "작가로 활동하고 싶으신가요? 지금 바로 등록하세요.",
-        to: "/commissions/join/artist",
+        name: "커미션 등록하기",
+        description: "커미션을 받기 위해서 폼을 작성해보세요.",
+        to: "/commissions/create",
       },
     ],
   },
@@ -137,32 +137,32 @@ const menus = [
       },
     ],
   },
-  {
-    name: "고객센터",
-    to: "/support",
-    items: [
-      {
-        name: "FAQ (자주 묻는 질문)",
-        description: "자주 묻는 질문과 답변을 모아두었습니다.",
-        to: "/support/faq",
-      },
-      {
-        name: "공지사항",
-        description: "사이트 관련 중요 소식 및 업데이트를 확인하세요.",
-        to: "/support/announcements",
-      },
-      {
-        name: "1:1 문의하기",
-        description: "궁금한 점이나 문제가 있다면 문의해주세요.",
-        to: "/support/contact",
-      },
-      {
-        name: "이용 가이드",
-        description: "사이트 이용 방법을 안내해드립니다.",
-        to: "/support/guide",
-      },
-    ],
-  },
+  // {
+  //   name: "고객센터",
+  //   to: "/support",
+  //   items: [
+  //     {
+  //       name: "FAQ (자주 묻는 질문)",
+  //       description: "자주 묻는 질문과 답변을 모아두었습니다.",
+  //       to: "/support/faq",
+  //     },
+  //     {
+  //       name: "공지사항",
+  //       description: "사이트 관련 중요 소식 및 업데이트를 확인하세요.",
+  //       to: "/support/announcements",
+  //     },
+  //     {
+  //       name: "1:1 문의하기",
+  //       description: "궁금한 점이나 문제가 있다면 문의해주세요.",
+  //       to: "/support/contact",
+  //     },
+  //     {
+  //       name: "이용 가이드",
+  //       description: "사이트 이용 방법을 안내해드립니다.",
+  //       to: "/support/guide",
+  //     },
+  //   ],
+  // },
 ];
 
 export default function Navigation({
@@ -300,7 +300,7 @@ export default function Navigation({
             size="icon"
             variant="ghost"
             asChild
-            className="relative md:block hidden"
+            className="relative items-center"
           >
             <Link to="/my/messages">
               <MessageCircleIcon className="size-4" />
@@ -391,15 +391,15 @@ export default function Navigation({
                 <>
                   <DropdownMenuGroup>
                     <DropdownMenuItem asChild className="cursor-pointer">
-                      <Link to="/admin">
-                        <SettingsIcon className="size-4 mr-2" />
-                        관리자 대시보드
+                      <Link to="/my/admin/commissions">
+                        <ClipboardListIcon className="size-4 mr-2" />
+                        커미션 승인 관리
                       </Link>
                     </DropdownMenuItem>
                     <DropdownMenuItem asChild className="cursor-pointer">
-                      <Link to="/admin/commissions">
-                        <ClipboardListIcon className="size-4 mr-2" />
-                        커미션 관리
+                      <Link to="/my/admin/orders">
+                        <ShoppingCartIcon className="size-4 mr-2" />
+                        주문 관리
                       </Link>
                     </DropdownMenuItem>
                   </DropdownMenuGroup>

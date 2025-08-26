@@ -58,20 +58,20 @@ export default function SubmitPostPage({
   return (
     <div className="space-y-20">
       <Hero
-        title="Create Discussion"
-        subtitle="Ask questions, share ideas, and connect with other developers"
+        title="새 글 작성하기"
+        subtitle="다른 사람들과 소통하고, 받은 작품을 공유해보세요."
       />
       <Form
         className="flex flex-col gap-10 max-w-screen-md mx-auto"
         method="post"
       >
         <InputPair
-          label="Title"
+          label="제목"
           name="title"
           id="title"
-          description="(40 characters or less)"
+          description="(40자 이내)"
           required
-          placeholder="i.e What is the best productivity tool?"
+          placeholder="이 작가님 어때요?"
         />
         {actionData && "fieldErrors" in actionData && (
           <div className="text-red-500">
@@ -81,9 +81,9 @@ export default function SubmitPostPage({
         <SelectPair
           required
           name="category"
-          label="Category"
-          description="Select the category that best fits your discussion"
-          placeholder="i.e Productivity"
+          label="카테고리"
+          description="주제에 맞는 카테고리를 선택해주세요."
+          placeholder="Illustration"
           options={loaderData.topics.map((topic) => ({
             label: topic.name,
             value: topic.slug,
@@ -95,12 +95,12 @@ export default function SubmitPostPage({
           </div>
         )}
         <InputPair
-          label="Content"
+          label="내용"
           name="content"
           id="content"
-          description="(1000 characters or less)"
+          description="(1000자 이내)"
           required
-          placeholder="i.e I'm looking for a tool that can help me manage my time and tasks. What are the best tools out there?"
+          placeholder="이 작가님 그림이 정말 마음에 들어서 커미션을 맡겨보려는데 어떨까요?"
           textArea
         />
         {actionData && "fieldErrors" in actionData && (
@@ -108,7 +108,7 @@ export default function SubmitPostPage({
             {actionData.fieldErrors.content?.join("")}
           </div>
         )}
-        <Button className="mx-auto">Create Discussion</Button>
+        <Button className="mx-auto">등록하기</Button>
       </Form>
     </div>
   );
