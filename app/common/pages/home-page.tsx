@@ -26,7 +26,7 @@ export const meta = () => {
 };
 
 export const loader = async ({ request }: Route.LoaderArgs) => {
-  const { client, headers } = makeSSRClient(request);
+  const { client } = makeSSRClient(request);
   const [featuredCommissions, logo, categoryShowcase, marketplaceImages] =
     await Promise.all([
       getFeaturedWeeklyCommissions(client),

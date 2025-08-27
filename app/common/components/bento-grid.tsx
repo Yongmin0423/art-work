@@ -55,7 +55,7 @@ export function BentoDemo({ categoryShowcase = [] }: BentoDemoProps) {
     {
       name: "커뮤니티",
       description: "We automatically save your files as you type.",
-      href: "#",
+      href: "community",
       cta: "Learn more",
       className: "col-span-3 lg:col-span-1",
       background: (
@@ -71,7 +71,7 @@ export function BentoDemo({ categoryShowcase = [] }: BentoDemoProps) {
     {
       name: "카테고리",
       description: "See categories",
-      href: "#",
+      href: "commissions",
       cta: "See categories",
       className: "col-span-3 lg:col-span-2",
       background: (

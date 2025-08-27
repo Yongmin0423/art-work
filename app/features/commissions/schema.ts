@@ -10,6 +10,7 @@ import {
   timestamp,
   uuid,
   pgPolicy,
+  unique,
 } from "drizzle-orm/pg-core";
 import { sql } from "drizzle-orm";
 import { authenticatedRole, anonRole } from "drizzle-orm/supabase";
@@ -246,6 +247,8 @@ export const commissionLikes = pgTable(
     created_at: timestamp().notNull().defaultNow(),
   },
   (table) => [
+    // 중복 좋아요 방지를 위한 복합 UNIQUE 제약조건
+    unique().on(table.commission_id, table.liker_id),
     // 비인증 사용자도 좋아요 수를 볼 수 있음
     pgPolicy("commission-likes-select-policy-anon", {
       for: "select",

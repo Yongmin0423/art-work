@@ -10,7 +10,7 @@ import { Button } from "~/components/ui/button";
 import { Heart } from "lucide-react";
 import { Badge } from "~/components/ui/badge";
 import { Link, Form } from "react-router";
-import { useState } from "react";
+import { useState, useCallback } from "react";
 
 interface ArtistCardProps {
   id: number;
@@ -42,12 +42,22 @@ export default function ArtistCard({
   // 좋아요 상태와 카운트를 로컬 state로 관리
   const [isLikedState, setIsLikedState] = useState(isLiked);
   const [likesCount, setLikesCount] = useState(likes);
+  const [isProcessing, setIsProcessing] = useState(false);
 
-  // 좋아요 버튼 클릭 핸들러 - 낙관적 UI 업데이트
-  const handleLikeClick = () => {
-    setIsLikedState(!isLikedState);
+  // 좋아요 버튼 클릭 핸들러 - 디바운싱과 낙관적 UI 업데이트
+  const handleLikeClick = useCallback((e: React.FormEvent) => {
+    if (isProcessing) {
+      e.preventDefault(); // 처리 중이면 요청 차단
+      return;
+    }
+    
+    setIsProcessing(true);
+    setIsLikedState(!isLikedState); // 낙관적 업데이트
     setLikesCount((prev) => (isLikedState ? prev - 1 : prev + 1));
-  };
+    
+    // 최소 300ms 후에 다시 클릭 가능하도록
+    setTimeout(() => setIsProcessing(false), 300);
+  }, [isProcessing, isLikedState]);
 
   return (
     <Card className="w-full max-w-md shadow-xl">
@@ -108,6 +118,8 @@ export default function ArtistCard({
                 size="icon"
                 type="submit"
                 onClick={handleLikeClick}
+                disabled={isProcessing}
+                className={isProcessing ? "opacity-50 cursor-not-allowed" : ""}
               >
                 <Heart
                   className={`w-5 h-5 ${

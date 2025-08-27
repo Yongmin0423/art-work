@@ -1,0 +1,1 @@
+ALTER TABLE "commission_likes" ADD CONSTRAINT "commission_likes_commission_id_liker_id_unique" UNIQUE("commission_id","liker_id");
