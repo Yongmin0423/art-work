@@ -9,8 +9,8 @@ import {
 import { Button } from "~/components/ui/button";
 import { Heart } from "lucide-react";
 import { Badge } from "~/components/ui/badge";
-import { Link, Form } from "react-router";
-import { useState, useCallback } from "react";
+import { Link, Form, useActionData, useSubmit, useRevalidator } from "react-router";
+import { useState, useEffect } from "react";
 
 interface ArtistCardProps {
   id: number;
@@ -20,9 +20,8 @@ interface ArtistCardProps {
   rating: number;
   likes: number;
   tags: string[];
-  commissionStatus: "가능" | "대기 중" | "불가";
   priceStart: number;
-  isLiked?: boolean;
+  isLiked: boolean;
   isLoggedIn?: boolean;
 }
 
@@ -34,30 +33,45 @@ export default function ArtistCard({
   rating,
   likes,
   tags,
-  commissionStatus,
   priceStart,
-  isLiked = false,
+  isLiked,
   isLoggedIn = false,
 }: ArtistCardProps) {
-  // 좋아요 상태와 카운트를 로컬 state로 관리
+  const actionData = useActionData();
+  const submit = useSubmit();
+  const revalidator = useRevalidator();
+  
+  // 좋아요 상태와 카운트를 로컬 state로 관리 (데이터베이스 상태를 초기값으로 사용)
   const [isLikedState, setIsLikedState] = useState(isLiked);
   const [likesCount, setLikesCount] = useState(likes);
   const [isProcessing, setIsProcessing] = useState(false);
 
-  // 좋아요 버튼 클릭 핸들러 - 디바운싱과 낙관적 UI 업데이트
-  const handleLikeClick = useCallback((e: React.FormEvent) => {
-    if (isProcessing) {
-      e.preventDefault(); // 처리 중이면 요청 차단
-      return;
+  // props가 변경되면 local state 업데이트 (페이지 새로고침 또는 데이터 리로드 시)
+  useEffect(() => {
+    console.log(`Commission ${id}: props 변경됨`, { 
+      newIsLiked: isLiked, 
+      newLikes: likes, 
+      currentState: { isLikedState, likesCount } 
+    });
+    setIsLikedState(isLiked);
+    setLikesCount(likes);
+  }, [isLiked, likes, id, isLikedState, likesCount]);
+
+  // 서버 응답 처리 - 좋아요 토글 완료 시 데이터 재검증
+  useEffect(() => {
+    if (actionData && (actionData.liked === true || actionData.liked === false)) {
+      console.log("서버 응답 받음, 데이터 재검증 시작");
+      revalidator.revalidate();
+      setIsProcessing(false);
     }
-    
-    setIsProcessing(true);
-    setIsLikedState(!isLikedState); // 낙관적 업데이트
-    setLikesCount((prev) => (isLikedState ? prev - 1 : prev + 1));
-    
-    // 최소 300ms 후에 다시 클릭 가능하도록
-    setTimeout(() => setIsProcessing(false), 300);
-  }, [isProcessing, isLikedState]);
+    if (actionData?.error) {
+      // 에러 발생 시 낙관적 업데이트 되돌리기
+      setIsLikedState(isLiked);
+      setLikesCount(likes);
+      setIsProcessing(false);
+    }
+  }, [actionData, isLiked, likes, revalidator]);
+
 
   return (
     <Card className="w-full max-w-md shadow-xl">
@@ -93,41 +107,51 @@ export default function ArtistCard({
 
         <div className="flex justify-between items-center w-full pt-2">
           <div>
-            <p
-              className={`font-semibold ${
-                commissionStatus === "가능"
-                  ? "text-green-600 border border-green-600 text-center rounded-full px-2"
-                  : commissionStatus === "대기 중"
-                  ? "text-yellow-600 border border-yellow-600 text-center rounded-full px-2"
-                  : "text-red-600 border border-red-600 text-center rounded-full px-2"
-              }`}
-            >
-              커미션 {commissionStatus}
-            </p>
             <p className="text-muted-foreground">
               ₩{priceStart.toLocaleString()}부터
             </p>
           </div>
 
           {isLoggedIn ? (
-            <Form method="post">
-              <input type="hidden" name="action" value="like" />
-              <input type="hidden" name="commissionId" value={id} />
-              <Button
-                variant="ghost"
-                size="icon"
-                type="submit"
-                onClick={handleLikeClick}
-                disabled={isProcessing}
-                className={isProcessing ? "opacity-50 cursor-not-allowed" : ""}
-              >
-                <Heart
-                  className={`w-5 h-5 ${
-                    isLikedState ? "text-red-500 fill-current" : "text-red-500"
-                  }`}
-                />
-              </Button>
-            </Form>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => {
+                console.log("좋아요 버튼 클릭됨", { isProcessing, isLikedState });
+                
+                if (isProcessing) {
+                  console.log("처리 중이라서 요청 차단됨");
+                  return;
+                }
+                
+                console.log("낙관적 업데이트 시작");
+                setIsProcessing(true);
+                setIsLikedState(!isLikedState);
+                setLikesCount((prev) => (isLikedState ? prev - 1 : prev + 1));
+                
+                console.log("useSubmit으로 Form 제출");
+                submit(
+                  {
+                    action: "like",
+                    commissionId: id.toString(),
+                  },
+                  { method: "post" }
+                );
+                
+                setTimeout(() => {
+                  console.log("처리 상태 해제됨");
+                  setIsProcessing(false);
+                }, 300);
+              }}
+              disabled={isProcessing}
+              className={isProcessing ? "opacity-50 cursor-not-allowed" : ""}
+            >
+              <Heart
+                className={`w-5 h-5 ${
+                  isLikedState ? "text-red-500 fill-current" : "text-red-500"
+                }`}
+              />
+            </Button>
           ) : null}
         </div>
       </CardFooter>

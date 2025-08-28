@@ -19,9 +19,9 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
-DROP TRIGGER IF EXISTS commission_likes_count_trigger ON commission_like;
+DROP TRIGGER IF EXISTS commission_likes_count_trigger ON commission_likes;
 CREATE TRIGGER commission_likes_count_trigger
-    AFTER INSERT OR DELETE ON commission_like
+    AFTER INSERT OR DELETE ON commission_likes
     FOR EACH ROW EXECUTE FUNCTION update_commission_likes_count();
 
 -- 2. Post upvotes count trigger

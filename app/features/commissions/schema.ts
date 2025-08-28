@@ -103,6 +103,13 @@ export const commission = pgTable(
         AND role = 'admin'
       )`,
     }),
+    // likes_count, order_count, views_count 업데이트는 모든 인증된 사용자가 가능 (트리거용)
+    pgPolicy("commission-counter-update-policy", {
+      for: "update",
+      to: authenticatedRole,
+      using: sql`true`,
+      withCheck: sql`true`,
+    }),
     // 커미션 작성자만 삭제 가능
     pgPolicy("commission-delete-policy", {
       for: "delete",

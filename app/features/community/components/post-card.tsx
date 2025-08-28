@@ -4,6 +4,7 @@ import { Button } from "~/components/ui/button";
 import { Link } from "react-router";
 import { cn } from "~/lib/utils";
 import { ChevronUpIcon } from "lucide-react";
+import { DateTime } from "luxon";
 
 interface PostCardProps {
   postId: string;
@@ -45,7 +46,25 @@ export function PostCard({
               <span>{author}</span>
               <span>{category}</span>
               <span>•</span>
-              <span>{timeAgo}</span>
+              <span>
+                {(() => {
+                  const postTime = DateTime.fromISO(timeAgo, { zone: "utc" });
+                  const now = DateTime.now();
+                  const diff = now.diff(postTime);
+                  
+                  if (diff.as('minutes') < 60) {
+                    return postTime.toRelative({ unit: 'minutes' });
+                  } else if (diff.as('hours') < 24) {
+                    return postTime.toRelative({ unit: 'hours' });
+                  } else if (diff.as('days') < 30) {
+                    return postTime.toRelative({ unit: 'days' });
+                  } else if (diff.as('months') < 12) {
+                    return postTime.toRelative({ unit: 'months' });
+                  } else {
+                    return postTime.toRelative({ unit: 'years' });
+                  }
+                })()}
+              </span>
             </div>
           </div>
         </CardHeader>

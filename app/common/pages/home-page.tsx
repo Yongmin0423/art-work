@@ -112,13 +112,6 @@ export default function HomePage({ loaderData }: Route.ComponentProps) {
               rating={commission.artist_avg_rating}
               likes={commission.likes_count}
               tags={commission.tags}
-              commissionStatus={
-                commission.status === "available"
-                  ? "가능"
-                  : commission.status === "pending"
-                  ? "대기 중"
-                  : "불가"
-              }
               priceStart={commission.price_start}
             />
           ))}

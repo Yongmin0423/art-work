@@ -35,70 +35,16 @@ export const loader = async ({ request }: Route.LoaderArgs) => {
   }
 
   const [
-    characterCommissionsRaw,
-    virtual3dCommissionsRaw,
-    designCommissionsRaw,
-    live2dCommissionsRaw,
+    characterCommissions,
+    virtual3dCommissions,
+    designCommissions,
+    live2dCommissions,
   ] = await Promise.all([
-    getTopCommissionsByCategory(client, "character", 3),
-    getTopCommissionsByCategory(client, "virtual-3d", 3),
-    getTopCommissionsByCategory(client, "design", 3),
-    getTopCommissionsByCategory(client, "live2d", 3),
+    getTopCommissionsByCategory(client, "character", 3, user?.profile_id),
+    getTopCommissionsByCategory(client, "virtual-3d", 3, user?.profile_id),
+    getTopCommissionsByCategory(client, "design", 3, user?.profile_id),
+    getTopCommissionsByCategory(client, "live2d", 3, user?.profile_id),
   ]);
-
-  // 타입 캐스팅
-  const characterCommissions =
-    characterCommissionsRaw as CommissionWithLikeStatus[];
-  const virtual3dCommissions =
-    virtual3dCommissionsRaw as CommissionWithLikeStatus[];
-  const designCommissions = designCommissionsRaw as CommissionWithLikeStatus[];
-  const live2dCommissions = live2dCommissionsRaw as CommissionWithLikeStatus[];
-
-  // 사용자가 로그인한 경우에만 좋아요 상태 확인
-  if (user) {
-    // 모든 커미션에 대한 좋아요 상태 확인
-    const allCommissions = [
-      ...characterCommissions,
-      ...virtual3dCommissions,
-      ...designCommissions,
-      ...live2dCommissions,
-    ];
-
-    // 각 커미션에 대한 좋아요 상태 확인
-    const likesPromises = allCommissions.map(async (commission) => {
-      const isLiked = await getUserLikeStatus(client, {
-        commissionId: commission.commission_id,
-        userId: user.profile_id,
-      });
-      return {
-        commissionId: commission.commission_id,
-        isLiked,
-      };
-    });
-
-    const likesResults = await Promise.all(likesPromises);
-
-    // 좋아요 상태를 각 커미션 객체에 추가
-    const likesMap = new Map(
-      likesResults.map(({ commissionId, isLiked }) => [commissionId, isLiked])
-    );
-
-    characterCommissions.forEach((commission) => {
-      commission.is_liked = likesMap.get(commission.commission_id) || false;
-    });
-
-    virtual3dCommissions.forEach((commission) => {
-      commission.is_liked = likesMap.get(commission.commission_id) || false;
-    });
-
-    designCommissions.forEach((commission) => {
-      commission.is_liked = likesMap.get(commission.commission_id) || false;
-    });
-
-    live2dCommissions.forEach((commission) => {
-      commission.is_liked = likesMap.get(commission.commission_id) || false;
-    });
-  }
 
   return {
     characterCommissions,
@@ -111,8 +57,10 @@ export const loader = async ({ request }: Route.LoaderArgs) => {
 
 // 좋아요 액션 처리
 export const action = async ({ request }: Route.ActionArgs) => {
+  console.log("commissions 페이지 action 호출됨");
   const formData = await request.formData();
   const action = formData.get("action");
+  console.log("action:", action);
 
   if (action === "like") {
     const commissionId = Number(formData.get("commissionId"));
@@ -189,9 +137,8 @@ export default function commissions({ loaderData }: Route.ComponentProps) {
             rating={commission.artist_avg_rating}
             likes={commission.likes_count}
             tags={commission.tags}
-            commissionStatus="가능"
             priceStart={commission.price_start}
-            isLiked={commission.is_liked}
+            isLiked={commission.isLiked || false}
             isLoggedIn={isLoggedIn}
           />
         ))}
@@ -222,9 +169,8 @@ export default function commissions({ loaderData }: Route.ComponentProps) {
             rating={commission.artist_avg_rating}
             likes={commission.likes_count}
             tags={commission.tags}
-            commissionStatus="가능"
             priceStart={commission.price_start}
-            isLiked={commission.is_liked}
+            isLiked={commission.isLiked || false}
             isLoggedIn={isLoggedIn}
           />
         ))}
@@ -255,9 +201,8 @@ export default function commissions({ loaderData }: Route.ComponentProps) {
             rating={commission.artist_avg_rating}
             likes={commission.likes_count}
             tags={commission.tags}
-            commissionStatus="가능"
             priceStart={commission.price_start}
-            isLiked={commission.is_liked}
+            isLiked={commission.isLiked || false}
             isLoggedIn={isLoggedIn}
           />
         ))}
@@ -288,9 +233,8 @@ export default function commissions({ loaderData }: Route.ComponentProps) {
             rating={commission.artist_avg_rating}
             likes={commission.likes_count}
             tags={commission.tags}
-            commissionStatus="가능"
             priceStart={commission.price_start}
-            isLiked={commission.is_liked}
+            isLiked={commission.isLiked || false}
             isLoggedIn={isLoggedIn}
           />
         ))}

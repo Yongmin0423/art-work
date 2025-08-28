@@ -189,6 +189,8 @@ export const toggleCommissionLike = async (
   client: SupabaseClient<Database>,
   { commissionId, userId }: { commissionId: number; userId: string }
 ) => {
+  console.log(`좋아요 토글 시작: commissionId=${commissionId}, userId=${userId}`);
+  
   // 먼저 현재 좋아요 상태 확인
   const { data: existingLike, error: checkError } = await client
     .from("commission_likes")
@@ -197,18 +199,17 @@ export const toggleCommissionLike = async (
     .eq("liker_id", userId)
     .single();
 
-  if (checkError && checkError.code !== "PGRST116") throw checkError;
+  console.log(`기존 좋아요 상태:`, existingLike);
+  if (checkError && checkError.code !== "PGRST116") {
+    console.error("좋아요 상태 확인 에러:", checkError);
+    throw checkError;
+  }
 
-  // 현재 likes_count 가져오기
-  const { data: commission, error: commissionError } = await client
-    .from("commission")
-    .select("likes_count")
-    .eq("commission_id", commissionId)
-    .single();
-
-  if (commissionError) throw commissionError;
+  console.log("트리거가 자동으로 likes_count를 업데이트할 예정");
 
   if (existingLike) {
+    console.log("좋아요 취소 시작");
+    
     // 좋아요가 이미 있으면 삭제
     const { error: deleteError } = await client
       .from("commission_likes")
@@ -216,18 +217,16 @@ export const toggleCommissionLike = async (
       .eq("commission_id", commissionId)
       .eq("liker_id", userId);
 
-    if (deleteError) throw deleteError;
-
-    // commission 테이블의 likes_count 감소
-    const { error: updateError } = await client
-      .from("commission")
-      .update({ likes_count: (commission.likes_count || 0) - 1 })
-      .eq("commission_id", commissionId);
-
-    if (updateError) throw updateError;
+    if (deleteError) {
+      console.error("좋아요 삭제 에러:", deleteError);
+      throw deleteError;
+    }
+    console.log("좋아요 삭제 성공 - 트리거가 자동으로 카운트를 감소시킬 예정");
 
     return { liked: false };
   } else {
+    console.log("좋아요 추가 시작");
+    
     // 좋아요가 없으면 추가
     const { error: insertError } = await client
       .from("commission_likes")
@@ -236,15 +235,11 @@ export const toggleCommissionLike = async (
         liker_id: userId,
       });
 
-    if (insertError) throw insertError;
-
-    // commission 테이블의 likes_count 증가
-    const { error: updateError } = await client
-      .from("commission")
-      .update({ likes_count: (commission.likes_count || 0) + 1 })
-      .eq("commission_id", commissionId);
-
-    if (updateError) throw updateError;
+    if (insertError) {
+      console.error("좋아요 추가 에러:", insertError);
+      throw insertError;
+    }
+    console.log("좋아요 추가 성공 - 트리거가 자동으로 카운트를 증가시킬 예정");
 
     return { liked: true };
   }

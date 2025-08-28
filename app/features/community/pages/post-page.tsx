@@ -123,9 +123,23 @@ export default function PostPage({
                   <span>{loaderData.post.profiles.name}</span>
                   <DotIcon className="size-5" />
                   <span>
-                    {DateTime.fromISO(loaderData.post.created_at, {
-                      zone: "utc",
-                    }).toRelative({ unit: "hours" })}
+                    {(() => {
+                      const postTime = DateTime.fromISO(loaderData.post.created_at, { zone: "utc" });
+                      const now = DateTime.now();
+                      const diff = now.diff(postTime);
+                      
+                      if (diff.as('minutes') < 60) {
+                        return postTime.toRelative({ unit: 'minutes' });
+                      } else if (diff.as('hours') < 24) {
+                        return postTime.toRelative({ unit: 'hours' });
+                      } else if (diff.as('days') < 30) {
+                        return postTime.toRelative({ unit: 'days' });
+                      } else if (diff.as('months') < 12) {
+                        return postTime.toRelative({ unit: 'months' });
+                      } else {
+                        return postTime.toRelative({ unit: 'years' });
+                      }
+                    })()}
                   </span>
                   <DotIcon className="size-5" />
                   <span>{loaderData.post.replies_count} replies</span>

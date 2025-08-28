@@ -34,35 +34,12 @@ export const loader = async ({ params, request }: Route.LoaderArgs) => {
     console.log("User not logged in");
   }
 
-  // 카테고리별 커미션 가져오기
-  const commissionsRaw = await getCommissionsByCategory(client, category);
-
-  // 타입 캐스팅
-  const commissions = commissionsRaw as unknown as CommissionWithLikeStatus[];
-
-  // 사용자가 로그인한 경우에만 좋아요 상태 확인
-  if (user) {
-    const likesPromises = commissions.map(async (commission) => {
-      const isLiked = await getUserLikeStatus(client, {
-        commissionId: commission.commission_id,
-        userId: user.profile_id,
-      });
-      return {
-        commissionId: commission.commission_id,
-        isLiked,
-      };
-    });
-
-    const likesResults = await Promise.all(likesPromises);
-    const likesMap = new Map(
-      likesResults.map(({ commissionId, isLiked }) => [commissionId, isLiked])
-    );
-
-    // 좋아요 상태를 각 커미션 객체에 추가
-    commissions.forEach((commission) => {
-      commission.is_liked = likesMap.get(commission.commission_id) || false;
-    });
-  }
+  // 카테고리별 커미션 가져오기 (사용자별 좋아요 상태 포함)
+  const commissions = await getCommissionsByCategory(
+    client, 
+    category, 
+    user?.profile_id
+  );
 
   return {
     commissions,
@@ -99,6 +76,7 @@ export const action = async ({ request }: Route.ActionArgs) => {
         userId: user.profile_id,
       });
 
+      console.log("좋아요 토글 결과:", result);
       return result;
     } catch (error) {
       console.error("좋아요 처리 중 오류 발생:", error);
@@ -123,15 +101,8 @@ export default function Category({ loaderData }: Route.ComponentProps) {
             rating={commission.artist_avg_rating}
             likes={commission.likes_count}
             tags={commission.tags}
-            commissionStatus={
-              commission.status === "available"
-                ? "가능"
-                : commission.status === "pending"
-                ? "대기 중"
-                : "불가"
-            }
             priceStart={commission.price_start}
-            isLiked={commission.is_liked}
+            isLiked={commission.isLiked || false}
             isLoggedIn={loaderData.isLoggedIn}
           />
         ))}

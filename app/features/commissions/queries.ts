@@ -95,10 +95,11 @@ export const getCommissionsByArtist = async (
   return data;
 };
 
-// 카테고리별 commission 조회
+// 카테고리별 commission 조회 (사용자별 좋아요 상태 포함)
 export const getCommissionsByCategory = async (
   client: SupabaseClient<Database>,
-  category: CategoryType | string
+  category: CategoryType | string,
+  userId?: string
 ) => {
   const { data, error } = await client
     .from("commission_with_artist")
@@ -125,13 +126,35 @@ export const getCommissionsByCategory = async (
     throw new Error(error.message);
   }
 
-  return (
-    data?.map((commission) => ({
+  const commissions = data?.map((commission) => ({
+    ...commission,
+    tags: [commission.category, ...toStringArray(commission.tags)],
+    images: toStringArray(commission.images),
+  })) || [];
+
+  // 사용자가 로그인한 경우 각 커미션에 대한 좋아요 상태 확인
+  if (userId && commissions.length > 0) {
+    const commissionIds = commissions.map(c => c.commission_id);
+    const { data: likedCommissions, error: likeError } = await client
+      .from("commission_likes")
+      .select("commission_id")
+      .eq("liker_id", userId)
+      .in("commission_id", commissionIds);
+
+    if (likeError) throw likeError;
+
+    const likedCommissionIds = new Set(likedCommissions?.map(like => like.commission_id) || []);
+
+    return commissions.map(commission => ({
       ...commission,
-      tags: [commission.category, ...toStringArray(commission.tags)],
-      images: toStringArray(commission.images),
-    })) || []
-  );
+      isLiked: likedCommissionIds.has(commission.commission_id)
+    }));
+  }
+
+  return commissions.map(commission => ({
+    ...commission,
+    isLiked: false
+  }));
 };
 
 // commission 검색 (제목, 설명, artist 이름으로)
@@ -152,11 +175,12 @@ export const searchCommissions = async (
   return data;
 };
 
-// 카테고리별 인기 commission 조회 (리더보드용)
+// 카테고리별 인기 commission 조회 (리더보드용, 사용자별 좋아요 상태 포함)
 export const getTopCommissionsByCategory = async (
   client: SupabaseClient<Database>,
   category: CategoryType | string,
-  limit: number = 3
+  limit: number = 3,
+  userId?: string
 ) => {
   const { data, error } = await client
     .from("commission_with_artist")
@@ -185,18 +209,41 @@ export const getTopCommissionsByCategory = async (
     throw new Error(error.message);
   }
 
-  return (
-    data?.map((commission) => ({
+  const commissions = data?.map((commission) => ({
+    ...commission,
+    tags: [commission.category, ...toStringArray(commission.tags)],
+    images: toStringArray(commission.images),
+  })) || [];
+
+  // 사용자가 로그인한 경우 각 커미션에 대한 좋아요 상태 확인
+  if (userId && commissions.length > 0) {
+    const commissionIds = commissions.map(c => c.commission_id);
+    const { data: likedCommissions, error: likeError } = await client
+      .from("commission_likes")
+      .select("commission_id")
+      .eq("liker_id", userId)
+      .in("commission_id", commissionIds);
+
+    if (likeError) throw likeError;
+
+    const likedCommissionIds = new Set(likedCommissions?.map(like => like.commission_id) || []);
+
+    return commissions.map(commission => ({
       ...commission,
-      tags: [commission.category, ...toStringArray(commission.tags)],
-      images: toStringArray(commission.images),
-    })) || []
-  );
+      isLiked: likedCommissionIds.has(commission.commission_id)
+    }));
+  }
+
+  return commissions.map(commission => ({
+    ...commission,
+    isLiked: false
+  }));
 };
 
-// 주간 추천 아티스트 가져오기 (임시로 랜덤 8개 선택)
+// 주간 추천 아티스트 가져오기 (사용자별 좋아요 상태 포함)
 export const getFeaturedWeeklyCommissions = async (
-  client: SupabaseClient<Database>
+  client: SupabaseClient<Database>,
+  userId?: string
 ) => {
   const { data, error } = await client
     .from("commission_with_artist")
@@ -224,13 +271,35 @@ export const getFeaturedWeeklyCommissions = async (
     throw new Error(error.message);
   }
 
-  return (
-    data?.map((commission) => ({
+  const commissions = data?.map((commission) => ({
+    ...commission,
+    tags: [commission.category, ...toStringArray(commission.tags)],
+    images: toStringArray(commission.images),
+  })) || [];
+
+  // 사용자가 로그인한 경우 각 커미션에 대한 좋아요 상태 확인
+  if (userId && commissions.length > 0) {
+    const commissionIds = commissions.map(c => c.commission_id);
+    const { data: likedCommissions, error: likeError } = await client
+      .from("commission_likes")
+      .select("commission_id")
+      .eq("liker_id", userId)
+      .in("commission_id", commissionIds);
+
+    if (likeError) throw likeError;
+
+    const likedCommissionIds = new Set(likedCommissions?.map(like => like.commission_id) || []);
+
+    return commissions.map(commission => ({
       ...commission,
-      tags: [commission.category, ...toStringArray(commission.tags)],
-      images: toStringArray(commission.images),
-    })) || []
-  );
+      isLiked: likedCommissionIds.has(commission.commission_id)
+    }));
+  }
+
+  return commissions.map(commission => ({
+    ...commission,
+    isLiked: false
+  }));
 };
 
 export const getImagesByCategory = async (

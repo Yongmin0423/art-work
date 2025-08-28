@@ -1,0 +1,1 @@
+CREATE POLICY "commission-counter-update-policy" ON "commission" AS PERMISSIVE FOR UPDATE TO "authenticated" USING (true) WITH CHECK (true);

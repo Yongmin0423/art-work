@@ -76,9 +76,23 @@ export function Reply({
             </Link>
             <DotIcon className="size-5" />
             <span className="text-xs text-muted-foreground">
-              {DateTime.fromISO(timestamp, {
-                zone: "utc",
-              }).toRelative()}
+              {(() => {
+                const replyTime = DateTime.fromISO(timestamp, { zone: "utc" });
+                const now = DateTime.now();
+                const diff = now.diff(replyTime);
+                
+                if (diff.as('minutes') < 60) {
+                  return replyTime.toRelative({ unit: 'minutes' });
+                } else if (diff.as('hours') < 24) {
+                  return replyTime.toRelative({ unit: 'hours' });
+                } else if (diff.as('days') < 30) {
+                  return replyTime.toRelative({ unit: 'days' });
+                } else if (diff.as('months') < 12) {
+                  return replyTime.toRelative({ unit: 'months' });
+                } else {
+                  return replyTime.toRelative({ unit: 'years' });
+                }
+              })()}
             </span>
           </div>
           <p className="text-muted-foreground">{content}</p>
