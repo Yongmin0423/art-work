@@ -26,8 +26,9 @@ export const getUserProfile = async (
     `
     )
     .eq("username", username)
-    .single();
+    .maybeSingle();
   if (error) throw error;
+  if (!data) throw new Error("User not found");
 
   // 통계 데이터를 stats 객체로 변환하고 필요한 필드들 추가
   return {

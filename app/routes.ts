@@ -85,6 +85,7 @@ export default [
   layout("features/users/layouts/profile-layout.tsx", [
     ...prefix("/users/:username", [
       index("features/users/pages/profile-page.tsx"),
+      route("/commissions", "features/users/pages/profile-commissions-page.tsx"),
       route("/portfolio", "features/users/pages/profile-portfolio-page.tsx"),
       route("/reviews", "features/users/pages/profile-reviews-page.tsx"),
       route("/posts", "features/users/pages/profile-posts-page.tsx"),

@@ -18,10 +18,14 @@ import { getUserProfile } from "../queries";
 
 export const loader = async ({ request, params }: Route.LoaderArgs) => {
   const { client } = await makeSSRClient(request);
-  const user = await getUserProfile(client, {
-    username: params.username as string,
-  });
-  return { user };
+  try {
+    const user = await getUserProfile(client, {
+      username: params.username as string,
+    });
+    return { user };
+  } catch (error) {
+    throw new Response("User not found", { status: 404 });
+  }
 };
 
 export default function ProfileLayout({
@@ -55,19 +59,6 @@ export default function ProfileLayout({
         <div className="flex-1 space-y-4">
           <div className="flex items-center gap-3">
             <h1 className="text-3xl font-bold">{loaderData.user.name}</h1>
-            <Badge
-              variant={
-                loaderData.user.work_status === "available"
-                  ? "default"
-                  : "secondary"
-              }
-            >
-              {loaderData.user.work_status === "available"
-                ? "Available"
-                : loaderData.user.work_status === "busy"
-                ? "Busy"
-                : "Not Available"}
-            </Badge>
           </div>
 
           <div className="flex items-center gap-2 text-sm text-muted-foreground">
@@ -110,10 +101,11 @@ export default function ProfileLayout({
               <strong>{formatNumber(loaderData.user.stats.following)}</strong>{" "}
               following
             </span>
-            <span>
+            {/*나중에 기능 구현 예정 */}
+            {/* <span>
               <strong>{formatNumber(loaderData.user.stats.views)}</strong>{" "}
               profile views
-            </span>
+            </span> */}
           </div>
 
           <div className="flex gap-3">
@@ -168,6 +160,10 @@ export default function ProfileLayout({
         <div className="flex gap-1">
           {[
             { label: "About", to: `/users/${loaderData.user.username}` },
+            {
+              label: "Commissions",
+              to: `/users/${loaderData.user.username}/commissions`,
+            },
             {
               label: "Portfolio",
               to: `/users/${loaderData.user.username}/portfolio`,
