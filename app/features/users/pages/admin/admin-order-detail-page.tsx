@@ -1,4 +1,3 @@
-import type { Route } from "./+types/admin-order-detail-page";
 import { data } from "react-router";
 import { makeSSRClient } from "app/supa-client";
 import { getOrderById } from "app/features/commissions/queries";
@@ -20,6 +19,7 @@ import {
   SelectValue,
 } from "app/components/ui/select";
 import { useState } from "react";
+import type { Route } from "./+types/admin-order-detail-page";
 
 export async function loader({ params, request }: Route.LoaderArgs) {
   const orderId = params.orderId;

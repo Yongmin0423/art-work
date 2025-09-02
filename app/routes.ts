@@ -55,15 +55,15 @@ export default [
         ),
       ]),
       ...prefix("/admin", [
-        route("commissions", "features/admin/pages/admin-commissions-page.tsx"),
+        route("commissions", "features/users/pages/admin/admin-commissions-page.tsx"),
         route(
           "commissions/:id",
-          "features/admin/pages/admin-commission-detail-page.tsx"
+          "features/users/pages/admin/admin-commission-detail-page.tsx"
         ),
-        route("orders", "features/admin/pages/admin-orders-page.tsx"),
+        route("orders", "features/users/pages/admin/admin-orders-page.tsx"),
         route(
           "orders/:orderId",
-          "features/admin/pages/admin-order-detail-page.tsx"
+          "features/users/pages/admin/admin-order-detail-page.tsx"
         ),
       ]),
     ]),

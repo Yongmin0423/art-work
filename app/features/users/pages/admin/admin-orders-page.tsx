@@ -1,9 +1,9 @@
-import { columns } from "../components/orders-table/columns";
-import { DataTable } from "../components/orders-table/data-table";
-import type { Route } from "./+types/admin-orders-page";
 import { makeSSRClient } from "~/supa-client";
 import { getAllOrders } from "~/features/commissions/queries";
 import { getLoggedInUser } from "~/features/community/queries";
+import { columns } from "../../components/orders-table/columns";
+import { DataTable } from "../../components/orders-table/data-table";
+import type { Route } from "./+types/admin-orders-page";
 
 export const meta: Route.MetaFunction = () => {
   return [{ title: "Admin - Orders | artwork" }];

@@ -194,7 +194,7 @@ export const columns: ColumnDef<Order>[] = [
             </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem>
-              <Link to={`/admin/orders/${order.order_id}`}>상세보기</Link>
+              <Link to={`/my/admin/orders/${order.order_id}`}>상세보기</Link>
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

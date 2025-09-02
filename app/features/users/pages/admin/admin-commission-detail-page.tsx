@@ -1,5 +1,5 @@
 import { getCommissionById } from "~/features/commissions/queries";
-import type { Route } from "./+types/admin-commission-detail-page";
+
 import { makeSSRClient } from "~/supa-client";
 import { requireAdmin } from "~/common/queries";
 import { Button } from "~/components/ui/button";
@@ -18,6 +18,7 @@ import {
 } from "lucide-react";
 import { Link, Form } from "react-router";
 import { useState } from "react";
+import type { Route } from "./+types/admin-commission-detail-page";
 
 export const loader = async ({ params, request }: Route.LoaderArgs) => {
   const { id } = params;
@@ -156,7 +157,7 @@ export default function AdminCommissionDetailPage({
     <div className="container mx-auto p-6 max-w-4xl">
       {/* 헤더 */}
       <div className="flex items-center gap-4 mb-6">
-        <Link to="/admin/commissions">
+        <Link to="/my/admin/commissions">
           <Button variant="ghost" size="sm">
             <ArrowLeft className="h-4 w-4 mr-2" />
             목록으로 돌아가기

@@ -1,12 +1,12 @@
-import {
-  columns,
-  type Commission,
-} from "../components/commissions-table/columns";
-import { DataTable } from "../components/commissions-table/data-table";
-import type { Route } from "./+types/admin-commissions-page";
 import { makeSSRClient } from "~/supa-client";
 import { getAllCommissionsForAdmin } from "~/features/commissions/queries";
 import { getLoggedInUser } from "~/features/community/queries";
+import { DataTable } from "../../components/commissions-table/data-table";
+import {
+  columns,
+  type Commission,
+} from "../../components/commissions-table/columns";
+import type { Route } from "./+types/admin-commissions-page";
 
 export const meta: Route.MetaFunction = () => {
   return [{ title: "Admin - Commissions | wemake" }];
