@@ -282,10 +282,13 @@ export default function AdminOrderDetailPage({
                   (option: any, index: number) => (
                     <div key={index} className="flex justify-between">
                       <span>
-                        {option.type}: {option.choice}
+                        {option.category}: {option.option}
+                        {option.quantity && option.quantity > 1 && (
+                          <span className="text-blue-600 font-medium"> x{option.quantity}</span>
+                        )}
                       </span>
                       <span className="font-medium">
-                        ₩{option.price?.toLocaleString()}
+                        ₩{((option.price || 0) * (option.quantity || 1)).toLocaleString()}
                       </span>
                     </div>
                   )

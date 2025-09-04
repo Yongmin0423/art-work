@@ -19,9 +19,11 @@ import { Label } from "~/components/ui/label";
 import { createCommissionOrder } from "../mutations";
 
 interface CartItem {
+  id: string;
   category: string;
   option: string;
   price: number;
+  quantity: number;
 }
 
 interface PriceChoice {
@@ -130,6 +132,28 @@ export const action = async ({ request, params }: Route.ActionArgs) => {
 export default function Artist({ loaderData }: Route.ComponentProps) {
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
 
+  // 수량 변경 함수
+  const updateQuantity = (id: string, newQuantity: number) => {
+    if (newQuantity < 1) return;
+    setCartItems(
+      cartItems.map((item) =>
+        item.id === id ? { ...item, quantity: newQuantity } : item
+      )
+    );
+  };
+
+  // 수량 증가 함수
+  const increaseQuantity = (id: string) => {
+    const item = cartItems.find((item) => item.id === id);
+    if (item) updateQuantity(id, item.quantity + 1);
+  };
+
+  // 수량 감소 함수
+  const decreaseQuantity = (id: string) => {
+    const item = cartItems.find((item) => item.id === id);
+    if (item && item.quantity > 1) updateQuantity(id, item.quantity - 1);
+  };
+
   // price_options JSON 파싱
   const priceOptions: PriceOption[] = Array.isArray(
     loaderData.commission.price_options
@@ -137,52 +161,39 @@ export default function Artist({ loaderData }: Route.ComponentProps) {
     ? (loaderData.commission.price_options as unknown as PriceOption[])
     : [];
 
-  // status를 한국어로 변환
-  const getStatusText = (status: string) => {
-    switch (status) {
-      case "available":
-        return "가능";
-      case "pending":
-        return "대기 중";
-      case "unavailable":
-        return "불가";
-      case "paused":
-        return "일시정지";
-      default:
-        return status;
-    }
-  };
-
   const handlePriceSelection = (category: string, selectedOption: string) => {
     // 가격 추출 (- 뒤의 숫자,숫자원 패턴)
     const priceMatch = selectedOption.match(/- ([\d,]+)원/);
     const price = priceMatch ? parseInt(priceMatch[1].replace(/,/g, "")) : 0;
 
-    // 같은 카테고리의 기존 항목 제거
-    const filteredItems = cartItems.filter(
-      (item) => item.category !== category
-    );
+    const id = `${category}-${selectedOption}`;
 
-    // 새 항목 추가
-    if (price > 0) {
+    const existingItem = cartItems.find((item) => item.id === id);
+
+    if (existingItem) {
+      updateQuantity(id, existingItem.quantity + 1);
+    } else if (price > 0) {
       setCartItems([
-        ...filteredItems,
+        ...cartItems,
         {
+          id,
           category,
           option: selectedOption,
           price,
+          quantity: 1,
         },
       ]);
-    } else {
-      setCartItems(filteredItems);
     }
   };
 
-  const removeCartItem = (category: string) => {
-    setCartItems(cartItems.filter((item) => item.category !== category));
+  const removeCartItem = (id: string) => {
+    setCartItems(cartItems.filter((item) => item.id !== id));
   };
 
-  const totalPrice = cartItems.reduce((sum, item) => sum + item.price, 0);
+  const totalPrice = cartItems.reduce(
+    (sum, item) => sum + item.price * item.quantity,
+    0
+  );
 
   return (
     <div className="container mx-auto px-4 md:px-6">
@@ -294,24 +305,12 @@ export default function Artist({ loaderData }: Route.ComponentProps) {
                   </span>
                   <span>❤️ {loaderData.commission.likes_count || 0}</span>
                 </div>
-                <p
-                  className={`text-sm font-semibold ${
-                    getStatusText(loaderData.commission.status || "") === "가능"
-                      ? "text-green-600 border border-green-600 text-center rounded-full px-2"
-                      : getStatusText(loaderData.commission.status || "") ===
-                        "대기 중"
-                      ? "text-yellow-600 border border-yellow-600 text-center rounded-full px-2"
-                      : "text-red-600 border border-red-600 text-center rounded-full px-2"
-                  }`}
-                >
-                  커미션 {getStatusText(loaderData.commission.status || "")}
-                </p>
               </div>
             </div>
             <Separator />
             <div>
               <div className="flex justify-center items-center bg-accent text-accent-foreground text-xl md:text-2xl font-bold rounded-2xl mb-4 md:mb-5">
-                <h4>상세 옵션</h4>
+                <h4 className="text-xl py-1">상세 옵션</h4>
               </div>
               <div className="space-y-2 px-2">
                 <div className="flex justify-between items-center text-sm md:text-base">
@@ -331,7 +330,7 @@ export default function Artist({ loaderData }: Route.ComponentProps) {
             <Separator />
             <div>
               <div className="flex justify-center items-center bg-accent text-accent-foreground text-xl md:text-2xl font-bold rounded-2xl mb-4 md:mb-5">
-                <h4>커미션 가격</h4>
+                <h4 className="text-xl py-1">커미션 가격</h4>
               </div>
               <div className="space-y-2 px-2">
                 {priceOptions.length > 0 ? (
@@ -368,8 +367,9 @@ export default function Artist({ loaderData }: Route.ComponentProps) {
                 <Separator />
                 <div>
                   <div className="flex justify-center items-center bg-accent text-accent-foreground text-xl md:text-2xl font-bold rounded-2xl mb-4 md:mb-5">
-                    <h4>선택한 옵션</h4>
+                    <h4 className="text-xl py-1">선택한 옵션</h4>
                   </div>
+
                   <div className="space-y-2 px-2">
                     {cartItems.map((item) => (
                       <div
@@ -384,12 +384,34 @@ export default function Artist({ loaderData }: Route.ComponentProps) {
                             {item.option}
                           </div>
                         </div>
+
                         <div className="flex items-center gap-2">
+                          {/* 수량 조절 버튼 */}
+                          <div className="flex items-center gap-1">
+                            <button
+                              type="button"
+                              onClick={() => decreaseQuantity(item.id)}
+                              className="w-6 h-6 flex items-center justify-center bg-gray-200 hover:bg-gray-300 rounded text-sm"
+                              disabled={item.quantity <= 1}
+                            >
+                              -
+                            </button>
+                            <span className="w-8 text-center text-sm">
+                              {item.quantity}
+                            </span>
+                            <button
+                              type="button"
+                              onClick={() => increaseQuantity(item.id)}
+                              className="w-6 h-6 flex items-center justify-center bg-gray-200 hover:bg-gray-300 rounded text-sm"
+                            >
+                              +
+                            </button>
+                          </div>
                           <span className="text-xs md:text-sm font-medium">
-                            {item.price.toLocaleString()}원
+                            {(item.price * item.quantity).toLocaleString()}원
                           </span>
                           <button
-                            onClick={() => removeCartItem(item.category)}
+                            onClick={() => removeCartItem(item.id)}
                             className="text-red-500 hover:text-red-700 text-xs md:text-sm"
                           >
                             ✕

@@ -95,6 +95,7 @@ export default function DashboardLayout() {
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
+              {/* TODO: MVP 이후 구현 예정
               <SidebarMenuItem>
                 <SidebarMenuButton
                   asChild
@@ -117,6 +118,7 @@ export default function DashboardLayout() {
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
+              */}
             </SidebarMenu>
           </SidebarGroup>
 
@@ -135,6 +137,7 @@ export default function DashboardLayout() {
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
+              {/* TODO: MVP 이후 구현 예정
               <SidebarMenuItem>
                 <SidebarMenuButton
                   asChild
@@ -168,6 +171,7 @@ export default function DashboardLayout() {
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
+              */}
             </SidebarMenu>
           </SidebarGroup>
 

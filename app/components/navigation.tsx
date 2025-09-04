@@ -92,12 +92,6 @@ const menus = [
         to: "/commissions",
       },
       {
-        name: "추천 작가",
-        description:
-          "실력 있는 추천 작가님들의 프로필과 포트폴리오를 직접 확인하세요.",
-        to: "/commissions/recommended",
-      },
-      {
         name: "커미션 등록하기",
         description: "커미션을 받기 위해서 폼을 작성해보세요.",
         to: "/commissions/create",
@@ -342,6 +336,7 @@ export default function Navigation({
                     의뢰한 커미션
                   </Link>
                 </DropdownMenuItem>
+                {/* TODO: MVP 이후 구현 예정
                 <DropdownMenuItem asChild className="cursor-pointer">
                   <Link to="/my/reviews">
                     <StarIcon className="size-4 mr-2" />
@@ -354,6 +349,7 @@ export default function Navigation({
                     찜한 작가
                   </Link>
                 </DropdownMenuItem>
+                */}
               </DropdownMenuGroup>
               <DropdownMenuSeparator />
 
@@ -365,6 +361,7 @@ export default function Navigation({
                     받은 커미션
                   </Link>
                 </DropdownMenuItem>
+                {/* TODO: MVP 이후 구현 예정
                 <DropdownMenuItem asChild className="cursor-pointer">
                   <Link to="/my/artworks">
                     <ImageIcon className="size-4 mr-2" />
@@ -383,6 +380,7 @@ export default function Navigation({
                     받은 후기
                   </Link>
                 </DropdownMenuItem>
+                */}
               </DropdownMenuGroup>
               <DropdownMenuSeparator />
 
@@ -410,14 +408,8 @@ export default function Navigation({
               {/* 계정 */}
               <DropdownMenuGroup>
                 <DropdownMenuItem asChild className="cursor-pointer">
-                  <Link to="/users/yongmin0423">
-                    <UserIcon className="size-4 mr-2" />내 프로필 보기
-                  </Link>
-                </DropdownMenuItem>
-                <DropdownMenuItem asChild className="cursor-pointer">
                   <Link to="/my/profile">
-                    <UserIcon className="size-4 mr-2" />
-                    프로필 설정
+                    <UserIcon className="size-4 mr-2" />내 프로필
                   </Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem asChild className="cursor-pointer">

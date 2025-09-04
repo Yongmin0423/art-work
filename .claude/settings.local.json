@@ -1,0 +1,14 @@
+{
+  "permissions": {
+    "allow": [
+      "Read(/C:\\Users\\yym21\\Desktop\\artwork\\app\\features\\commissions\\pages/**)",
+      "Read(/C:\\Users\\yym21\\Desktop\\artwork\\app/**)",
+      "Read(/C:\\Users\\yym21\\Desktop\\artwork\\app\\features\\users\\layouts/**)",
+      "Read(/C:\\Users\\yym21\\Desktop\\artwork\\app\\features\\users\\layouts/**)",
+      "Read(/C:\\Users\\yym21\\Desktop\\artwork\\app\\features\\community\\pages/**)",
+      "Read(/C:\\Users\\yym21\\Desktop\\artwork\\app\\features\\community/**)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}
