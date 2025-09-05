@@ -95,7 +95,7 @@ export const getCommissionsByArtist = async (
   return data;
 };
 
-// 카테고리별 commission 조회 (사용자별 좋아요 상태 포함)
+// 카테고리별 commission 조회
 export const getCommissionsByCategory = async (
   client: SupabaseClient<Database>,
   category: CategoryType | string,
@@ -126,15 +126,16 @@ export const getCommissionsByCategory = async (
     throw new Error(error.message);
   }
 
-  const commissions = data?.map((commission) => ({
-    ...commission,
-    tags: [commission.category, ...toStringArray(commission.tags)],
-    images: toStringArray(commission.images),
-  })) || [];
+  const commissions =
+    data?.map((commission) => ({
+      ...commission,
+      tags: [commission.category, ...toStringArray(commission.tags)],
+      images: toStringArray(commission.images),
+    })) || [];
 
   // 사용자가 로그인한 경우 각 커미션에 대한 좋아요 상태 확인
   if (userId && commissions.length > 0) {
-    const commissionIds = commissions.map(c => c.commission_id);
+    const commissionIds = commissions.map((c) => c.commission_id);
     const { data: likedCommissions, error: likeError } = await client
       .from("commission_likes")
       .select("commission_id")
@@ -143,17 +144,19 @@ export const getCommissionsByCategory = async (
 
     if (likeError) throw likeError;
 
-    const likedCommissionIds = new Set(likedCommissions?.map(like => like.commission_id) || []);
+    const likedCommissionIds = new Set(
+      likedCommissions?.map((like) => like.commission_id) || []
+    );
 
-    return commissions.map(commission => ({
+    return commissions.map((commission) => ({
       ...commission,
-      isLiked: likedCommissionIds.has(commission.commission_id)
+      isLiked: likedCommissionIds.has(commission.commission_id),
     }));
   }
 
-  return commissions.map(commission => ({
+  return commissions.map((commission) => ({
     ...commission,
-    isLiked: false
+    isLiked: false,
   }));
 };
 
@@ -209,15 +212,16 @@ export const getTopCommissionsByCategory = async (
     throw new Error(error.message);
   }
 
-  const commissions = data?.map((commission) => ({
-    ...commission,
-    tags: [commission.category, ...toStringArray(commission.tags)],
-    images: toStringArray(commission.images),
-  })) || [];
+  const commissions =
+    data?.map((commission) => ({
+      ...commission,
+      tags: [commission.category, ...toStringArray(commission.tags)],
+      images: toStringArray(commission.images),
+    })) || [];
 
   // 사용자가 로그인한 경우 각 커미션에 대한 좋아요 상태 확인
   if (userId && commissions.length > 0) {
-    const commissionIds = commissions.map(c => c.commission_id);
+    const commissionIds = commissions.map((c) => c.commission_id);
     const { data: likedCommissions, error: likeError } = await client
       .from("commission_likes")
       .select("commission_id")
@@ -226,17 +230,19 @@ export const getTopCommissionsByCategory = async (
 
     if (likeError) throw likeError;
 
-    const likedCommissionIds = new Set(likedCommissions?.map(like => like.commission_id) || []);
+    const likedCommissionIds = new Set(
+      likedCommissions?.map((like) => like.commission_id) || []
+    );
 
-    return commissions.map(commission => ({
+    return commissions.map((commission) => ({
       ...commission,
-      isLiked: likedCommissionIds.has(commission.commission_id)
+      isLiked: likedCommissionIds.has(commission.commission_id),
     }));
   }
 
-  return commissions.map(commission => ({
+  return commissions.map((commission) => ({
     ...commission,
-    isLiked: false
+    isLiked: false,
   }));
 };
 
@@ -271,15 +277,16 @@ export const getFeaturedWeeklyCommissions = async (
     throw new Error(error.message);
   }
 
-  const commissions = data?.map((commission) => ({
-    ...commission,
-    tags: [commission.category, ...toStringArray(commission.tags)],
-    images: toStringArray(commission.images),
-  })) || [];
+  const commissions =
+    data?.map((commission) => ({
+      ...commission,
+      tags: [commission.category, ...toStringArray(commission.tags)],
+      images: toStringArray(commission.images),
+    })) || [];
 
   // 사용자가 로그인한 경우 각 커미션에 대한 좋아요 상태 확인
   if (userId && commissions.length > 0) {
-    const commissionIds = commissions.map(c => c.commission_id);
+    const commissionIds = commissions.map((c) => c.commission_id);
     const { data: likedCommissions, error: likeError } = await client
       .from("commission_likes")
       .select("commission_id")
@@ -288,17 +295,19 @@ export const getFeaturedWeeklyCommissions = async (
 
     if (likeError) throw likeError;
 
-    const likedCommissionIds = new Set(likedCommissions?.map(like => like.commission_id) || []);
+    const likedCommissionIds = new Set(
+      likedCommissions?.map((like) => like.commission_id) || []
+    );
 
-    return commissions.map(commission => ({
+    return commissions.map((commission) => ({
       ...commission,
-      isLiked: likedCommissionIds.has(commission.commission_id)
+      isLiked: likedCommissionIds.has(commission.commission_id),
     }));
   }
 
-  return commissions.map(commission => ({
+  return commissions.map((commission) => ({
     ...commission,
-    isLiked: false
+    isLiked: false,
   }));
 };
 

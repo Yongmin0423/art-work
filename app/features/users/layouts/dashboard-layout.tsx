@@ -137,6 +137,17 @@ export default function DashboardLayout() {
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
+              <SidebarMenuItem>
+                <SidebarMenuButton
+                  asChild
+                  isActive={location.pathname.startsWith("/my/commissions/my-commissions")}
+                >
+                  <Link to="/my/commissions/my-commissions">
+                    <SettingsIcon className="size-4" />
+                    <span>커미션 관리</span>
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
               {/* TODO: MVP 이후 구현 예정
               <SidebarMenuItem>
                 <SidebarMenuButton

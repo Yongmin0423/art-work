@@ -110,7 +110,7 @@ export const columns: ColumnDef<Commission>[] = [
               </DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem>
-                <Link to={`/my/commissions/my-commissions/${commission.commission_id}`}>
+                <Link to={`/my/admin/commissions/${commission.commission_id}`}>
                   View details
                 </Link>
               </DropdownMenuItem>

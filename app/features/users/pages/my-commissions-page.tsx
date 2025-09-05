@@ -1,41 +1,38 @@
 import { makeSSRClient } from "~/supa-client";
-import { getAllCommissionsForAdmin } from "~/features/commissions/queries";
+import { getCommissionsByArtist } from "~/features/commissions/queries";
 import { getLoggedInUser } from "~/features/community/queries";
-import { DataTable } from "../../components/commissions-table/data-table";
-import {
-  columns,
-  type Commission,
-} from "../../components/commissions-table/columns";
-import type { Route } from "./+types/admin-commissions-page";
+import { DataTable } from "../components/commissions-table/data-table";
+import type { Route } from "./+types/my-commissions-page";
+import { columns, type Commission } from "../components/commissions-table/columns";
 
 export const meta: Route.MetaFunction = () => {
-  return [{ title: "Admin - Commissions | wemake" }];
+  return [{ title: " My Commissions | wemake" }];
 };
 
 export const loader = async ({ request }: Route.LoaderArgs) => {
-  console.log('=== ADMIN COMMISSIONS LOADER STARTED ===');
+  console.log('=== MY COMMISSIONS LOADER STARTED ===');
   const { client } = makeSSRClient(request);
 
   // 관리자 권한 확인
   const user = await getLoggedInUser(client);
-  if (!user || user.role !== "admin") {
-    throw new Response("관리자 권한이 필요합니다.", { status: 403 });
+  if (!user) {
+    throw new Response("로그인이 필요합니다.", { status: 401 });
   }
 
-  // 모든 커미션들 가져오기 (상태 무관)
-  const allCommissions = await getAllCommissionsForAdmin(client);
-
-  return { allCommissions };
+  // 커미션 정보 가져오기
+  const myCommissions = await getCommissionsByArtist(client, user.profile_id);
+  console.log('myCommissions:', myCommissions);
+  return { myCommissions };
 };
 
 export default function AdminCommissionsPage({
   loaderData,
 }: Route.ComponentProps) {
-  console.log('=== ADMIN COMPONENT RENDERING ===', loaderData);
-  const { allCommissions } = loaderData;
+  console.log('=== COMPONENT RENDERING ===', loaderData);
+  const { myCommissions } = loaderData;
 
   // 데이터를 columns 타입에 맞게 변환
-  const formattedData: Commission[] = allCommissions.map((commission: any) => ({
+  const formattedData: Commission[] = myCommissions.map((commission: any) => ({
     commission_id: commission.commission_id,
     title: commission.title,
     status: commission.status as "pending_approval" | "available" | "rejected",
@@ -50,9 +47,9 @@ export default function AdminCommissionsPage({
     <div className="container mx-auto py-10">
       <div className="space-y-6">
         <div>
-          <h1 className="text-3xl font-bold">Commission Management</h1>
+          <h1 className="text-3xl font-bold">커미션 관리</h1>
           <p className="text-muted-foreground">
-            모든 커미션들을 관리하세요. (총 {formattedData.length}개)
+            내가 등록한 커미션 (총 {formattedData.length}개)
           </p>
         </div>
 

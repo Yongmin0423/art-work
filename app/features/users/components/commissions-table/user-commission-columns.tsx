@@ -27,7 +27,7 @@ export type Commission = {
   created_at: string;
 };
 
-export const columns: ColumnDef<Commission>[] = [
+export const userCommissionColumns: ColumnDef<Commission>[] = [
   {
     id: "select",
     header: ({ table }) => (

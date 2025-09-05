@@ -1,11 +1,8 @@
 import { getCommissionById } from "~/features/commissions/queries";
-
 import { makeSSRClient } from "~/supa-client";
-import { requireAdmin } from "~/common/queries";
 import { Button } from "~/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
-import { Textarea } from "~/components/ui/textarea";
-import { Label } from "~/components/ui/label";
+
 import {
   ArrowLeft,
   Calendar,
@@ -18,7 +15,8 @@ import {
 import { Link, Form } from "react-router";
 import { useState } from "react";
 import { getStatusBadge } from "~/utils/commission";
-import type { Route } from "./+types/admin-commission-detail-page";
+import { getLoggedInUser } from "~/features/community/queries";
+import type { Route } from "./+types/my-commission-detail-page";
 
 export const loader = async ({ params, request }: Route.LoaderArgs) => {
   const { id } = params;
@@ -28,88 +26,27 @@ export const loader = async ({ params, request }: Route.LoaderArgs) => {
 
   const { client, headers } = makeSSRClient(request);
 
-  // 관리자 권한 체크
-  await requireAdmin(client, request);
-
   const commission = await getCommissionById(client, {
     commissionId: Number(id),
   });
+
+  const user = await getLoggedInUser(client);
 
   if (!commission) {
     throw new Response("커미션을 찾을 수 없습니다", { status: 404 });
   }
 
-  return { commission, headers };
-};
-
-export const action = async ({ request, params }: Route.ActionArgs) => {
-  const { id } = params;
-  const { client } = makeSSRClient(request);
-
-  // 관리자 권한 체크
-  const admin = await requireAdmin(client, request);
-
-  const formData = await request.formData();
-  const actionType = formData.get("action");
-  const rejectionReason = formData.get("rejectionReason");
-
-  if (actionType === "approve") {
-    // 커미션 승인
-    const { error } = await client
-      .from("commission")
-      .update({
-        status: "available",
-        approved_by: admin.profile_id,
-        approved_at: new Date().toISOString(),
-        rejection_reason: null, // 승인 시 거절 사유 초기화
-      })
-      .eq("commission_id", Number(id));
-
-    if (error) {
-      throw new Response("승인 처리 중 오류가 발생했습니다", { status: 500 });
-    }
-  } else if (actionType === "reject") {
-    // 커미션 거절
-    const { error } = await client
-      .from("commission")
-      .update({
-        status: "rejected",
-        approved_by: admin.profile_id,
-        approved_at: new Date().toISOString(),
-        rejection_reason: rejectionReason?.toString() || "",
-      })
-      .eq("commission_id", Number(id));
-
-    if (error) {
-      throw new Response("거절 처리 중 오류가 발생했습니다", { status: 500 });
-    }
-  } else if (actionType === "update_rejection") {
-    // 거절 사유 수정
-    const { error } = await client
-      .from("commission")
-      .update({
-        rejection_reason: rejectionReason?.toString() || "",
-        approved_by: admin.profile_id,
-        approved_at: new Date().toISOString(),
-      })
-      .eq("commission_id", Number(id));
-
-    if (error) {
-      throw new Response("거절 사유 수정 중 오류가 발생했습니다", {
-        status: 500,
-      });
-    }
+  if (commission.profile_id !== user.profile_id) {
+    throw new Response("접근 권한이 없습니다", { status: 403 });
   }
 
-  return { success: true };
+  return { commission, headers };
 };
 
 export default function AdminCommissionDetailPage({
   loaderData,
-  actionData,
 }: Route.ComponentProps) {
   const { commission } = loaderData;
-  const [showRejectForm, setShowRejectForm] = useState(false);
 
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat("ko-KR").format(price) + "원";
@@ -143,13 +80,6 @@ export default function AdminCommissionDetailPage({
         </div>
         {getStatusBadge(commission.status)}
       </div>
-
-      {/* 성공 메시지 */}
-      {actionData?.success && (
-        <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg">
-          <p className="text-green-800">처리가 완료되었습니다.</p>
-        </div>
-      )}
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* 왼쪽: 기본 정보 */}
@@ -289,103 +219,6 @@ export default function AdminCommissionDetailPage({
                   등록된 이미지가 없습니다.
                 </p>
               )}
-            </CardContent>
-          </Card>
-
-          {/* 관리자 액션 */}
-          <Card>
-            <CardHeader>
-              <CardTitle>관리자 액션</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              {/* 모든 상태에서 승인/거절 가능 */}
-              <div className="space-y-4">
-                <div className="flex gap-2">
-                  <Form method="post" className="flex-1">
-                    <input type="hidden" name="action" value="approve" />
-                    <Button
-                      type="submit"
-                      className="w-full"
-                      variant={
-                        commission.status === "available"
-                          ? "outline"
-                          : "default"
-                      }
-                      disabled={commission.status === "available"}
-                    >
-                      {commission.status === "available"
-                        ? "승인됨"
-                        : "승인하기"}
-                    </Button>
-                  </Form>
-                  <Button
-                    variant={
-                      commission.status === "rejected"
-                        ? "outline"
-                        : "destructive"
-                    }
-                    className="flex-1"
-                    onClick={() => setShowRejectForm(!showRejectForm)}
-                  >
-                    {commission.status === "rejected"
-                      ? "거절 사유 수정"
-                      : "거절하기"}
-                  </Button>
-                </div>
-
-                {showRejectForm && (
-                  <Form method="post" className="space-y-4 pt-4 border-t">
-                    <input
-                      type="hidden"
-                      name="action"
-                      value={
-                        commission.status === "rejected"
-                          ? "update_rejection"
-                          : "reject"
-                      }
-                    />
-                    <div>
-                      <Label htmlFor="rejectionReason">
-                        {commission.status === "rejected"
-                          ? "거절 사유 수정"
-                          : "거절 사유 (필수)"}
-                      </Label>
-                      <Textarea
-                        id="rejectionReason"
-                        name="rejectionReason"
-                        placeholder="거절 사유를 상세히 입력해주세요..."
-                        defaultValue={
-                          commission.status === "rejected"
-                            ? commission.rejection_reason || ""
-                            : ""
-                        }
-                        required
-                        className="mt-1"
-                        rows={4}
-                      />
-                    </div>
-                    <div className="flex gap-2">
-                      <Button
-                        type="submit"
-                        variant="destructive"
-                        className="flex-1"
-                      >
-                        {commission.status === "rejected"
-                          ? "사유 수정"
-                          : "거절 확정"}
-                      </Button>
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        className="flex-1"
-                        onClick={() => setShowRejectForm(false)}
-                      >
-                        취소
-                      </Button>
-                    </div>
-                  </Form>
-                )}
-              </div>
             </CardContent>
           </Card>
         </div>
