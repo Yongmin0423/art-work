@@ -89,7 +89,6 @@ export const action = async ({ request }: Route.ActionArgs) => {
       file.size <= 5 * 1024 * 1024 &&
       file.type.startsWith("image/")
     ) {
-      console.log("⬆️ Uploading image:", file.name);
       const { data: uploadData, error } = await client.storage
         .from("commission-images")
         .upload(`${userId}/${Date.now()}-${i}`, file, {
@@ -123,9 +122,6 @@ export const action = async ({ request }: Route.ActionArgs) => {
     // status 필드 제거 - 기본값 pending_approval 사용
     images: images, // 이미지 URL 배열 전달
   });
-
-  console.log("✅ Commission created:", commission);
-  console.log("🔄 Redirecting to /commissions");
 
   return redirect("/commissions");
 };

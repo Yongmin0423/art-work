@@ -78,7 +78,6 @@ export const action = async ({ request }: Route.ActionArgs) => {
     for (let i = 0; i < imageFiles.length; i++) {
       const file = imageFiles[i];
       if (file.size <= 5 * 1024 * 1024 && file.type.startsWith("image/")) {
-        console.log("⬆️ Uploading portfolio image:", file.name);
         const { data: uploadData, error: uploadError } = await client.storage
           .from("portfolio-images")
           .upload(`${userId}/${Date.now()}-${i}`, file, {
@@ -87,7 +86,6 @@ export const action = async ({ request }: Route.ActionArgs) => {
           });
 
         if (uploadError) {
-          console.log("❌ Upload error:", uploadError);
           return { error: `Failed to upload image ${file.name}` };
         }
 
@@ -98,7 +96,6 @@ export const action = async ({ request }: Route.ActionArgs) => {
           .getPublicUrl(uploadData.path);
 
         images.push(publicUrl);
-        console.log("✅ Portfolio image uploaded:", publicUrl);
       }
     }
 

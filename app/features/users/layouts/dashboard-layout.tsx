@@ -95,6 +95,17 @@ export default function DashboardLayout() {
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
+              <SidebarMenuItem>
+                <SidebarMenuButton
+                  asChild
+                  isActive={location.pathname === "/my/commissions/liked"}
+                >
+                  <Link to="/my/commissions/liked">
+                    <HeartIcon className="size-4" />
+                    <span>좋아요한 커미션</span>
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
               {/* TODO: MVP 이후 구현 예정
               <SidebarMenuItem>
                 <SidebarMenuButton

@@ -629,3 +629,36 @@ export const getRequestedOrders = async (
   if (error) throw error;
   return data;
 };
+
+// 사용자가 좋아요한 커미션들 조회
+export const getUserLikedCommissions = async (
+  client: SupabaseClient<Database>,
+  { userId, limit = 20, offset = 0 }: { userId: string; limit?: number; offset?: number }
+) => {
+  // 1단계: 좋아요한 commission_id들 가져오기
+  const { data: likedIds, error: likeError } = await client
+    .from("commission_likes")
+    .select("commission_id")
+    .eq("liker_id", userId)
+    .order("created_at", { ascending: false })
+    .range(offset, offset + limit - 1);
+
+  if (likeError) throw likeError;
+  if (!likedIds?.length) return [];
+
+  // 2단계: 커미션 정보 가져오기
+  const { data, error } = await client
+    .from("commission_with_artist")
+    .select("*")
+    .in("commission_id", likedIds.map(x => x.commission_id))
+    .eq("status", "available");
+
+  if (error) throw error;
+
+  return data?.map((commission) => ({
+    ...commission,
+    tags: [commission.category, ...toStringArray(commission.tags)],
+    images: toStringArray(commission.images),
+    isLiked: true,
+  })) || [];
+};

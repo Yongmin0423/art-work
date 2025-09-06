@@ -18,18 +18,13 @@ export const loader = async ({ request }: Route.LoaderArgs) => {
     profileId: user.profile_id,
   });
 
-  return { user, orders };
-};
-
-export const action = async ({ request }: Route.ActionArgs) => {
-  const { client } = makeSSRClient(request);
+  return { orders };
 };
 
 export default function ReceivedCommissionsPage({
   loaderData,
 }: Route.ComponentProps) {
-  const { orders, user } = loaderData;
-  console.log();
+  const { orders } = loaderData;
 
   return (
     <div className="container mx-auto p-6">

@@ -336,6 +336,12 @@ export default function Navigation({
                     의뢰한 커미션
                   </Link>
                 </DropdownMenuItem>
+                <DropdownMenuItem asChild className="cursor-pointer">
+                  <Link to="/my/commissions/liked">
+                    <HeartIcon className="size-4 mr-2" />
+                    좋아요한 커미션
+                  </Link>
+                </DropdownMenuItem>
                 {/* TODO: MVP 이후 구현 예정
                 <DropdownMenuItem asChild className="cursor-pointer">
                   <Link to="/my/reviews">
@@ -359,6 +365,12 @@ export default function Navigation({
                   <Link to="/my/commissions/received">
                     <ClipboardListIcon className="size-4 mr-2" />
                     받은 커미션
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild className="cursor-pointer">
+                  <Link to="/my/commissions/my-commissions">
+                    <ClipboardListIcon className="size-4 mr-2" />
+                    내 커미션 관리
                   </Link>
                 </DropdownMenuItem>
                 {/* TODO: MVP 이후 구현 예정

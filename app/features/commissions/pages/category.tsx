@@ -36,8 +36,8 @@ export const loader = async ({ params, request }: Route.LoaderArgs) => {
 
   // 카테고리별 커미션 가져오기 (사용자별 좋아요 상태 포함)
   const commissions = await getCommissionsByCategory(
-    client, 
-    category, 
+    client,
+    category,
     user?.profile_id
   );
 
@@ -76,7 +76,6 @@ export const action = async ({ request }: Route.ActionArgs) => {
         userId: user.profile_id,
       });
 
-      console.log("좋아요 토글 결과:", result);
       return result;
     } catch (error) {
       console.error("좋아요 처리 중 오류 발생:", error);

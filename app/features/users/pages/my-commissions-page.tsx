@@ -3,14 +3,16 @@ import { getCommissionsByArtist } from "~/features/commissions/queries";
 import { getLoggedInUser } from "~/features/community/queries";
 import { DataTable } from "../components/commissions-table/data-table";
 import type { Route } from "./+types/my-commissions-page";
-import { columns, type Commission } from "../components/commissions-table/columns";
+import {
+  columns,
+  type Commission,
+} from "../components/commissions-table/columns";
 
 export const meta: Route.MetaFunction = () => {
   return [{ title: " My Commissions | wemake" }];
 };
 
 export const loader = async ({ request }: Route.LoaderArgs) => {
-  console.log('=== MY COMMISSIONS LOADER STARTED ===');
   const { client } = makeSSRClient(request);
 
   // 관리자 권한 확인
@@ -21,14 +23,12 @@ export const loader = async ({ request }: Route.LoaderArgs) => {
 
   // 커미션 정보 가져오기
   const myCommissions = await getCommissionsByArtist(client, user.profile_id);
-  console.log('myCommissions:', myCommissions);
   return { myCommissions };
 };
 
 export default function AdminCommissionsPage({
   loaderData,
 }: Route.ComponentProps) {
-  console.log('=== COMPONENT RENDERING ===', loaderData);
   const { myCommissions } = loaderData;
 
   // 데이터를 columns 타입에 맞게 변환

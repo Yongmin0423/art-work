@@ -13,7 +13,6 @@ export const meta: Route.MetaFunction = () => {
 };
 
 export const loader = async ({ request }: Route.LoaderArgs) => {
-  console.log('=== ADMIN COMMISSIONS LOADER STARTED ===');
   const { client } = makeSSRClient(request);
 
   // 관리자 권한 확인
@@ -31,7 +30,6 @@ export const loader = async ({ request }: Route.LoaderArgs) => {
 export default function AdminCommissionsPage({
   loaderData,
 }: Route.ComponentProps) {
-  console.log('=== ADMIN COMPONENT RENDERING ===', loaderData);
   const { allCommissions } = loaderData;
 
   // 데이터를 columns 타입에 맞게 변환

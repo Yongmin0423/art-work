@@ -61,6 +61,10 @@ export default [
           "/my-commissions/:id",
           "features/users/pages/my-commission-detail-page.tsx"
         ),
+        route(
+          "/liked",
+          "features/users/pages/liked-commissions-page.tsx"
+        ),
       ]),
       ...prefix("/admin", [
         route("commissions", "features/users/pages/admin/admin-commissions-page.tsx"),
