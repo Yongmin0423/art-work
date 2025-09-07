@@ -8,25 +8,34 @@ export const getTopics = async (client: SupabaseClient<Database>) => {
   return data;
 };
 
+// export const getPosts = async (client: SupabaseClient<Database>) => {
+//   const { data, error } = await client.from("posts").select(`
+//     post_id,
+//     title,
+//     content,
+//     created_at,
+//     updated_at,
+//     replies_count,
+//     upvotes_count,
+//     profiles!posts_profile_id_profiles_profile_id_fk(
+//       name,
+//       avatar_url
+//     ),
+//     topics!posts_topic_id_topics_topic_id_fk(
+//       name,
+//       slug
+//     )
+//     `);
+//   if (error) throw error;
+//   return data;
+// };
+
 export const getPosts = async (client: SupabaseClient<Database>) => {
-  const { data, error } = await client.from("posts").select(`
-    post_id,
-    title,
-    content,
-    created_at,
-    updated_at,
-    replies_count,
-    upvotes_count,
-    profiles!posts_profile_id_profiles_profile_id_fk(
-      name,
-      avatar_url
-    ),
-    topics!posts_topic_id_topics_topic_id_fk(
-      name,
-      slug
-    )
-    `);
-  if (error) throw error;
+  const { data, error } = await client
+    .from("community_post_list_view")
+    .select("*")
+    .order("created_at", { ascending: false });
+  if (error) throw new Error(error.message);
   return data;
 };
 
@@ -63,7 +72,6 @@ export const getPostById = async (
     )
     .eq("post_id", parseInt(postId))
     .single();
-
 
   if (error) throw error;
   return data;
