@@ -80,14 +80,9 @@ export const posts = pgTable(
     title: text().notNull(),
     content: text().notNull(),
 
-    // 통계 필드들
-    upvotes_count: integer().default(0).notNull(),
-    replies_count: integer().default(0).notNull(),
-    views_count: integer().default(0).notNull(),
-
-    // 게시물 상태
-    is_pinned: boolean().default(false).notNull(), // 고정 게시물
-    is_locked: boolean().default(false).notNull(), // 댓글 잠금
+    // 통계 필드들 (trigger로 자동 관리 예정)
+    upvotes_count: bigint({ mode: "number" }).default(0),
+    replies_count: bigint({ mode: "number" }).default(0),
 
     created_at: timestamp().notNull().defaultNow(),
     updated_at: timestamp().notNull().defaultNow(),
