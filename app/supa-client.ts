@@ -30,6 +30,11 @@ export type Database = MergeDeep<
             string[]
           >;
         };
+        community_post_list_view: {
+          Row: SetNonNullable<
+            SupabaseDatabase["public"]["Views"]["community_post_list_view"]["Row"]
+          >;
+        };
       };
     };
   }
