@@ -110,9 +110,12 @@ export default function PostPage({
       <div className="grid grid-cols-1 lg:grid-cols-6 gap-10 lg:gap-40 items-start">
         <div className="col-span-1 lg:col-span-4 space-y-10">
           <div className="flex w-full items-start gap-4 sm:gap-10">
-            <Button variant="outline" className="flex flex-col h-14">
+            <Button 
+              variant={loaderData.post.is_upvoted ? "default" : "outline"} 
+              className="flex flex-col h-14"
+            >
               <ChevronUpIcon className="size-4 shrink-0" />
-              <span>10</span>
+              <span>{loaderData.post.upvotes_count || 0}</span>
             </Button>
             <div className="w-full space-y-10 sm:space-y-20">
               <div className="space-y-2">
