@@ -15,6 +15,7 @@ interface PostCardProps {
   timeAgo: string;
   expanded?: boolean;
   votesCount?: number;
+  isUpvoted?: boolean;
 }
 
 export function PostCard({
@@ -26,6 +27,7 @@ export function PostCard({
   timeAgo,
   expanded = false,
   votesCount = 0,
+  isUpvoted = false,
 }: PostCardProps) {
   return (
     <Link to={`/community/${postId}`} className="block">
@@ -51,17 +53,17 @@ export function PostCard({
                   const postTime = DateTime.fromISO(timeAgo, { zone: "utc" });
                   const now = DateTime.now();
                   const diff = now.diff(postTime);
-                  
-                  if (diff.as('minutes') < 60) {
-                    return postTime.toRelative({ unit: 'minutes' });
-                  } else if (diff.as('hours') < 24) {
-                    return postTime.toRelative({ unit: 'hours' });
-                  } else if (diff.as('days') < 30) {
-                    return postTime.toRelative({ unit: 'days' });
-                  } else if (diff.as('months') < 12) {
-                    return postTime.toRelative({ unit: 'months' });
+
+                  if (diff.as("minutes") < 60) {
+                    return postTime.toRelative({ unit: "minutes" });
+                  } else if (diff.as("hours") < 24) {
+                    return postTime.toRelative({ unit: "hours" });
+                  } else if (diff.as("days") < 30) {
+                    return postTime.toRelative({ unit: "days" });
+                  } else if (diff.as("months") < 12) {
+                    return postTime.toRelative({ unit: "months" });
                   } else {
-                    return postTime.toRelative({ unit: 'years' });
+                    return postTime.toRelative({ unit: "years" });
                   }
                 })()}
               </span>
@@ -75,7 +77,13 @@ export function PostCard({
         )}
         {expanded && (
           <CardFooter className="flex justify-end  pb-0">
-            <Button variant="outline" className="flex flex-col h-14">
+            <Button
+              variant="outline"
+              className={cn(
+                "flex flex-col h-14",
+                isUpvoted ? "bg-primary border-primary" : ""
+              )}
+            >
               <ChevronUpIcon className="size-4 shrink-0" />
               <span>{votesCount}</span>
             </Button>

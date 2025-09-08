@@ -92,8 +92,8 @@ export default function PostPage({
           <BreadcrumbSeparator />
           <BreadcrumbItem>
             <BreadcrumbLink asChild>
-              <Link to={`/community?topic=${loaderData.post.topics.slug}`}>
-                {loaderData.post.topics.slug}
+              <Link to={`/community?topic=${loaderData.post.topic_slug}`}>
+                {loaderData.post.topic_slug}
               </Link>
             </BreadcrumbLink>
           </BreadcrumbItem>
@@ -120,11 +120,11 @@ export default function PostPage({
                   {loaderData.post.title}
                 </h2>
                 <div className="flex flex-wrap items-center gap-2 text-sm text-muted-foreground">
-                  <span>{loaderData.post.profiles.name}</span>
+                  <span>{loaderData.post.author_name}</span>
                   <DotIcon className="size-5" />
                   <span>
                     {(() => {
-                      const postTime = DateTime.fromISO(loaderData.post.created_at, { zone: "utc" });
+                      const postTime = DateTime.fromISO(loaderData.post.created_at!, { zone: "utc" });
                       const now = DateTime.now();
                       const diff = now.diff(postTime);
                       
@@ -194,52 +194,52 @@ export default function PostPage({
           <div className="flex gap-5">
             <Avatar className="size-10 sm:size-14">
               <AvatarFallback>
-                {loaderData.post.profiles.name?.[0] || "U"}
+                {loaderData.post.author_name?.[0] || "U"}
               </AvatarFallback>
-              {loaderData.post.profiles.avatar_url && (
-                <AvatarImage src={loaderData.post.profiles.avatar_url} />
+              {loaderData.post.author_avatar && (
+                <AvatarImage src={loaderData.post.author_avatar} />
               )}
             </Avatar>
             <div className="flex flex-col gap-2">
               <h4 className="text-lg font-bold">
-                {loaderData.post.profiles.name}
+                {loaderData.post.author_name}
               </h4>
-              <Badge variant="secondary">{loaderData.post.topics.name}</Badge>
+              <Badge variant="secondary">{loaderData.post.topic_name}</Badge>
               <div className="flex items-center gap-4 text-sm">
-                <span>👥 {loaderData.post.profiles.followers_count || 0}</span>
+                <span>👥 {loaderData.post.followers_count || 0}</span>
               </div>
             </div>
           </div>
           <div className="space-y-2 text-sm">
-            {loaderData.post.profiles.job_title && (
+            {loaderData.post.job_title && (
               <div className="flex items-center gap-2">
                 <span>💼</span>
-                <span>{loaderData.post.profiles.job_title}</span>
+                <span>{loaderData.post.job_title}</span>
               </div>
             )}
-            {loaderData.post.profiles.location && (
+            {loaderData.post.location && (
               <div className="flex items-center gap-2">
                 <span>📍</span>
-                <span>{loaderData.post.profiles.location}</span>
+                <span>{loaderData.post.location}</span>
               </div>
             )}
-            {loaderData.post.profiles.website && (
+            {loaderData.post.website && (
               <div className="flex items-center gap-2">
                 <span>🌐</span>
                 <a
-                  href={loaderData.post.profiles.website}
+                  href={loaderData.post.website}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-blue-600 hover:underline break-all"
                 >
-                  {loaderData.post.profiles.website}
+                  {loaderData.post.website}
                 </a>
               </div>
             )}
           </div>
-          {loaderData.post.profiles.bio && (
+          {loaderData.post.bio && (
             <div className="text-sm text-muted-foreground">
-              <p>{loaderData.post.profiles.bio}</p>
+              <p>{loaderData.post.bio}</p>
             </div>
           )}
           <Button variant="outline" className="w-full">
