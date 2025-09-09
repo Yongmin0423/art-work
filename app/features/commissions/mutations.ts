@@ -52,7 +52,7 @@ export const createCommission = async (
     .from("commission")
     .insert({
       ...commissionFields,
-      status: commissionFields.status || "available",
+      status: commissionFields.status || "pending_approval",
     })
     .select()
     .single();
@@ -174,6 +174,71 @@ export const deleteCommission = async (
   client: SupabaseClient<Database>,
   { commissionId }: { commissionId: number }
 ) => {
+  // 1. 먼저 커미션에 연결된 처리 중인 주문이 있는지 확인
+  const processingStatuses = ['pending', 'accepted', 'in_progress', 'revision_requested', 'disputed'] as const;
+  
+  const { data: processingOrders, error: ordersError } = await client
+    .from("commission_order")
+    .select("order_id, status")
+    .eq("commission_id", commissionId)
+    .in("status", processingStatuses)
+    .limit(1);
+
+  if (ordersError) throw ordersError;
+
+  if (processingOrders && processingOrders.length > 0) {
+    throw new Error("처리 중인 주문이 있는 커미션은 삭제할 수 없습니다. 주문이 완료되거나 취소될 때까지 기다려주세요.");
+  }
+
+  // 2. 커미션에 연결된 모든 주문들을 먼저 삭제
+  const { error: deleteOrdersError } = await client
+    .from("commission_order")
+    .delete()
+    .eq("commission_id", commissionId);
+
+  if (deleteOrdersError) {
+    throw new Error("관련 주문 삭제 중 오류가 발생했습니다.");
+  }
+
+  // 3. 커미션에 연결된 이미지들 가져오기
+  const { data: images, error: imagesError } = await client
+    .from("commission_images")
+    .select("image_url")
+    .eq("commission_id", commissionId);
+
+  if (imagesError) throw imagesError;
+
+  // 4. 스토리지에서 이미지 파일들 삭제
+  if (images && images.length > 0) {
+    const filePaths: string[] = [];
+    
+    for (const image of images) {
+      try {
+        // Supabase storage URL에서 파일 경로 추출
+        const urlParts = image.image_url.split('/');
+        const bucketIndex = urlParts.findIndex(part => part === 'commission-images');
+        if (bucketIndex !== -1 && bucketIndex + 1 < urlParts.length) {
+          const filePath = urlParts.slice(bucketIndex + 1).join('/');
+          filePaths.push(filePath);
+        }
+      } catch (parseError) {
+        console.log("Failed to parse image URL:", parseError);
+      }
+    }
+
+    if (filePaths.length > 0) {
+      const { error: storageError } = await client.storage
+        .from("commission-images")
+        .remove(filePaths);
+      
+      if (storageError) {
+        console.log("Failed to delete some images from storage:", storageError);
+        // 스토리지 삭제 실패해도 DB 삭제는 진행
+      }
+    }
+  }
+
+  // 5. DB에서 커미션 삭제 (cascade로 commission_images도 자동 삭제됨)
   const { error } = await client
     .from("commission")
     .delete()
@@ -278,4 +343,36 @@ export const updateOrderStatus = async (
 
   if (error) throw error;
   return data;
+};
+
+export const cancelOrder = async (
+  client: SupabaseClient<Database>,
+  { orderId, userId }: { orderId: number; userId: string }
+) => {
+  // 먼저 주문이 존재하고 취소 가능한 상태인지 확인
+  const { data: order, error: fetchError } = await client
+    .from("commission_order")
+    .select("order_id, status, client_id")
+    .eq("order_id", orderId)
+    .single();
+
+  if (fetchError) throw fetchError;
+  if (!order) throw new Error("주문을 찾을 수 없습니다.");
+
+  // 주문한 사람만 취소할 수 있음
+  if (order.client_id !== userId) {
+    throw new Error("자신이 주문한 커미션만 취소할 수 있습니다.");
+  }
+
+  // 취소 가능한 상태인지 확인 (pending, accepted만 취소 가능)
+  const cancellableStatuses = ['pending', 'accepted'];
+  if (!cancellableStatuses.includes(order.status)) {
+    throw new Error("이미 진행 중이거나 완료된 주문은 취소할 수 없습니다.");
+  }
+
+  // 주문 상태를 cancelled로 변경
+  return await updateOrderStatus(client, { 
+    orderId, 
+    status: "cancelled" 
+  });
 };

@@ -87,7 +87,8 @@ export const getCommissionsByArtist = async (
   const { data, error } = await client
     .from("commission_with_artist")
     .select("*")
-    .eq("profile_id", artistId);
+    .eq("profile_id", artistId)
+    .eq("status", "available");
 
   if (error) {
     throw new Error(error.message);

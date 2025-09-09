@@ -123,7 +123,7 @@ export const action = async ({ request }: Route.ActionArgs) => {
     images: images, // 이미지 URL 배열 전달
   });
 
-  return redirect("/commissions");
+  return redirect("/commissions/create/success");
 };
 
 export default function SubmitCommissionPage({

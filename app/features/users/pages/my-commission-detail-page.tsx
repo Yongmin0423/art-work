@@ -2,6 +2,13 @@ import { getCommissionById } from "~/features/commissions/queries";
 import { makeSSRClient } from "~/supa-client";
 import { Button } from "~/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "~/components/ui/dropdown-menu";
 
 import {
   ArrowLeft,
@@ -9,11 +16,11 @@ import {
   DollarSign,
   Eye,
   Heart,
+  MoreVertical,
   ShoppingCart,
   User,
 } from "lucide-react";
 import { Link, Form } from "react-router";
-import { useState } from "react";
 import { getStatusBadge } from "~/utils/commission";
 import { getLoggedInUser } from "~/features/community/queries";
 import type { Route } from "./+types/my-commission-detail-page";
@@ -78,7 +85,44 @@ export default function AdminCommissionDetailPage({
             ID: {commission.commission_id}
           </p>
         </div>
-        {getStatusBadge(commission.status)}
+        <div className="flex items-center gap-2">
+          {getStatusBadge(commission.status)}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" size="icon">
+                <MoreVertical className="h-4 w-4" />
+                <span className="sr-only">액션 메뉴</span>
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem asChild>
+                <Link to={`/commissions/edit/${commission.commission_id}`}>
+                  수정하기
+                </Link>
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem className="text-red-600">
+                <Form
+                  method="post"
+                  action={`/my/commissions/my-commissions/${commission.commission_id}/delete`}
+                  onSubmit={(e) => {
+                    if (
+                      !confirm(
+                        "정말로 이 커미션을 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다."
+                      )
+                    ) {
+                      e.preventDefault();
+                    }
+                  }}
+                >
+                  <button type="submit" className="w-full text-left">
+                    삭제하기
+                  </button>
+                </Form>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">

@@ -16,6 +16,7 @@ export default [
       route(":category", "features/commissions/pages/category.tsx"),
     ]),
     route("create", "features/commissions/pages/submit-commission.tsx"),
+    route("create/success", "features/commissions/pages/commission-success-page.tsx"),
   ]),
   ...prefix("/auth", [
     layout("features/auth/layouts/auth-layout.tsx", [
@@ -61,6 +62,10 @@ export default [
         route(
           "/my-commissions/:id",
           "features/users/pages/my-commission-detail-page.tsx"
+        ),
+        route(
+          "/my-commissions/:id/delete",
+          "features/users/pages/commission-delete-page.tsx"
         ),
         route("/liked", "features/users/pages/liked-commissions-page.tsx"),
       ]),
