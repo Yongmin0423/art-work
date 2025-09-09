@@ -190,17 +190,7 @@ export const deleteCommission = async (
     throw new Error("처리 중인 주문이 있는 커미션은 삭제할 수 없습니다. 주문이 완료되거나 취소될 때까지 기다려주세요.");
   }
 
-  // 2. 커미션에 연결된 모든 주문들을 먼저 삭제
-  const { error: deleteOrdersError } = await client
-    .from("commission_order")
-    .delete()
-    .eq("commission_id", commissionId);
-
-  if (deleteOrdersError) {
-    throw new Error("관련 주문 삭제 중 오류가 발생했습니다.");
-  }
-
-  // 3. 커미션에 연결된 이미지들 가져오기
+  // 2. 커미션에 연결된 이미지들 가져오기 (스토리지에서 삭제하기 위해)
   const { data: images, error: imagesError } = await client
     .from("commission_images")
     .select("image_url")
@@ -208,7 +198,7 @@ export const deleteCommission = async (
 
   if (imagesError) throw imagesError;
 
-  // 4. 스토리지에서 이미지 파일들 삭제
+  // 3. 스토리지에서 이미지 파일들 삭제
   if (images && images.length > 0) {
     const filePaths: string[] = [];
     
@@ -238,7 +228,7 @@ export const deleteCommission = async (
     }
   }
 
-  // 5. DB에서 커미션 삭제 (cascade로 commission_images도 자동 삭제됨)
+  // 4. DB에서 커미션 삭제 (CASCADE로 commission_order와 commission_images가 자동 삭제됨)
   const { error } = await client
     .from("commission")
     .delete()

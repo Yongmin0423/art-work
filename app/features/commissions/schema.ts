@@ -184,7 +184,7 @@ export const commissionOrder = pgTable(
       .primaryKey()
       .generatedAlwaysAsIdentity(),
     commission_id: bigint({ mode: "number" })
-      .references(() => commission.commission_id, { onDelete: "restrict" })
+      .references(() => commission.commission_id, { onDelete: "cascade" })
       .notNull(),
     client_id: uuid()
       .references(() => profiles.profile_id, { onDelete: "restrict" })
