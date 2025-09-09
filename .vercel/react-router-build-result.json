@@ -1,0 +1,841 @@
+{
+  "buildManifest": {
+    "serverBundles": {
+      "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0": {
+        "id": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+        "file": "build/server/nodejs_eyJydW50aW1lIjoibm9kZWpzIn0/index.js",
+        "config": {
+          "runtime": "nodejs"
+        }
+      }
+    },
+    "routeIdToServerBundleId": {
+      "common/pages/home-page": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "features/commissions/pages/commissions": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "features/commissions/pages/artist": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "features/commissions/pages/commission-like-page": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "features/commissions/pages/category": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "features/commissions/pages/submit-commission": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "features/auth/pages/login-page": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "features/auth/pages/join-page": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "features/auth/pages/otp-start-page": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "features/auth/pages/otp-complete-page": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "features/auth/pages/social-start-page": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "features/auth/pages/social-complete-page": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "features/auth/pages/logout-page": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "features/users/pages/dashboard-page": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "features/users/pages/dashboard-recieved-commissions": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "features/users/pages/dashboard-product-page": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "features/users/pages/received-commissions-page": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "features/users/pages/requested-commissions-page": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "features/users/pages/my-commissions-page": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "features/users/pages/my-commission-detail-page": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "features/users/pages/liked-commissions-page": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "features/users/pages/admin/admin-commissions-page": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "features/users/pages/admin/admin-commission-detail-page": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "features/users/pages/admin/admin-orders-page": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "features/users/pages/admin/admin-order-detail-page": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "features/users/pages/my-profile-page": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "features/users/pages/settings-page": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "features/users/pages/portfolio-create-page": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "features/users/pages/portfolio-edit-page": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "features/users/pages/notifications-page": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "features/users/pages/messages-page": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "features/users/pages/message-page": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "features/users/pages/profile-page": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "features/users/pages/profile-commissions-page": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "features/users/pages/profile-portfolio-page": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "features/users/pages/profile-reviews-page": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "features/users/pages/profile-posts-page": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "features/users/pages/welcome-page": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "features/community/pages/community-page": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "features/community/pages/post-page": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "features/community/pages/post-upvote-page": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "features/community/pages/submit-post-page": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "features/reviews/pages/reviews": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "features/reviews/pages/review-page": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "features/reviews/pages/submit-review-page": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0"
+    },
+    "routes": {
+      "root": {
+        "path": "",
+        "id": "root",
+        "file": "app/root.tsx",
+        "config": {}
+      },
+      "common/pages/home-page": {
+        "id": "common/pages/home-page",
+        "parentId": "root",
+        "file": "app/common/pages/home-page.tsx",
+        "index": true,
+        "config": {
+          "runtime": "nodejs"
+        }
+      },
+      "features/commissions/pages/commissions": {
+        "id": "features/commissions/pages/commissions",
+        "parentId": "root",
+        "file": "app/features/commissions/pages/commissions.tsx",
+        "path": "commissions",
+        "index": true,
+        "config": {
+          "runtime": "nodejs"
+        }
+      },
+      "features/commissions/pages/artist": {
+        "id": "features/commissions/pages/artist",
+        "parentId": "root",
+        "file": "app/features/commissions/pages/artist.tsx",
+        "path": "commissions/artist/:id",
+        "config": {
+          "runtime": "nodejs"
+        }
+      },
+      "features/commissions/pages/commission-like-page": {
+        "id": "features/commissions/pages/commission-like-page",
+        "parentId": "root",
+        "file": "app/features/commissions/pages/commission-like-page.tsx",
+        "path": "commissions/:commissionId/like",
+        "config": {
+          "runtime": "nodejs"
+        }
+      },
+      "features/commissions/layouts/commissions-layout": {
+        "id": "features/commissions/layouts/commissions-layout",
+        "parentId": "root",
+        "file": "app/features/commissions/layouts/commissions-layout.tsx",
+        "config": {}
+      },
+      "features/commissions/pages/category": {
+        "id": "features/commissions/pages/category",
+        "parentId": "features/commissions/layouts/commissions-layout",
+        "file": "app/features/commissions/pages/category.tsx",
+        "path": "commissions/:category",
+        "config": {
+          "runtime": "nodejs"
+        }
+      },
+      "features/commissions/pages/submit-commission": {
+        "id": "features/commissions/pages/submit-commission",
+        "parentId": "root",
+        "file": "app/features/commissions/pages/submit-commission.tsx",
+        "path": "commissions/create",
+        "config": {
+          "runtime": "nodejs"
+        }
+      },
+      "features/auth/layouts/auth-layout": {
+        "id": "features/auth/layouts/auth-layout",
+        "parentId": "root",
+        "file": "app/features/auth/layouts/auth-layout.tsx",
+        "config": {}
+      },
+      "features/auth/pages/login-page": {
+        "id": "features/auth/pages/login-page",
+        "parentId": "features/auth/layouts/auth-layout",
+        "file": "app/features/auth/pages/login-page.tsx",
+        "path": "/auth/login",
+        "config": {
+          "runtime": "nodejs"
+        }
+      },
+      "features/auth/pages/join-page": {
+        "id": "features/auth/pages/join-page",
+        "parentId": "features/auth/layouts/auth-layout",
+        "file": "app/features/auth/pages/join-page.tsx",
+        "path": "/auth/join",
+        "config": {
+          "runtime": "nodejs"
+        }
+      },
+      "features/auth/pages/otp-start-page": {
+        "id": "features/auth/pages/otp-start-page",
+        "parentId": "features/auth/layouts/auth-layout",
+        "file": "app/features/auth/pages/otp-start-page.tsx",
+        "path": "/auth/otp/start",
+        "config": {
+          "runtime": "nodejs"
+        }
+      },
+      "features/auth/pages/otp-complete-page": {
+        "id": "features/auth/pages/otp-complete-page",
+        "parentId": "features/auth/layouts/auth-layout",
+        "file": "app/features/auth/pages/otp-complete-page.tsx",
+        "path": "/auth/otp/complete",
+        "config": {
+          "runtime": "nodejs"
+        }
+      },
+      "features/auth/pages/social-start-page": {
+        "id": "features/auth/pages/social-start-page",
+        "parentId": "features/auth/layouts/auth-layout",
+        "file": "app/features/auth/pages/social-start-page.tsx",
+        "path": "/auth/social/:provider/start",
+        "config": {
+          "runtime": "nodejs"
+        }
+      },
+      "features/auth/pages/social-complete-page": {
+        "id": "features/auth/pages/social-complete-page",
+        "parentId": "features/auth/layouts/auth-layout",
+        "file": "app/features/auth/pages/social-complete-page.tsx",
+        "path": "/auth/social/:provider/complete",
+        "config": {
+          "runtime": "nodejs"
+        }
+      },
+      "features/auth/pages/logout-page": {
+        "id": "features/auth/pages/logout-page",
+        "parentId": "root",
+        "file": "app/features/auth/pages/logout-page.tsx",
+        "path": "/auth/logout",
+        "config": {
+          "runtime": "nodejs"
+        }
+      },
+      "features/users/layouts/dashboard-layout": {
+        "id": "features/users/layouts/dashboard-layout",
+        "parentId": "root",
+        "file": "app/features/users/layouts/dashboard-layout.tsx",
+        "config": {}
+      },
+      "features/users/pages/dashboard-page": {
+        "id": "features/users/pages/dashboard-page",
+        "parentId": "features/users/layouts/dashboard-layout",
+        "file": "app/features/users/pages/dashboard-page.tsx",
+        "path": "/my/dashboard",
+        "index": true,
+        "config": {
+          "runtime": "nodejs"
+        }
+      },
+      "features/users/pages/dashboard-recieved-commissions": {
+        "id": "features/users/pages/dashboard-recieved-commissions",
+        "parentId": "features/users/layouts/dashboard-layout",
+        "file": "app/features/users/pages/dashboard-recieved-commissions.tsx",
+        "path": "/my/dashboard/commissions/requested",
+        "config": {
+          "runtime": "nodejs"
+        }
+      },
+      "features/users/pages/dashboard-product-page": {
+        "id": "features/users/pages/dashboard-product-page",
+        "parentId": "features/users/layouts/dashboard-layout",
+        "file": "app/features/users/pages/dashboard-product-page.tsx",
+        "path": "/my/dashboard/products/:productId",
+        "config": {
+          "runtime": "nodejs"
+        }
+      },
+      "features/users/pages/received-commissions-page": {
+        "id": "features/users/pages/received-commissions-page",
+        "parentId": "features/users/layouts/dashboard-layout",
+        "file": "app/features/users/pages/received-commissions-page.tsx",
+        "path": "/my/commissions/received",
+        "config": {
+          "runtime": "nodejs"
+        }
+      },
+      "features/users/pages/requested-commissions-page": {
+        "id": "features/users/pages/requested-commissions-page",
+        "parentId": "features/users/layouts/dashboard-layout",
+        "file": "app/features/users/pages/requested-commissions-page.tsx",
+        "path": "/my/commissions/requested",
+        "config": {
+          "runtime": "nodejs"
+        }
+      },
+      "features/users/pages/my-commissions-page": {
+        "id": "features/users/pages/my-commissions-page",
+        "parentId": "features/users/layouts/dashboard-layout",
+        "file": "app/features/users/pages/my-commissions-page.tsx",
+        "path": "/my/commissions/my-commissions",
+        "config": {
+          "runtime": "nodejs"
+        }
+      },
+      "features/users/pages/my-commission-detail-page": {
+        "id": "features/users/pages/my-commission-detail-page",
+        "parentId": "features/users/layouts/dashboard-layout",
+        "file": "app/features/users/pages/my-commission-detail-page.tsx",
+        "path": "/my/commissions/my-commissions/:id",
+        "config": {
+          "runtime": "nodejs"
+        }
+      },
+      "features/users/pages/liked-commissions-page": {
+        "id": "features/users/pages/liked-commissions-page",
+        "parentId": "features/users/layouts/dashboard-layout",
+        "file": "app/features/users/pages/liked-commissions-page.tsx",
+        "path": "/my/commissions/liked",
+        "config": {
+          "runtime": "nodejs"
+        }
+      },
+      "features/users/pages/admin/admin-commissions-page": {
+        "id": "features/users/pages/admin/admin-commissions-page",
+        "parentId": "features/users/layouts/dashboard-layout",
+        "file": "app/features/users/pages/admin/admin-commissions-page.tsx",
+        "path": "/my/admin/commissions",
+        "config": {
+          "runtime": "nodejs"
+        }
+      },
+      "features/users/pages/admin/admin-commission-detail-page": {
+        "id": "features/users/pages/admin/admin-commission-detail-page",
+        "parentId": "features/users/layouts/dashboard-layout",
+        "file": "app/features/users/pages/admin/admin-commission-detail-page.tsx",
+        "path": "/my/admin/commissions/:id",
+        "config": {
+          "runtime": "nodejs"
+        }
+      },
+      "features/users/pages/admin/admin-orders-page": {
+        "id": "features/users/pages/admin/admin-orders-page",
+        "parentId": "features/users/layouts/dashboard-layout",
+        "file": "app/features/users/pages/admin/admin-orders-page.tsx",
+        "path": "/my/admin/orders",
+        "config": {
+          "runtime": "nodejs"
+        }
+      },
+      "features/users/pages/admin/admin-order-detail-page": {
+        "id": "features/users/pages/admin/admin-order-detail-page",
+        "parentId": "features/users/layouts/dashboard-layout",
+        "file": "app/features/users/pages/admin/admin-order-detail-page.tsx",
+        "path": "/my/admin/orders/:orderId",
+        "config": {
+          "runtime": "nodejs"
+        }
+      },
+      "features/users/pages/my-profile-page": {
+        "id": "features/users/pages/my-profile-page",
+        "parentId": "root",
+        "file": "app/features/users/pages/my-profile-page.tsx",
+        "path": "/my/profile",
+        "config": {
+          "runtime": "nodejs"
+        }
+      },
+      "features/users/pages/settings-page": {
+        "id": "features/users/pages/settings-page",
+        "parentId": "root",
+        "file": "app/features/users/pages/settings-page.tsx",
+        "path": "/my/settings",
+        "config": {
+          "runtime": "nodejs"
+        }
+      },
+      "features/users/pages/portfolio-create-page": {
+        "id": "features/users/pages/portfolio-create-page",
+        "parentId": "root",
+        "file": "app/features/users/pages/portfolio-create-page.tsx",
+        "path": "/my/portfolio/new",
+        "config": {
+          "runtime": "nodejs"
+        }
+      },
+      "features/users/pages/portfolio-edit-page": {
+        "id": "features/users/pages/portfolio-edit-page",
+        "parentId": "root",
+        "file": "app/features/users/pages/portfolio-edit-page.tsx",
+        "path": "/my/portfolio/:portfolioId/edit",
+        "config": {
+          "runtime": "nodejs"
+        }
+      },
+      "features/users/pages/notifications-page": {
+        "id": "features/users/pages/notifications-page",
+        "parentId": "root",
+        "file": "app/features/users/pages/notifications-page.tsx",
+        "path": "/my/notifications",
+        "config": {
+          "runtime": "nodejs"
+        }
+      },
+      "features/users/layouts/messages-layout": {
+        "id": "features/users/layouts/messages-layout",
+        "parentId": "root",
+        "file": "app/features/users/layouts/messages-layout.tsx",
+        "config": {}
+      },
+      "features/users/pages/messages-page": {
+        "id": "features/users/pages/messages-page",
+        "parentId": "features/users/layouts/messages-layout",
+        "file": "app/features/users/pages/messages-page.tsx",
+        "path": "/my/messages",
+        "index": true,
+        "config": {
+          "runtime": "nodejs"
+        }
+      },
+      "features/users/pages/message-page": {
+        "id": "features/users/pages/message-page",
+        "parentId": "features/users/layouts/messages-layout",
+        "file": "app/features/users/pages/message-page.tsx",
+        "path": "/my/messages/:messageId",
+        "config": {
+          "runtime": "nodejs"
+        }
+      },
+      "features/users/layouts/profile-layout": {
+        "id": "features/users/layouts/profile-layout",
+        "parentId": "root",
+        "file": "app/features/users/layouts/profile-layout.tsx",
+        "config": {}
+      },
+      "features/users/pages/profile-page": {
+        "id": "features/users/pages/profile-page",
+        "parentId": "features/users/layouts/profile-layout",
+        "file": "app/features/users/pages/profile-page.tsx",
+        "path": "/users/:username",
+        "index": true,
+        "config": {
+          "runtime": "nodejs"
+        }
+      },
+      "features/users/pages/profile-commissions-page": {
+        "id": "features/users/pages/profile-commissions-page",
+        "parentId": "features/users/layouts/profile-layout",
+        "file": "app/features/users/pages/profile-commissions-page.tsx",
+        "path": "/users/:username/commissions",
+        "config": {
+          "runtime": "nodejs"
+        }
+      },
+      "features/users/pages/profile-portfolio-page": {
+        "id": "features/users/pages/profile-portfolio-page",
+        "parentId": "features/users/layouts/profile-layout",
+        "file": "app/features/users/pages/profile-portfolio-page.tsx",
+        "path": "/users/:username/portfolio",
+        "config": {
+          "runtime": "nodejs"
+        }
+      },
+      "features/users/pages/profile-reviews-page": {
+        "id": "features/users/pages/profile-reviews-page",
+        "parentId": "features/users/layouts/profile-layout",
+        "file": "app/features/users/pages/profile-reviews-page.tsx",
+        "path": "/users/:username/reviews",
+        "config": {
+          "runtime": "nodejs"
+        }
+      },
+      "features/users/pages/profile-posts-page": {
+        "id": "features/users/pages/profile-posts-page",
+        "parentId": "features/users/layouts/profile-layout",
+        "file": "app/features/users/pages/profile-posts-page.tsx",
+        "path": "/users/:username/posts",
+        "config": {
+          "runtime": "nodejs"
+        }
+      },
+      "features/users/pages/welcome-page": {
+        "id": "features/users/pages/welcome-page",
+        "parentId": "features/users/layouts/profile-layout",
+        "file": "app/features/users/pages/welcome-page.tsx",
+        "path": "/users/:username/welcome",
+        "config": {
+          "runtime": "nodejs"
+        }
+      },
+      "features/community/pages/community-page": {
+        "id": "features/community/pages/community-page",
+        "parentId": "root",
+        "file": "app/features/community/pages/community-page.tsx",
+        "path": "/community",
+        "index": true,
+        "config": {
+          "runtime": "nodejs"
+        }
+      },
+      "features/community/pages/post-page": {
+        "id": "features/community/pages/post-page",
+        "parentId": "root",
+        "file": "app/features/community/pages/post-page.tsx",
+        "path": "/community/:postId",
+        "config": {
+          "runtime": "nodejs"
+        }
+      },
+      "features/community/pages/post-upvote-page": {
+        "id": "features/community/pages/post-upvote-page",
+        "parentId": "root",
+        "file": "app/features/community/pages/post-upvote-page.tsx",
+        "path": "/community/:postId/upvote",
+        "config": {
+          "runtime": "nodejs"
+        }
+      },
+      "features/community/pages/submit-post-page": {
+        "id": "features/community/pages/submit-post-page",
+        "parentId": "root",
+        "file": "app/features/community/pages/submit-post-page.tsx",
+        "path": "/community/create",
+        "config": {
+          "runtime": "nodejs"
+        }
+      },
+      "features/reviews/pages/reviews": {
+        "id": "features/reviews/pages/reviews",
+        "parentId": "root",
+        "file": "app/features/reviews/pages/reviews.tsx",
+        "path": "/reviews",
+        "index": true,
+        "config": {
+          "runtime": "nodejs"
+        }
+      },
+      "features/reviews/pages/review-page": {
+        "id": "features/reviews/pages/review-page",
+        "parentId": "root",
+        "file": "app/features/reviews/pages/review-page.tsx",
+        "path": "/reviews/:reviewId",
+        "config": {
+          "runtime": "nodejs"
+        }
+      },
+      "features/reviews/pages/submit-review-page": {
+        "id": "features/reviews/pages/submit-review-page",
+        "parentId": "root",
+        "file": "app/features/reviews/pages/submit-review-page.tsx",
+        "path": "/reviews/submit",
+        "config": {
+          "runtime": "nodejs"
+        }
+      }
+    }
+  },
+  "reactRouterConfig": {
+    "appDirectory": "C:/Users/yym21/Desktop/artwork/app",
+    "basename": "/",
+    "buildDirectory": "C:/Users/yym21/Desktop/artwork/build",
+    "future": {
+      "unstable_middleware": false,
+      "unstable_optimizeDeps": false,
+      "unstable_splitRouteModules": false,
+      "unstable_subResourceIntegrity": false,
+      "unstable_viteEnvironmentApi": false
+    },
+    "routes": {
+      "root": {
+        "path": "",
+        "id": "root",
+        "file": "root.tsx"
+      },
+      "common/pages/home-page": {
+        "id": "common/pages/home-page",
+        "parentId": "root",
+        "file": "common/pages/home-page.tsx",
+        "index": true
+      },
+      "features/commissions/pages/commissions": {
+        "id": "features/commissions/pages/commissions",
+        "parentId": "root",
+        "file": "features/commissions/pages/commissions.tsx",
+        "path": "commissions",
+        "index": true
+      },
+      "features/commissions/pages/artist": {
+        "id": "features/commissions/pages/artist",
+        "parentId": "root",
+        "file": "features/commissions/pages/artist.tsx",
+        "path": "commissions/artist/:id"
+      },
+      "features/commissions/pages/commission-like-page": {
+        "id": "features/commissions/pages/commission-like-page",
+        "parentId": "root",
+        "file": "features/commissions/pages/commission-like-page.tsx",
+        "path": "commissions/:commissionId/like"
+      },
+      "features/commissions/layouts/commissions-layout": {
+        "id": "features/commissions/layouts/commissions-layout",
+        "parentId": "root",
+        "file": "features/commissions/layouts/commissions-layout.tsx"
+      },
+      "features/commissions/pages/category": {
+        "id": "features/commissions/pages/category",
+        "parentId": "features/commissions/layouts/commissions-layout",
+        "file": "features/commissions/pages/category.tsx",
+        "path": "commissions/:category"
+      },
+      "features/commissions/pages/submit-commission": {
+        "id": "features/commissions/pages/submit-commission",
+        "parentId": "root",
+        "file": "features/commissions/pages/submit-commission.tsx",
+        "path": "commissions/create"
+      },
+      "features/auth/layouts/auth-layout": {
+        "id": "features/auth/layouts/auth-layout",
+        "parentId": "root",
+        "file": "features/auth/layouts/auth-layout.tsx"
+      },
+      "features/auth/pages/login-page": {
+        "id": "features/auth/pages/login-page",
+        "parentId": "features/auth/layouts/auth-layout",
+        "file": "features/auth/pages/login-page.tsx",
+        "path": "/auth/login"
+      },
+      "features/auth/pages/join-page": {
+        "id": "features/auth/pages/join-page",
+        "parentId": "features/auth/layouts/auth-layout",
+        "file": "features/auth/pages/join-page.tsx",
+        "path": "/auth/join"
+      },
+      "features/auth/pages/otp-start-page": {
+        "id": "features/auth/pages/otp-start-page",
+        "parentId": "features/auth/layouts/auth-layout",
+        "file": "features/auth/pages/otp-start-page.tsx",
+        "path": "/auth/otp/start"
+      },
+      "features/auth/pages/otp-complete-page": {
+        "id": "features/auth/pages/otp-complete-page",
+        "parentId": "features/auth/layouts/auth-layout",
+        "file": "features/auth/pages/otp-complete-page.tsx",
+        "path": "/auth/otp/complete"
+      },
+      "features/auth/pages/social-start-page": {
+        "id": "features/auth/pages/social-start-page",
+        "parentId": "features/auth/layouts/auth-layout",
+        "file": "features/auth/pages/social-start-page.tsx",
+        "path": "/auth/social/:provider/start"
+      },
+      "features/auth/pages/social-complete-page": {
+        "id": "features/auth/pages/social-complete-page",
+        "parentId": "features/auth/layouts/auth-layout",
+        "file": "features/auth/pages/social-complete-page.tsx",
+        "path": "/auth/social/:provider/complete"
+      },
+      "features/auth/pages/logout-page": {
+        "id": "features/auth/pages/logout-page",
+        "parentId": "root",
+        "file": "features/auth/pages/logout-page.tsx",
+        "path": "/auth/logout"
+      },
+      "features/users/layouts/dashboard-layout": {
+        "id": "features/users/layouts/dashboard-layout",
+        "parentId": "root",
+        "file": "features/users/layouts/dashboard-layout.tsx"
+      },
+      "features/users/pages/dashboard-page": {
+        "id": "features/users/pages/dashboard-page",
+        "parentId": "features/users/layouts/dashboard-layout",
+        "file": "features/users/pages/dashboard-page.tsx",
+        "path": "/my/dashboard",
+        "index": true
+      },
+      "features/users/pages/dashboard-recieved-commissions": {
+        "id": "features/users/pages/dashboard-recieved-commissions",
+        "parentId": "features/users/layouts/dashboard-layout",
+        "file": "features/users/pages/dashboard-recieved-commissions.tsx",
+        "path": "/my/dashboard/commissions/requested"
+      },
+      "features/users/pages/dashboard-product-page": {
+        "id": "features/users/pages/dashboard-product-page",
+        "parentId": "features/users/layouts/dashboard-layout",
+        "file": "features/users/pages/dashboard-product-page.tsx",
+        "path": "/my/dashboard/products/:productId"
+      },
+      "features/users/pages/received-commissions-page": {
+        "id": "features/users/pages/received-commissions-page",
+        "parentId": "features/users/layouts/dashboard-layout",
+        "file": "features/users/pages/received-commissions-page.tsx",
+        "path": "/my/commissions/received"
+      },
+      "features/users/pages/requested-commissions-page": {
+        "id": "features/users/pages/requested-commissions-page",
+        "parentId": "features/users/layouts/dashboard-layout",
+        "file": "features/users/pages/requested-commissions-page.tsx",
+        "path": "/my/commissions/requested"
+      },
+      "features/users/pages/my-commissions-page": {
+        "id": "features/users/pages/my-commissions-page",
+        "parentId": "features/users/layouts/dashboard-layout",
+        "file": "features/users/pages/my-commissions-page.tsx",
+        "path": "/my/commissions/my-commissions"
+      },
+      "features/users/pages/my-commission-detail-page": {
+        "id": "features/users/pages/my-commission-detail-page",
+        "parentId": "features/users/layouts/dashboard-layout",
+        "file": "features/users/pages/my-commission-detail-page.tsx",
+        "path": "/my/commissions/my-commissions/:id"
+      },
+      "features/users/pages/liked-commissions-page": {
+        "id": "features/users/pages/liked-commissions-page",
+        "parentId": "features/users/layouts/dashboard-layout",
+        "file": "features/users/pages/liked-commissions-page.tsx",
+        "path": "/my/commissions/liked"
+      },
+      "features/users/pages/admin/admin-commissions-page": {
+        "id": "features/users/pages/admin/admin-commissions-page",
+        "parentId": "features/users/layouts/dashboard-layout",
+        "file": "features/users/pages/admin/admin-commissions-page.tsx",
+        "path": "/my/admin/commissions"
+      },
+      "features/users/pages/admin/admin-commission-detail-page": {
+        "id": "features/users/pages/admin/admin-commission-detail-page",
+        "parentId": "features/users/layouts/dashboard-layout",
+        "file": "features/users/pages/admin/admin-commission-detail-page.tsx",
+        "path": "/my/admin/commissions/:id"
+      },
+      "features/users/pages/admin/admin-orders-page": {
+        "id": "features/users/pages/admin/admin-orders-page",
+        "parentId": "features/users/layouts/dashboard-layout",
+        "file": "features/users/pages/admin/admin-orders-page.tsx",
+        "path": "/my/admin/orders"
+      },
+      "features/users/pages/admin/admin-order-detail-page": {
+        "id": "features/users/pages/admin/admin-order-detail-page",
+        "parentId": "features/users/layouts/dashboard-layout",
+        "file": "features/users/pages/admin/admin-order-detail-page.tsx",
+        "path": "/my/admin/orders/:orderId"
+      },
+      "features/users/pages/my-profile-page": {
+        "id": "features/users/pages/my-profile-page",
+        "parentId": "root",
+        "file": "features/users/pages/my-profile-page.tsx",
+        "path": "/my/profile"
+      },
+      "features/users/pages/settings-page": {
+        "id": "features/users/pages/settings-page",
+        "parentId": "root",
+        "file": "features/users/pages/settings-page.tsx",
+        "path": "/my/settings"
+      },
+      "features/users/pages/portfolio-create-page": {
+        "id": "features/users/pages/portfolio-create-page",
+        "parentId": "root",
+        "file": "features/users/pages/portfolio-create-page.tsx",
+        "path": "/my/portfolio/new"
+      },
+      "features/users/pages/portfolio-edit-page": {
+        "id": "features/users/pages/portfolio-edit-page",
+        "parentId": "root",
+        "file": "features/users/pages/portfolio-edit-page.tsx",
+        "path": "/my/portfolio/:portfolioId/edit"
+      },
+      "features/users/pages/notifications-page": {
+        "id": "features/users/pages/notifications-page",
+        "parentId": "root",
+        "file": "features/users/pages/notifications-page.tsx",
+        "path": "/my/notifications"
+      },
+      "features/users/layouts/messages-layout": {
+        "id": "features/users/layouts/messages-layout",
+        "parentId": "root",
+        "file": "features/users/layouts/messages-layout.tsx"
+      },
+      "features/users/pages/messages-page": {
+        "id": "features/users/pages/messages-page",
+        "parentId": "features/users/layouts/messages-layout",
+        "file": "features/users/pages/messages-page.tsx",
+        "path": "/my/messages",
+        "index": true
+      },
+      "features/users/pages/message-page": {
+        "id": "features/users/pages/message-page",
+        "parentId": "features/users/layouts/messages-layout",
+        "file": "features/users/pages/message-page.tsx",
+        "path": "/my/messages/:messageId"
+      },
+      "features/users/layouts/profile-layout": {
+        "id": "features/users/layouts/profile-layout",
+        "parentId": "root",
+        "file": "features/users/layouts/profile-layout.tsx"
+      },
+      "features/users/pages/profile-page": {
+        "id": "features/users/pages/profile-page",
+        "parentId": "features/users/layouts/profile-layout",
+        "file": "features/users/pages/profile-page.tsx",
+        "path": "/users/:username",
+        "index": true
+      },
+      "features/users/pages/profile-commissions-page": {
+        "id": "features/users/pages/profile-commissions-page",
+        "parentId": "features/users/layouts/profile-layout",
+        "file": "features/users/pages/profile-commissions-page.tsx",
+        "path": "/users/:username/commissions"
+      },
+      "features/users/pages/profile-portfolio-page": {
+        "id": "features/users/pages/profile-portfolio-page",
+        "parentId": "features/users/layouts/profile-layout",
+        "file": "features/users/pages/profile-portfolio-page.tsx",
+        "path": "/users/:username/portfolio"
+      },
+      "features/users/pages/profile-reviews-page": {
+        "id": "features/users/pages/profile-reviews-page",
+        "parentId": "features/users/layouts/profile-layout",
+        "file": "features/users/pages/profile-reviews-page.tsx",
+        "path": "/users/:username/reviews"
+      },
+      "features/users/pages/profile-posts-page": {
+        "id": "features/users/pages/profile-posts-page",
+        "parentId": "features/users/layouts/profile-layout",
+        "file": "features/users/pages/profile-posts-page.tsx",
+        "path": "/users/:username/posts"
+      },
+      "features/users/pages/welcome-page": {
+        "id": "features/users/pages/welcome-page",
+        "parentId": "features/users/layouts/profile-layout",
+        "file": "features/users/pages/welcome-page.tsx",
+        "path": "/users/:username/welcome"
+      },
+      "features/community/pages/community-page": {
+        "id": "features/community/pages/community-page",
+        "parentId": "root",
+        "file": "features/community/pages/community-page.tsx",
+        "path": "/community",
+        "index": true
+      },
+      "features/community/pages/post-page": {
+        "id": "features/community/pages/post-page",
+        "parentId": "root",
+        "file": "features/community/pages/post-page.tsx",
+        "path": "/community/:postId"
+      },
+      "features/community/pages/post-upvote-page": {
+        "id": "features/community/pages/post-upvote-page",
+        "parentId": "root",
+        "file": "features/community/pages/post-upvote-page.tsx",
+        "path": "/community/:postId/upvote"
+      },
+      "features/community/pages/submit-post-page": {
+        "id": "features/community/pages/submit-post-page",
+        "parentId": "root",
+        "file": "features/community/pages/submit-post-page.tsx",
+        "path": "/community/create"
+      },
+      "features/reviews/pages/reviews": {
+        "id": "features/reviews/pages/reviews",
+        "parentId": "root",
+        "file": "features/reviews/pages/reviews.tsx",
+        "path": "/reviews",
+        "index": true
+      },
+      "features/reviews/pages/review-page": {
+        "id": "features/reviews/pages/review-page",
+        "parentId": "root",
+        "file": "features/reviews/pages/review-page.tsx",
+        "path": "/reviews/:reviewId"
+      },
+      "features/reviews/pages/submit-review-page": {
+        "id": "features/reviews/pages/submit-review-page",
+        "parentId": "root",
+        "file": "features/reviews/pages/submit-review-page.tsx",
+        "path": "/reviews/submit"
+      }
+    },
+    "routeDiscovery": {
+      "mode": "lazy",
+      "manifestPath": "/__manifest"
+    },
+    "serverBuildFile": "index.js",
+    "serverModuleFormat": "esm",
+    "ssr": true
+  },
+  "viteConfig": {
+    "build": {
+      "assetsDir": "assets"
+    }
+  }
+}
