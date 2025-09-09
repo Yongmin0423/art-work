@@ -9,8 +9,7 @@ import {
 import { Button } from "~/components/ui/button";
 import { Heart } from "lucide-react";
 import { Badge } from "~/components/ui/badge";
-import { Link, Form, useActionData, useSubmit, useRevalidator } from "react-router";
-import { useState, useEffect } from "react";
+import { Link, useFetcher } from "react-router";
 
 interface ArtistCardProps {
   id: number;
@@ -37,40 +36,20 @@ export default function ArtistCard({
   isLiked,
   isLoggedIn = false,
 }: ArtistCardProps) {
-  const actionData = useActionData();
-  const submit = useSubmit();
-  const revalidator = useRevalidator();
+  const fetcher = useFetcher();
   
-  // 좋아요 상태와 카운트를 로컬 state로 관리 (데이터베이스 상태를 초기값으로 사용)
-  const [isLikedState, setIsLikedState] = useState(isLiked);
-  const [likesCount, setLikesCount] = useState(likes);
-  const [isProcessing, setIsProcessing] = useState(false);
+  const optimisticIsLiked = fetcher.state === "idle" ? isLiked : !isLiked;
+  const optimisticLikes = fetcher.state === "idle" ? likes : (isLiked ? likes - 1 : likes + 1);
 
-  // props가 변경되면 local state 업데이트 (페이지 새로고침 또는 데이터 리로드 시)
-  useEffect(() => {
-    console.log(`Commission ${id}: props 변경됨`, { 
-      newIsLiked: isLiked, 
-      newLikes: likes, 
-      currentState: { isLikedState, likesCount } 
-    });
-    setIsLikedState(isLiked);
-    setLikesCount(likes);
-  }, [isLiked, likes, id, isLikedState, likesCount]);
-
-  // 서버 응답 처리 - 좋아요 토글 완료 시 데이터 재검증
-  useEffect(() => {
-    if (actionData && (actionData.liked === true || actionData.liked === false)) {
-      console.log("서버 응답 받음, 데이터 재검증 시작");
-      revalidator.revalidate();
-      setIsProcessing(false);
-    }
-    if (actionData?.error) {
-      // 에러 발생 시 낙관적 업데이트 되돌리기
-      setIsLikedState(isLiked);
-      setLikesCount(likes);
-      setIsProcessing(false);
-    }
-  }, [actionData, isLiked, likes, revalidator]);
+  const handleLikeClick = () => {
+    fetcher.submit(
+      { commissionId: id.toString() },
+      {
+        method: "post",
+        action: `/commissions/${id}/like`,
+      }
+    );
+  };
 
 
   return (
@@ -96,7 +75,7 @@ export default function ArtistCard({
       <CardFooter className="flex flex-col items-start gap-2 text-sm text-muted-foreground">
         <div className="flex items-center gap-4">
           <span>⭐ {rating.toFixed(1)}</span>
-          <span>❤️ {likesCount}</span>
+          <span>❤️ {optimisticLikes}</span>
         </div>
 
         <div className="flex flex-wrap gap-1">
@@ -116,39 +95,12 @@ export default function ArtistCard({
             <Button
               variant="ghost"
               size="icon"
-              onClick={() => {
-                console.log("좋아요 버튼 클릭됨", { isProcessing, isLikedState });
-                
-                if (isProcessing) {
-                  console.log("처리 중이라서 요청 차단됨");
-                  return;
-                }
-                
-                console.log("낙관적 업데이트 시작");
-                setIsProcessing(true);
-                setIsLikedState(!isLikedState);
-                setLikesCount((prev) => (isLikedState ? prev - 1 : prev + 1));
-                
-                console.log("useSubmit으로 Form 제출");
-                submit(
-                  {
-                    action: "like",
-                    commissionId: id.toString(),
-                  },
-                  { method: "post" }
-                );
-                
-                setTimeout(() => {
-                  console.log("처리 상태 해제됨");
-                  setIsProcessing(false);
-                }, 300);
-              }}
-              disabled={isProcessing}
-              className={isProcessing ? "opacity-50 cursor-not-allowed" : ""}
+              onClick={handleLikeClick}
+              disabled={fetcher.state !== "idle"}
             >
               <Heart
                 className={`w-5 h-5 ${
-                  isLikedState ? "text-red-500 fill-current" : "text-red-500"
+                  optimisticIsLiked ? "text-red-500 fill-current" : "text-red-500"
                 }`}
               />
             </Button>

@@ -6,7 +6,7 @@ import {
   BreadcrumbSeparator,
 } from "~/components/ui/breadcrumb";
 import type { Route } from "./+types/post-page";
-import { Form, Link, useOutletContext } from "react-router";
+import { Form, Link, useFetcher, useOutletContext } from "react-router";
 import { ChevronUpIcon, DotIcon } from "lucide-react";
 import { Button } from "~/components/ui/button";
 import { Textarea } from "~/components/ui/textarea";
@@ -19,6 +19,7 @@ import { makeSSRClient } from "~/supa-client";
 import { z } from "zod";
 import { createReply } from "../mutations";
 import { useEffect, useRef } from "react";
+import { cn } from "~/lib/utils";
 
 export const meta: Route.MetaFunction = ({ params }) => {
   return [{ title: `${params.postId} | wemake` }];
@@ -67,6 +68,7 @@ export default function PostPage({
   loaderData,
   actionData,
 }: Route.ComponentProps) {
+  const fetcher = useFetcher();
   const { isLoggedIn, name, username, avatarUrl } = useOutletContext<{
     isLoggedIn: boolean;
     name: string;
@@ -74,6 +76,16 @@ export default function PostPage({
     avatarUrl: string;
   }>();
   const formRef = useRef<HTMLFormElement>(null);
+  
+  const handleUpvoteClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    fetcher.submit(null, {
+      method: "post",
+      action: `/community/${loaderData.post.post_id}/upvote`,
+    });
+  };
+
   useEffect(() => {
     if (actionData?.ok) {
       formRef.current?.reset();
@@ -110,9 +122,15 @@ export default function PostPage({
       <div className="grid grid-cols-1 lg:grid-cols-6 gap-10 lg:gap-40 items-start">
         <div className="col-span-1 lg:col-span-4 space-y-10">
           <div className="flex w-full items-start gap-4 sm:gap-10">
-            <Button 
-              variant={loaderData.post.is_upvoted ? "default" : "outline"} 
-              className="flex flex-col h-14"
+            <Button
+              onClick={handleUpvoteClick}
+              variant={loaderData.post.is_upvoted ? "default" : "outline"}
+              className={cn(
+                "flex flex-col h-14",
+                loaderData.post.is_upvoted
+                  ? "border-primary bg-primary text-primary-foreground"
+                  : ""
+              )}
             >
               <ChevronUpIcon className="size-4 shrink-0" />
               <span>{loaderData.post.upvotes_count || 0}</span>
@@ -127,20 +145,23 @@ export default function PostPage({
                   <DotIcon className="size-5" />
                   <span>
                     {(() => {
-                      const postTime = DateTime.fromISO(loaderData.post.created_at!, { zone: "utc" });
+                      const postTime = DateTime.fromISO(
+                        loaderData.post.created_at!,
+                        { zone: "utc" }
+                      );
                       const now = DateTime.now();
                       const diff = now.diff(postTime);
-                      
-                      if (diff.as('minutes') < 60) {
-                        return postTime.toRelative({ unit: 'minutes' });
-                      } else if (diff.as('hours') < 24) {
-                        return postTime.toRelative({ unit: 'hours' });
-                      } else if (diff.as('days') < 30) {
-                        return postTime.toRelative({ unit: 'days' });
-                      } else if (diff.as('months') < 12) {
-                        return postTime.toRelative({ unit: 'months' });
+
+                      if (diff.as("minutes") < 60) {
+                        return postTime.toRelative({ unit: "minutes" });
+                      } else if (diff.as("hours") < 24) {
+                        return postTime.toRelative({ unit: "hours" });
+                      } else if (diff.as("days") < 30) {
+                        return postTime.toRelative({ unit: "days" });
+                      } else if (diff.as("months") < 12) {
+                        return postTime.toRelative({ unit: "months" });
                       } else {
-                        return postTime.toRelative({ unit: 'years' });
+                        return postTime.toRelative({ unit: "years" });
                       }
                     })()}
                   </span>

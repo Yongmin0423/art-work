@@ -11,6 +11,7 @@ export default [
   ...prefix("commissions", [
     index("features/commissions/pages/commissions.tsx"),
     route("artist/:id", "features/commissions/pages/artist.tsx"),
+    route(":commissionId/like", "features/commissions/pages/commission-like-page.tsx"),
     layout("features/commissions/layouts/commissions-layout.tsx", [
       route(":category", "features/commissions/pages/category.tsx"),
     ]),
@@ -61,13 +62,13 @@ export default [
           "/my-commissions/:id",
           "features/users/pages/my-commission-detail-page.tsx"
         ),
-        route(
-          "/liked",
-          "features/users/pages/liked-commissions-page.tsx"
-        ),
+        route("/liked", "features/users/pages/liked-commissions-page.tsx"),
       ]),
       ...prefix("/admin", [
-        route("commissions", "features/users/pages/admin/admin-commissions-page.tsx"),
+        route(
+          "commissions",
+          "features/users/pages/admin/admin-commissions-page.tsx"
+        ),
         route(
           "commissions/:id",
           "features/users/pages/admin/admin-commission-detail-page.tsx"
@@ -97,7 +98,10 @@ export default [
   layout("features/users/layouts/profile-layout.tsx", [
     ...prefix("/users/:username", [
       index("features/users/pages/profile-page.tsx"),
-      route("/commissions", "features/users/pages/profile-commissions-page.tsx"),
+      route(
+        "/commissions",
+        "features/users/pages/profile-commissions-page.tsx"
+      ),
       route("/portfolio", "features/users/pages/profile-portfolio-page.tsx"),
       route("/reviews", "features/users/pages/profile-reviews-page.tsx"),
       route("/posts", "features/users/pages/profile-posts-page.tsx"),
@@ -107,6 +111,7 @@ export default [
   ...prefix("/community", [
     index("features/community/pages/community-page.tsx"),
     route("/:postId", "features/community/pages/post-page.tsx"),
+    route("/:postId/upvote", "features/community/pages/post-upvote-page.tsx"),
     route("/create", "features/community/pages/submit-post-page.tsx"),
   ]),
   ...prefix("/reviews", [

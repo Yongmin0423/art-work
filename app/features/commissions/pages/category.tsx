@@ -48,43 +48,6 @@ export const loader = async ({ params, request }: Route.LoaderArgs) => {
   };
 };
 
-// 좋아요 액션 처리
-export const action = async ({ request }: Route.ActionArgs) => {
-  const formData = await request.formData();
-  const action = formData.get("action");
-
-  if (action === "like") {
-    const commissionId = Number(formData.get("commissionId"));
-    const { client } = makeSSRClient(request);
-
-    // 로그인 확인
-    let user;
-    try {
-      user = await getLoggedInUser(client);
-    } catch (error) {
-      return { error: "로그인이 필요합니다." };
-    }
-
-    if (!commissionId) {
-      return { error: "커미션 ID가 필요합니다." };
-    }
-
-    try {
-      // 좋아요 토글
-      const result = await toggleCommissionLike(client, {
-        commissionId,
-        userId: user.profile_id,
-      });
-
-      return result;
-    } catch (error) {
-      console.error("좋아요 처리 중 오류 발생:", error);
-      return { error: "좋아요 처리 중 오류가 발생했습니다." };
-    }
-  }
-
-  return null;
-};
 
 export default function Category({ loaderData }: Route.ComponentProps) {
   return (

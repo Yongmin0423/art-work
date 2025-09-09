@@ -105,26 +105,6 @@ export const action = async ({ request, params }: Route.ActionArgs) => {
     }
   }
 
-  if (actionType === "like") {
-    const commissionId = Number(formData.get("commissionId"));
-
-    if (!commissionId) {
-      return { error: "커미션 ID가 필요합니다." };
-    }
-
-    try {
-      // 좋아요 토글
-      const result = await toggleCommissionLike(client, {
-        commissionId,
-        userId: user.profile_id,
-      });
-
-      return result;
-    } catch (error) {
-      console.error("좋아요 처리 중 오류 발생:", error);
-      return { error: "좋아요 처리 중 오류가 발생했습니다." };
-    }
-  }
 
   return null;
 };

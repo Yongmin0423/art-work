@@ -1,7 +1,7 @@
 import { Card, CardHeader, CardFooter, CardTitle } from "~/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar";
 import { Button } from "~/components/ui/button";
-import { Link } from "react-router";
+import { Link, useFetcher } from "react-router";
 import { cn } from "~/lib/utils";
 import { ChevronUpIcon } from "lucide-react";
 import { DateTime } from "luxon";
@@ -29,6 +29,23 @@ export function PostCard({
   votesCount = 0,
   isUpvoted = false,
 }: PostCardProps) {
+  const fetcher = useFetcher();
+  const optimisticVotesCount =
+    fetcher.state === "idle"
+      ? votesCount
+      : isUpvoted
+      ? votesCount - 1
+      : votesCount + 1;
+  const optimisticIsUpvoted = fetcher.state === "idle" ? isUpvoted : !isUpvoted;
+  const absorbClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    // call upvote action here
+    fetcher.submit(null, {
+      method: "post",
+      action: `/community/${postId}/upvote`,
+    });
+  };
   return (
     <Link to={`/community/${postId}`} className="block">
       <Card
@@ -78,14 +95,15 @@ export function PostCard({
         {expanded && (
           <CardFooter className="flex justify-end  pb-0">
             <Button
+              onClick={absorbClick}
               variant="outline"
               className={cn(
-                "flex flex-col h-14",
-                isUpvoted ? "bg-primary border-primary" : ""
+                "flex flex-col h-14 cursor-pointer",
+                optimisticIsUpvoted ? "bg-primary text-white" : ""
               )}
             >
               <ChevronUpIcon className="size-4 shrink-0" />
-              <span>{votesCount}</span>
+              <span>{optimisticVotesCount}</span>
             </Button>
           </CardFooter>
         )}
