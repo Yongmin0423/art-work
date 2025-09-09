@@ -282,7 +282,7 @@ export default function Navigation({
       </div>
       {isLoggedIn ? (
         <div className="flex items-center gap-2 md:gap-4">
-          <Button size="icon" variant="ghost" asChild className="relative">
+          {/* <Button size="icon" variant="ghost" asChild className="relative">
             <Link to="/my/notifications">
               <BellIcon className="size-4" />
               {hasNotifications && (
@@ -302,7 +302,7 @@ export default function Navigation({
                 <div className="absolute top-1.5 right-1.5 size-2 bg-red-500 rounded-full" />
               )}
             </Link>
-          </Button>
+          </Button> */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Avatar className="size-8 md:size-9">
@@ -327,7 +327,6 @@ export default function Navigation({
                 </DropdownMenuItem>
               </DropdownMenuGroup>
               <DropdownMenuSeparator />
-
               {/* 내 의뢰 */}
               <DropdownMenuGroup>
                 <DropdownMenuItem asChild className="cursor-pointer">
@@ -358,7 +357,6 @@ export default function Navigation({
                 */}
               </DropdownMenuGroup>
               <DropdownMenuSeparator />
-
               {/* 작가 활동 */}
               <DropdownMenuGroup>
                 <DropdownMenuItem asChild className="cursor-pointer">
@@ -369,8 +367,7 @@ export default function Navigation({
                 </DropdownMenuItem>
                 <DropdownMenuItem asChild className="cursor-pointer">
                   <Link to="/my/commissions/my-commissions">
-                    <ClipboardListIcon className="size-4 mr-2" />
-                    내 커미션 관리
+                    <ClipboardListIcon className="size-4 mr-2" />내 커미션 관리
                   </Link>
                 </DropdownMenuItem>
                 {/* TODO: MVP 이후 구현 예정
@@ -395,7 +392,6 @@ export default function Navigation({
                 */}
               </DropdownMenuGroup>
               <DropdownMenuSeparator />
-
               {/* 관리자 메뉴 - 관리자만 보임 */}
               {isAdmin && (
                 <>
@@ -416,7 +412,6 @@ export default function Navigation({
                   <DropdownMenuSeparator />
                 </>
               )}
-
               {/* 계정 */}
               <DropdownMenuGroup>
                 <DropdownMenuItem asChild className="cursor-pointer">
@@ -424,12 +419,12 @@ export default function Navigation({
                     <UserIcon className="size-4 mr-2" />내 프로필
                   </Link>
                 </DropdownMenuItem>
-                <DropdownMenuItem asChild className="cursor-pointer">
+                {/* <DropdownMenuItem asChild className="cursor-pointer">
                   <Link to="/my/notifications">
                     <BellIcon className="size-4 mr-2" />
                     알림 설정
                   </Link>
-                </DropdownMenuItem>
+                </DropdownMenuItem> */}
                 <DropdownMenuItem asChild className="cursor-pointer">
                   <Link to="/my/settings">
                     <SettingsIcon className="size-4 mr-2" />
@@ -437,9 +432,8 @@ export default function Navigation({
                   </Link>
                 </DropdownMenuItem>
               </DropdownMenuGroup>
-              <DropdownMenuSeparator />
-
-              {/* 고객 지원 */}
+              {/* <DropdownMenuSeparator /> */}
+              {/* 고객 지원
               <DropdownMenuGroup>
                 <DropdownMenuItem asChild className="cursor-pointer">
                   <Link to="/support">
@@ -453,7 +447,7 @@ export default function Navigation({
                     공지사항/블로그
                   </Link>
                 </DropdownMenuItem>
-              </DropdownMenuGroup>
+              </DropdownMenuGroup> */}
               <DropdownMenuSeparator />
               <DropdownMenuItem asChild className="cursor-pointer">
                 <Link to="/auth/logout">

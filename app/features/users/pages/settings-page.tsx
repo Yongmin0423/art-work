@@ -44,7 +44,7 @@ export const action = async ({ request }: Route.ActionArgs) => {
     if (avatar.size <= 2 * 1024 * 1024 && avatar.type.startsWith("image/")) {
       const { data, error } = await client.storage
         .from("avatars")
-        .upload(`${userId}/${Date.now()}`, avatar, {
+        .upload(`${userId?.profile_id}/${Date.now()}`, avatar, {
           contentType: avatar.type,
           upsert: false,
         });
