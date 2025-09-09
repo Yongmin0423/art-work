@@ -6,7 +6,8 @@ import {
   BreadcrumbSeparator,
 } from "~/components/ui/breadcrumb";
 import type { Route } from "./+types/post-page";
-import { Form, Link, useFetcher, useOutletContext } from "react-router";
+import { Form, Link, useOutletContext } from "react-router";
+import { useDebouncedFetcher } from "~/hooks/use-debounced-fetcher";
 import { ChevronUpIcon, DotIcon } from "lucide-react";
 import { Button } from "~/components/ui/button";
 import { Textarea } from "~/components/ui/textarea";
@@ -18,7 +19,7 @@ import { DateTime } from "luxon";
 import { makeSSRClient } from "~/supa-client";
 import { z } from "zod";
 import { createReply } from "../mutations";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { cn } from "~/lib/utils";
 
 export const meta: Route.MetaFunction = ({ params }) => {
@@ -68,7 +69,9 @@ export default function PostPage({
   loaderData,
   actionData,
 }: Route.ComponentProps) {
-  const fetcher = useFetcher();
+  const fetcher = useDebouncedFetcher(300);
+  const [optimisticUpvotesCount, setOptimisticUpvotesCount] = useState(loaderData.post.upvotes_count || 0);
+  const [optimisticIsUpvoted, setOptimisticIsUpvoted] = useState(loaderData.post.is_upvoted);
   const { isLoggedIn, name, username, avatarUrl } = useOutletContext<{
     isLoggedIn: boolean;
     name: string;
@@ -80,7 +83,14 @@ export default function PostPage({
   const handleUpvoteClick = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
     e.stopPropagation();
-    fetcher.submit(null, {
+    
+    const newIsUpvoted = !optimisticIsUpvoted;
+    const newUpvotesCount = newIsUpvoted ? optimisticUpvotesCount + 1 : optimisticUpvotesCount - 1;
+    
+    setOptimisticIsUpvoted(newIsUpvoted);
+    setOptimisticUpvotesCount(newUpvotesCount);
+    
+    fetcher.debouncedSubmit(null, {
       method: "post",
       action: `/community/${loaderData.post.post_id}/upvote`,
     });
@@ -124,16 +134,16 @@ export default function PostPage({
           <div className="flex w-full items-start gap-4 sm:gap-10">
             <Button
               onClick={handleUpvoteClick}
-              variant={loaderData.post.is_upvoted ? "default" : "outline"}
+              variant={optimisticIsUpvoted ? "default" : "outline"}
               className={cn(
                 "flex flex-col h-14",
-                loaderData.post.is_upvoted
+                optimisticIsUpvoted
                   ? "border-primary bg-primary text-primary-foreground"
                   : ""
               )}
             >
               <ChevronUpIcon className="size-4 shrink-0" />
-              <span>{loaderData.post.upvotes_count || 0}</span>
+              <span>{optimisticUpvotesCount}</span>
             </Button>
             <div className="w-full space-y-10 sm:space-y-20">
               <div className="space-y-2">

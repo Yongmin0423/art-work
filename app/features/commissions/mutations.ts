@@ -124,7 +124,6 @@ export const updateCommissionImage = async (
     .select()
     .single();
 
-
   if (error) throw error;
   return data;
 };
@@ -137,7 +136,6 @@ export const deleteCommissionImage = async (
     .from("commission_images")
     .delete()
     .eq("image_id", imageId);
-
 
   if (error) throw error;
 };
@@ -181,7 +179,6 @@ export const deleteCommission = async (
     .delete()
     .eq("commission_id", commissionId);
 
-
   if (error) throw error;
 };
 
@@ -189,8 +186,6 @@ export const toggleCommissionLike = async (
   client: SupabaseClient<Database>,
   { commissionId, userId }: { commissionId: number; userId: string }
 ) => {
-  console.log(`좋아요 토글 시작: commissionId=${commissionId}, userId=${userId}`);
-  
   // 먼저 현재 좋아요 상태 확인
   const { data: existingLike, error: checkError } = await client
     .from("commission_likes")
@@ -199,17 +194,12 @@ export const toggleCommissionLike = async (
     .eq("liker_id", userId)
     .single();
 
-  console.log(`기존 좋아요 상태:`, existingLike);
   if (checkError && checkError.code !== "PGRST116") {
     console.error("좋아요 상태 확인 에러:", checkError);
     throw checkError;
   }
 
-  console.log("트리거가 자동으로 likes_count를 업데이트할 예정");
-
   if (existingLike) {
-    console.log("좋아요 취소 시작");
-    
     // 좋아요가 이미 있으면 삭제
     const { error: deleteError } = await client
       .from("commission_likes")
@@ -218,15 +208,11 @@ export const toggleCommissionLike = async (
       .eq("liker_id", userId);
 
     if (deleteError) {
-      console.error("좋아요 삭제 에러:", deleteError);
       throw deleteError;
     }
-    console.log("좋아요 삭제 성공 - 트리거가 자동으로 카운트를 감소시킬 예정");
 
     return { liked: false };
   } else {
-    console.log("좋아요 추가 시작");
-    
     // 좋아요가 없으면 추가
     const { error: insertError } = await client
       .from("commission_likes")
@@ -236,10 +222,8 @@ export const toggleCommissionLike = async (
       });
 
     if (insertError) {
-      console.error("좋아요 추가 에러:", insertError);
       throw insertError;
     }
-    console.log("좋아요 추가 성공 - 트리거가 자동으로 카운트를 증가시킬 예정");
 
     return { liked: true };
   }

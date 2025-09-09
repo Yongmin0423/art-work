@@ -9,7 +9,9 @@ import {
 import { Button } from "~/components/ui/button";
 import { Heart } from "lucide-react";
 import { Badge } from "~/components/ui/badge";
-import { Link, useFetcher } from "react-router";
+import { Link } from "react-router";
+import { useDebouncedFetcher } from "~/hooks/use-debounced-fetcher";
+import { useState } from "react";
 
 interface ArtistCardProps {
   id: number;
@@ -36,13 +38,18 @@ export default function ArtistCard({
   isLiked,
   isLoggedIn = false,
 }: ArtistCardProps) {
-  const fetcher = useFetcher();
-  
-  const optimisticIsLiked = fetcher.state === "idle" ? isLiked : !isLiked;
-  const optimisticLikes = fetcher.state === "idle" ? likes : (isLiked ? likes - 1 : likes + 1);
+  const fetcher = useDebouncedFetcher(300);
+  const [optimisticIsLiked, setOptimisticIsLiked] = useState(isLiked);
+  const [optimisticLikes, setOptimisticLikes] = useState(likes);
 
   const handleLikeClick = () => {
-    fetcher.submit(
+    const newIsLiked = !optimisticIsLiked;
+    const newLikes = newIsLiked ? optimisticLikes + 1 : optimisticLikes - 1;
+    
+    setOptimisticIsLiked(newIsLiked);
+    setOptimisticLikes(newLikes);
+    
+    fetcher.debouncedSubmit(
       { commissionId: id.toString() },
       {
         method: "post",
@@ -96,7 +103,7 @@ export default function ArtistCard({
               variant="ghost"
               size="icon"
               onClick={handleLikeClick}
-              disabled={fetcher.state !== "idle"}
+              disabled={false}
             >
               <Heart
                 className={`w-5 h-5 ${

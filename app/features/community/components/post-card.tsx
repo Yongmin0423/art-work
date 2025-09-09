@@ -1,7 +1,9 @@
 import { Card, CardHeader, CardFooter, CardTitle } from "~/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar";
 import { Button } from "~/components/ui/button";
-import { Link, useFetcher } from "react-router";
+import { Link } from "react-router";
+import { useDebouncedFetcher } from "~/hooks/use-debounced-fetcher";
+import { useState } from "react";
 import { cn } from "~/lib/utils";
 import { ChevronUpIcon } from "lucide-react";
 import { DateTime } from "luxon";
@@ -29,19 +31,21 @@ export function PostCard({
   votesCount = 0,
   isUpvoted = false,
 }: PostCardProps) {
-  const fetcher = useFetcher();
-  const optimisticVotesCount =
-    fetcher.state === "idle"
-      ? votesCount
-      : isUpvoted
-      ? votesCount - 1
-      : votesCount + 1;
-  const optimisticIsUpvoted = fetcher.state === "idle" ? isUpvoted : !isUpvoted;
+  const fetcher = useDebouncedFetcher(300);
+  const [optimisticVotesCount, setOptimisticVotesCount] = useState(votesCount);
+  const [optimisticIsUpvoted, setOptimisticIsUpvoted] = useState(isUpvoted);
+  
   const absorbClick = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
     e.stopPropagation();
-    // call upvote action here
-    fetcher.submit(null, {
+    
+    const newIsUpvoted = !optimisticIsUpvoted;
+    const newVotesCount = newIsUpvoted ? optimisticVotesCount + 1 : optimisticVotesCount - 1;
+    
+    setOptimisticIsUpvoted(newIsUpvoted);
+    setOptimisticVotesCount(newVotesCount);
+    
+    fetcher.debouncedSubmit(null, {
       method: "post",
       action: `/community/${postId}/upvote`,
     });
