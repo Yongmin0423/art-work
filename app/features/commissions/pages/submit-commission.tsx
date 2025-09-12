@@ -11,18 +11,36 @@ import { COMMISSION_CATEGORIES } from "../constants";
 import { makeSSRClient } from "~/supa-client";
 import { getLoggedInUser } from "~/features/community/queries";
 import { z } from "zod";
-import { createCommission, createCommissionImage } from "../mutations";
+import { createCommission, createCommissionImage, updateCommission } from "../mutations";
+import { getCommissionById } from "../queries";
 import { Separator } from "~/components/ui/separator";
 import { Badge } from "~/components/ui/badge";
 
-export const meta: Route.MetaFunction = () => {
-  return [{ title: "Submit Commission | wemake" }];
+export const meta: Route.MetaFunction = ({ params }) => {
+  const isEdit = params.id;
+  return [{ title: isEdit ? "Edit Commission | wemake" : "Submit Commission | wemake" }];
 };
 
-export const loader = async ({ request }: Route.LoaderArgs) => {
+export const loader = async ({ request, params }: Route.LoaderArgs) => {
   const { client } = await makeSSRClient(request);
-  await getLoggedInUser(client); // 로그인 확인
-  return {};
+  const user = await getLoggedInUser(client); // 로그인 확인
+  
+  const isEdit = !!params.id;
+  
+  if (isEdit) {
+    const commission = await getCommissionById(client, {
+      commissionId: Number(params.id),
+    });
+    
+    // 작성자 권한 확인
+    if (commission.profile_id !== user.profile_id) {
+      throw new Response("수정 권한이 없습니다.", { status: 403 });
+    }
+    
+    return { commission, isEdit: true };
+  }
+  
+  return { isEdit: false };
 };
 
 const formSchema = z.object({
@@ -47,9 +65,11 @@ type PriceOption = {
   choices: PriceChoice[];
 };
 
-export const action = async ({ request }: Route.ActionArgs) => {
+export const action = async ({ request, params }: Route.ActionArgs) => {
   const { client, headers } = makeSSRClient(request);
   const formData = await request.formData();
+  
+  const isEdit = !!params.id;
 
   // Form validation
   const result = formSchema.safeParse({
@@ -107,32 +127,54 @@ export const action = async ({ request }: Route.ActionArgs) => {
     }
   }
 
-  // 커미션 생성 (이미지 포함) - status는 기본값 pending_approval 사용
-  const commission = await createCommission(client, {
-    profile_id: userId,
-    title: data.title,
-    description: data.description,
-    category: data.category as any,
-    tags: tags,
-    price_start: data.price_start,
-    price_options: priceOptions,
-    turnaround_days: data.turnaround_days,
-    revision_count: data.revision_count,
-    base_size: data.base_size,
-    // status 필드 제거 - 기본값 pending_approval 사용
-    images: images, // 이미지 URL 배열 전달
-  });
+  if (isEdit) {
+    // 수정 모드
+    await updateCommission(client, {
+      commissionId: Number(params.id),
+      title: data.title,
+      description: data.description,
+      category: data.category as any,
+      tags: tags,
+      price_start: data.price_start,
+      price_options: priceOptions,
+      turnaround_days: data.turnaround_days,
+      revision_count: data.revision_count,
+      base_size: data.base_size,
+    });
 
-  return redirect("/commissions/create/success");
+    return redirect(`/commissions/artist/${params.id}`);
+  } else {
+    // 생성 모드
+    const commission = await createCommission(client, {
+      profile_id: userId,
+      title: data.title,
+      description: data.description,
+      category: data.category as any,
+      tags: tags,
+      price_start: data.price_start,
+      price_options: priceOptions,
+      turnaround_days: data.turnaround_days,
+      revision_count: data.revision_count,
+      base_size: data.base_size,
+      images: images, // 이미지 URL 배열 전달
+    });
+
+    return redirect("/commissions/create/success");
+  }
 };
 
 export default function SubmitCommissionPage({
+  loaderData,
   actionData,
 }: Route.ComponentProps) {
+  const { commission, isEdit } = loaderData;
+  
   const [portfolioImages, setPortfolioImages] = useState<string[]>([]);
-  const [priceOptions, setPriceOptions] = useState<PriceOption[]>([
-    { type: "", choices: [{ label: "", price: 0, description: "" }] },
-  ]);
+  const [priceOptions, setPriceOptions] = useState<PriceOption[]>(
+    isEdit && commission?.price_options && Array.isArray(commission.price_options)
+      ? (commission.price_options as unknown as PriceOption[])
+      : [{ type: "", choices: [{ label: "", price: 0, description: "" }] }]
+  );
 
   const handleImageChange = (
     event: React.ChangeEvent<HTMLInputElement>,
@@ -204,8 +246,8 @@ export default function SubmitCommissionPage({
   return (
     <div className="space-y-20">
       <Hero
-        title="Submit Commission"
-        subtitle="Share your artistic services with the community"
+        title={isEdit ? "Edit Commission" : "Submit Commission"}
+        subtitle={isEdit ? "Update your artistic services" : "Share your artistic services with the community"}
       />
 
       <Form
@@ -231,6 +273,7 @@ export default function SubmitCommissionPage({
               id="title"
               name="title"
               required
+              defaultValue={isEdit ? commission?.title : ""}
               placeholder="e.g., Anime Character Illustration"
             />
             {actionData?.fieldErrors?.title && (
@@ -246,6 +289,7 @@ export default function SubmitCommissionPage({
               name="description"
               textArea
               required
+              defaultValue={isEdit ? commission?.description : ""}
               placeholder="Describe your art style, what you offer, and any special techniques..."
             />
             {actionData?.fieldErrors?.description && (
@@ -259,6 +303,7 @@ export default function SubmitCommissionPage({
               description="Select the main category for your commission"
               name="category"
               required
+              defaultValue={isEdit ? commission?.category : ""}
               placeholder="Choose a category"
               options={COMMISSION_CATEGORIES.map((cat) => ({
                 label: cat.label,
@@ -276,6 +321,7 @@ export default function SubmitCommissionPage({
               description="Comma-separated tags (e.g., anime, portrait, digital)"
               id="tags"
               name="tags"
+              defaultValue={isEdit && Array.isArray(commission?.tags) ? commission.tags.join(", ") : ""}
               placeholder="anime, portrait, digital, fantasy"
             />
           </div>
@@ -291,6 +337,7 @@ export default function SubmitCommissionPage({
               name="price_start"
               type="number"
               required
+              defaultValue={isEdit ? commission?.price_start?.toString() : ""}
               placeholder="50000"
             />
             {actionData?.fieldErrors?.price_start && (
@@ -308,6 +355,7 @@ export default function SubmitCommissionPage({
                   name="turnaround_days"
                   type="number"
                   required
+                  defaultValue={isEdit ? commission?.turnaround_days?.toString() : ""}
                   placeholder="7"
                 />
                 {actionData?.fieldErrors?.turnaround_days && (
@@ -324,6 +372,7 @@ export default function SubmitCommissionPage({
                   name="revision_count"
                   type="number"
                   required
+                  defaultValue={isEdit ? commission?.revision_count?.toString() : ""}
                   placeholder="3"
                 />
                 {actionData?.fieldErrors?.revision_count && (
@@ -340,6 +389,7 @@ export default function SubmitCommissionPage({
               id="base_size"
               name="base_size"
               required
+              defaultValue={isEdit ? commission?.base_size : ""}
               placeholder="3000x3000px"
             />
             {actionData?.fieldErrors?.base_size && (
@@ -596,7 +646,7 @@ export default function SubmitCommissionPage({
 
         <div className="flex justify-center pt-6">
           <Button type="submit" size="lg" className="px-16">
-            Submit Commission
+            {isEdit ? "Update Commission" : "Submit Commission"}
           </Button>
         </div>
       </Form>

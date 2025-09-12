@@ -10,12 +10,14 @@ export default [
   index("common/pages/home-page.tsx"),
   ...prefix("commissions", [
     index("features/commissions/pages/commissions.tsx"),
-    route("artist/:id", "features/commissions/pages/artist.tsx"),
+    route("artist/:id", "features/commissions/pages/commission-detail-page.tsx"),
     route(":commissionId/like", "features/commissions/pages/commission-like-page.tsx"),
+    route(":commissionId/delete", "features/commissions/pages/commission-delete-page.tsx"),
+    route("edit/:id", "features/commissions/pages/submit-commission.tsx", { id: "edit-commission" }),
     layout("features/commissions/layouts/commissions-layout.tsx", [
       route(":category", "features/commissions/pages/category.tsx"),
     ]),
-    route("create", "features/commissions/pages/submit-commission.tsx"),
+    route("create", "features/commissions/pages/submit-commission.tsx", { id: "create-commission" }),
     route("create/success", "features/commissions/pages/commission-success-page.tsx"),
   ]),
   ...prefix("/auth", [

@@ -4,6 +4,9 @@
 .env
 CLAUD.md
 
+# Development Logs
+CHANGELOG_*.md
+
 # React Router
 /.react-router/
 /build/

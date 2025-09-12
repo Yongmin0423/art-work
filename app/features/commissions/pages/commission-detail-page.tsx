@@ -1,22 +1,29 @@
 // app/routes/artist.$artistId.tsx
 import { Badge } from "~/components/ui/badge";
-import type { Route } from "./+types/artist";
-import { DotIcon } from "lucide-react";
+import type { Route } from "./+types/commission-detail-page";
+import { DotIcon, MoreVertical } from "lucide-react";
 import { MarqueeHorizontal } from "~/common/components/marquee-horizontal";
 import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar";
 import { Separator } from "~/components/ui/separator";
 import SelectPair from "~/components/select-pair";
 import PriceSelector from "../components/price-selector";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "~/components/ui/button";
 import { getCommissionById } from "../queries";
 import { makeSSRClient } from "~/supa-client";
 import { getLoggedInUser } from "~/features/community/queries";
 import { toggleCommissionLike } from "../mutations";
-import { Form, redirect } from "react-router";
+import { Form, Link, redirect, useFetcher, useNavigate } from "react-router";
 import { Textarea } from "~/components/ui/textarea";
 import { Label } from "~/components/ui/label";
 import { createCommissionOrder } from "../mutations";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "~/components/ui/dropdown-menu";
 
 interface CartItem {
   id: string;
@@ -57,7 +64,18 @@ export async function loader({ params, request }: Route.LoaderArgs) {
   if (!id) {
     throw new Response("ID가 필요합니다", { status: 400 });
   }
-  return { commission };
+
+  let isAuthor = false;
+  try {
+    const user = await getLoggedInUser(client);
+    if (user) {
+      isAuthor = user.profile_id === commission.profile_id;
+    }
+  } catch (error) {
+    // 로그인 하지 않은 경우 isAuthor 는 false
+  }
+
+  return { commission, isAuthor };
 }
 
 export const action = async ({ request, params }: Route.ActionArgs) => {
@@ -105,12 +123,14 @@ export const action = async ({ request, params }: Route.ActionArgs) => {
     }
   }
 
-
   return null;
 };
 
 export default function Artist({ loaderData }: Route.ComponentProps) {
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
+  const { isAuthor } = loaderData;
+  const deleteFetcher = useFetcher();
+  const navigate = useNavigate();
 
   // 수량 변경 함수
   const updateQuantity = (id: string, newQuantity: number) => {
@@ -175,6 +195,22 @@ export default function Artist({ loaderData }: Route.ComponentProps) {
     0
   );
 
+  const handleDelete = () => {
+    if (confirm("정말로 이 커미션을 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.")) {
+      deleteFetcher.submit({}, {
+        method: "post",
+        action: `/commissions/${loaderData.commission.commission_id}/delete`
+      });
+    }
+  };
+
+  // 삭제 성공 시 리다이렉트
+  useEffect(() => {
+    if (deleteFetcher.data?.success) {
+      navigate("/commissions");
+    }
+  }, [deleteFetcher.data, navigate]);
+
   return (
     <div className="container mx-auto px-4 md:px-6">
       <div className="w-full rounded-lg">
@@ -208,84 +244,96 @@ export default function Artist({ loaderData }: Route.ComponentProps) {
             ))}
           </div>
           <div className="space-y-2">
-            <h4 className="text-xl md:text-2xl font-bold">About</h4>
+            <h4 className="text-xl md:text-xl font-bold">작가 소개말</h4>
             <p className="text-base md:text-lg">
               {loaderData.commission.artist_bio}
             </p>
           </div>
           <div className="space-y-2">
-            <h4 className="text-xl md:text-2xl font-bold">
-              커미션 타입 및 가격
-            </h4>
-            <ul className="text-base md:text-lg list-disc list-inside">
-              {priceOptions.map((option, index) => (
-                <div key={index} className="mb-3">
-                  <li className="font-semibold">{option.type}</li>
-                  <ul className="ml-6 text-sm md:text-base text-gray-600">
-                    {option.choices.map((choice, choiceIndex) => (
-                      <li key={choiceIndex} className="list-disc mb-1">
-                        {choice.label} - {choice.price.toLocaleString()}원
-                        {choice.description && (
-                          <span className="text-xs md:text-sm text-gray-500">
-                            {" "}
-                            ({choice.description})
-                          </span>
-                        )}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              ))}
-            </ul>
+            <h4 className="text-xl md:text-xl font-bold">설명</h4>
+            <p>{loaderData.commission.description}</p>
           </div>
           <div className="space-y-2">
-            <h4 className="text-xl md:text-2xl font-bold">작품 예시</h4>
+            <h4 className="text-xl md:text-xl font-bold">작품 예시</h4>
             <div className="flex flex-col gap-4">
               {loaderData.commission.images.map((img, idx) => (
                 <img
                   key={idx}
                   src={img}
-                  alt={`포트폴리오 이미지 ${idx + 1}`}
+                  alt={`커미션 이미지 ${idx + 1}`}
                   className="w-full object-cover rounded-lg"
                 />
               ))}
             </div>
           </div>
         </div>
+        {/*오른쪽 주문 섹션 */}
         <div className="lg:col-span-2 space-y-5 mt-8 lg:mt-32 lg:sticky lg:top-20">
           <Form
             method="post"
             className="border rounded-lg p-4 md:p-6 space-y-5"
           >
-            <div className="flex gap-4 md:gap-5">
-              <Avatar className="size-12 md:size-14">
-                <AvatarFallback>
-                  {loaderData.commission.artist_name?.[0] || "A"}
-                </AvatarFallback>
-                {loaderData.commission.artist_avatar_url && (
-                  <AvatarImage src={loaderData.commission.artist_avatar_url} />
-                )}
-              </Avatar>
-              <div className="flex flex-col gap-2">
-                <h4 className="text-base md:text-lg font-bold">
-                  {loaderData.commission.artist_name}
-                </h4>
-                <div className="flex flex-wrap gap-2 md:gap-5">
-                  {loaderData.commission.tags.map((tag) => (
-                    <Badge key={tag} variant={"secondary"}>
-                      #{tag}
-                    </Badge>
-                  ))}
-                </div>
-                <div className="flex items-center gap-4 text-xs md:text-sm">
-                  <span>
-                    ⭐{" "}
-                    {loaderData.commission.artist_avg_rating?.toFixed(1) ||
-                      "N/A"}
-                  </span>
-                  <span>❤️ {loaderData.commission.likes_count || 0}</span>
+            <div className="flex justify-between">
+              <div className="flex gap-4 md:gap-5">
+                <Avatar className="size-12 md:size-14">
+                  <AvatarFallback>
+                    {loaderData.commission.artist_name?.[0] || "A"}
+                  </AvatarFallback>
+                  {loaderData.commission.artist_avatar_url && (
+                    <AvatarImage
+                      src={loaderData.commission.artist_avatar_url}
+                    />
+                  )}
+                </Avatar>
+                <div className="flex flex-col gap-2">
+                  <h4 className="text-base md:text-lg font-bold">
+                    {loaderData.commission.artist_name}
+                  </h4>
+                  <div className="flex flex-wrap gap-2 md:gap-5">
+                    {loaderData.commission.tags.map((tag) => (
+                      <Badge key={tag} variant={"secondary"}>
+                        #{tag}
+                      </Badge>
+                    ))}
+                  </div>
+                  <div className="flex items-center gap-4 text-xs md:text-sm">
+                    <span>
+                      ⭐{" "}
+                      {loaderData.commission.artist_avg_rating?.toFixed(1) ||
+                        "N/A"}
+                    </span>
+                    <span>❤️ {loaderData.commission.likes_count || 0}</span>
+                  </div>
                 </div>
               </div>
+              {isAuthor && (
+                <div>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button variant="outline" size="icon">
+                        <MoreVertical className="h-4 w-4" />
+                        <span className="sr-only">액션 메뉴</span>
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end">
+                      <DropdownMenuItem asChild>
+                        <Link
+                          to={`/commissions/edit/${loaderData.commission.commission_id}`}
+                        >
+                          수정하기
+                        </Link>
+                      </DropdownMenuItem>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem 
+                        className="text-red-600 cursor-pointer"
+                        onClick={handleDelete}
+                      >
+                        삭제하기
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </div>
+              )}
             </div>
             <Separator />
             <div>
