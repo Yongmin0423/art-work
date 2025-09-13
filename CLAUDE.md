@@ -85,3 +85,69 @@ This is a React Router v7 application with SSR (Server-Side Rendering) using:
 - Supabase project integration for auth and real-time features
 - Database migrations managed through Drizzle Kit
 - TypeScript types auto-generated from Supabase schema
+
+## Resume-worthy Technical Implementations
+
+### Advanced UI/UX Patterns
+**Optimistic UI with Debouncing**: 
+- Commission likes: `useDebouncedFetcher(300)` + `useState` for immediate UI feedback
+- Community upvotes: Instant visual updates before server confirmation
+- Custom hook pattern for reusable debounced API calls
+
+**TanStack Table Integration**:
+- Advanced data tables with sorting, filtering, pagination
+- Column visibility controls and row selection
+- Used in admin panels for commission/order management
+
+### React Router v7 SSR Architecture
+**Modern Data Loading**:
+- Server-side data fetching with `loader` functions returning plain objects
+- Type-safe component props with `Route.ComponentProps<typeof loader>`
+- No client-side data fetching hooks needed (`useLoaderData` eliminated)
+
+**Sophisticated Routing**:
+- Nested layouts with prefix grouping (`/auth/*`, `/my/*`, `/admin/*`)
+- Dynamic route parameters with type generation
+- Layout-based authentication and authorization
+
+### Database Architecture & Security
+**Row Level Security (RLS)**:
+- Comprehensive RLS policies defined inline with Drizzle schema
+- User-specific data access controls across all tables
+- Admin-level and user-level permission separation
+
+**Advanced Schema Design**:
+- UUID primary keys with `defaultRandom()` for security
+- CASCADE delete relationships for data consistency
+- Korean timezone defaults (`Asia/Seoul`) for localization
+- Feature-distributed schema files for modularity
+
+### Performance Optimizations
+**Debounced API Calls**:
+- Custom `useDebouncedFetcher` hook with 300ms delay
+- Prevents excessive API requests during rapid user interactions
+- Maintains optimistic UI state during debounce period
+
+**SSR Performance**:
+- Server-side rendering for SEO and initial load performance
+- Hydration-friendly component architecture
+- Static asset optimization with Vite bundler
+
+### Type Safety & Developer Experience
+**Comprehensive TypeScript**:
+- Strict mode enabled with full type coverage
+- Auto-generated route types from React Router v7
+- Database types generated from Supabase schema
+- Path aliases (`~/`) for clean imports
+
+### Business Logic Implementation
+**Commission Marketplace**:
+- Complete order lifecycle from creation to completion
+- Status transitions (pending → accepted → in_progress → completed)
+- Real-time messaging between artists and clients
+- Review system with rating aggregation
+
+**Admin Management System**:
+- Comprehensive dashboard for commission oversight
+- Order tracking and status management
+- User management and content moderation tools
