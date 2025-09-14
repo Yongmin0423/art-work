@@ -53,23 +53,43 @@ export function Layout({ children }: { children: React.ReactNode }) {
 }
 
 export const loader = async ({ request }: Route.LoaderArgs) => {
+  console.log("=== ROOT LOADER START ===");
+  console.log("Request URL:", request.url);
+  console.log("Request headers - Cookie:", request.headers.get("Cookie"));
+  
   const { client } = makeSSRClient(request);
+  console.log("Client created successfully");
+  
   const {
     data: { user },
+    error: authError
   } = await client.auth.getUser();
   
-  console.log("Root loader - user:", user?.id);
+  console.log("Auth result:", {
+    user_id: user?.id,
+    user_email: user?.email,
+    user_exists: !!user,
+    auth_error: authError?.message
+  });
   
   if (user) {
+    console.log("User found, getting profile...");
     try {
       const profile = await getUserById(client, { id: user.id });
-      console.log("Root loader - profile:", profile);
+      console.log("Profile result:", {
+        profile_id: profile?.profile_id,
+        username: profile?.username,
+        name: profile?.name,
+        profile_exists: !!profile
+      });
       return { user, profile };
     } catch (error) {
-      console.error("Root loader - profile error:", error);
+      console.error("Profile fetch error:", error);
       return { user, profile: null };
     }
   }
+  
+  console.log("No user found, returning null");
   return { user: null, profile: null };
 };
 

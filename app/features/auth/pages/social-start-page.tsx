@@ -17,7 +17,7 @@ export const loader = async ({ params, request }: Route.LoaderArgs) => {
     return redirect("/auth/login");
   }
   const { provider } = data;
-  const redirectTo = `${process.env.NEXT_PUBLIC_SITE_URL}/auth/social/${provider}/complete`;
+  const redirectTo = `https://art-work-three.vercel.app/auth/social/${provider}/complete`;
   const { client, headers } = makeSSRClient(request);
   const {
     data: { url },
