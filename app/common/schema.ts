@@ -54,7 +54,7 @@ export const category_showcase = pgTable(
   {
     showcase_id: uuid("showcase_id").primaryKey().defaultRandom(),
     title: text("title").notNull(),
-    image_url: text("image_url").notNull(),
+    storage_path: text("storage_path").notNull(), // Supabase Storage에서의 파일 경로
     alt_text: text("alt_text").notNull(),
     display_order: integer("display_order").notNull().default(0), // 표시 순서
     is_active: text("is_active").notNull().default("true"), // 활성화 여부

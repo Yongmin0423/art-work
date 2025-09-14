@@ -5,7 +5,9 @@ import { Hero } from "~/components/hero";
 import type { Database } from "~/supa-client";
 
 type CategoryShowcase =
-  Database["public"]["Tables"]["category_showcase"]["Row"];
+  Database["public"]["Tables"]["category_showcase"]["Row"] & {
+    image_url: string;
+  };
 
 // 기본 fallback 데이터
 const defaultFiles = [
