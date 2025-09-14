@@ -77,8 +77,8 @@ export default function ProfileLayout({
             )}
           </div>
 
-          {loaderData.user.bio && (
-            <p className="text-foreground max-w-2xl">{loaderData.user.bio}</p>
+          {loaderData.user.short_intro && (
+            <p className="text-foreground max-w-2xl">{loaderData.user.short_intro}</p>
           )}
 
           {loaderData.user.website && (

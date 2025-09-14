@@ -9,6 +9,7 @@ export const updateUser = async (
     name,
     username,
     job_title,
+    short_intro,
     bio,
     work_status,
     location,
@@ -20,6 +21,7 @@ export const updateUser = async (
     name?: string;
     username?: string;
     job_title?: string;
+    short_intro?: string;
     bio?: string;
     work_status?: string;
     location?: string;
@@ -32,6 +34,7 @@ export const updateUser = async (
     name,
     username,
     job_title,
+    short_intro,
     bio,
     work_status,
     location,

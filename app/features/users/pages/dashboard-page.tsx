@@ -42,6 +42,7 @@ export default function DashboardPage() {
 
   return (
     <div className="w-full space-y-5">
+      <h1>차후 구현 예정인 페이지입니다</h1>
       <h1 className="text-2xl font-semibold mb-6">
         {isAdmin ? "관리자 대시보드" : "Dashboard"}
       </h1>
@@ -83,7 +84,7 @@ export default function DashboardPage() {
             </ChartContainer>
           </CardContent>
         </Card>
-        
+
         {isAdmin && (
           <Card>
             <CardHeader>

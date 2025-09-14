@@ -11,7 +11,25 @@ as $$
 begin
     -- 예외 처리 추가
     begin
-        if new.raw_user_meta_data ? 'name' and new.raw_user_meta_data ? 'username' then
+        -- Kakao 로그인인지 확인
+        if new.raw_app_meta_data ? 'provider' AND new.raw_app_meta_data ->> 'provider' = 'kakao' then
+            -- Kakao 로그인 사용자 프로필 생성
+            insert into public.profiles (
+                profile_id, 
+                name, 
+                username, 
+                role, 
+                avatar_url
+            )
+            values (
+                new.id,
+                coalesce(new.raw_user_meta_data ->> 'name', 'Kakao User'),
+                coalesce(new.raw_user_meta_data ->> 'preferred_username', 'kakao_user') || '_' || substr(md5(random()::text), 1, 5),
+                'user',
+                new.raw_user_meta_data ->> 'avatar_url'
+            );
+        elsif new.raw_user_meta_data ? 'name' and new.raw_user_meta_data ? 'username' then
+            -- 일반적인 소셜 로그인 (GitHub 등)
             insert into public.profiles (
                 profile_id, 
                 username, 
@@ -23,6 +41,7 @@ begin
                 new.raw_user_meta_data ->> 'name'
             );
         else
+            -- 기본 이메일 회원가입 또는 메타데이터가 없는 경우
             insert into public.profiles (
                 profile_id, 
                 username, 
@@ -34,6 +53,7 @@ begin
                 'Anonymous User'
             );
         end if;
+
     exception
         when others then
             -- 에러가 발생해도 사용자 생성은 계속 진행
