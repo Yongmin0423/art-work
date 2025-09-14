@@ -409,7 +409,7 @@ export default function Navigation({
               {/* 계정 */}
               <DropdownMenuGroup>
                 <DropdownMenuItem asChild className="cursor-pointer">
-                  <Link to="/my/profile">
+                  <Link to={`/users/${username}`}>
                     <UserIcon className="size-4 mr-2" />내 프로필
                   </Link>
                 </DropdownMenuItem>

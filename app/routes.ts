@@ -87,7 +87,7 @@ export default [
         ),
       ]),
     ]),
-    route("profile", "features/users/pages/my-profile-page.tsx"),
+
     route("settings", "features/users/pages/settings-page.tsx"),
     route("/portfolio/new", "features/users/pages/portfolio-create-page.tsx"),
     route(
