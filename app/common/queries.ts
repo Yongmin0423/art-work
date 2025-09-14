@@ -34,7 +34,17 @@ export async function getCategoryShowcase(client: SupabaseClient<Database>) {
     return [];
   }
 
-  return data;
+  // storage_path에서 publicUrl 생성
+  return data.map((item) => {
+    const { data: { publicUrl } } = client.storage
+      .from("category-images")
+      .getPublicUrl(item.storage_path);
+    
+    return {
+      ...item,
+      image_url: publicUrl, // BentoDemo에서 사용할 수 있도록 image_url 필드 추가
+    };
+  });
 }
 
 export async function requireAdmin(

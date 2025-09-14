@@ -70,9 +70,9 @@ export type Database = {
           alt_text: string
           created_at: string
           display_order: number
-          image_url: string
           is_active: string
           showcase_id: string
+          storage_path: string
           title: string
           updated_at: string
         }
@@ -80,9 +80,9 @@ export type Database = {
           alt_text: string
           created_at?: string
           display_order?: number
-          image_url: string
           is_active?: string
           showcase_id?: string
+          storage_path: string
           title: string
           updated_at?: string
         }
@@ -90,9 +90,9 @@ export type Database = {
           alt_text?: string
           created_at?: string
           display_order?: number
-          image_url?: string
           is_active?: string
           showcase_id?: string
+          storage_path?: string
           title?: string
           updated_at?: string
         }

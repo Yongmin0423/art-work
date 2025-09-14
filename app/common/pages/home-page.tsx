@@ -1,15 +1,8 @@
-import CategoryCard from "~/components/category-card";
 import { Hero } from "~/components/hero";
-import { Button } from "~/components/ui/button";
-import { Input } from "~/components/ui/input";
-import ArtistCard from "~/features/commissions/components/artist-card";
 import { BentoDemo } from "../components/bento-grid";
 import type { Route } from "./+types/home-page";
-import {
-  getFeaturedWeeklyCommissions,
-  getMarketplaceImages,
-} from "~/features/commissions/queries";
-import { getActiveLogo, getCategoryShowcase } from "~/common/queries";
+import { getMarketplaceImages } from "~/features/commissions/queries";
+import { getCategoryShowcase } from "~/common/queries";
 import { makeSSRClient } from "~/supa-client";
 import { BlurFade } from "components/magicui/blur-fade";
 
@@ -27,20 +20,16 @@ export const meta = () => {
 
 export const loader = async ({ request }: Route.LoaderArgs) => {
   const { client } = makeSSRClient(request);
-  const [featuredCommissions, logo, categoryShowcase, marketplaceImages] =
-    await Promise.all([
-      getFeaturedWeeklyCommissions(client),
-      getActiveLogo(client),
-      getCategoryShowcase(client),
-      getMarketplaceImages(client),
-    ]);
+  const [categoryShowcase, marketplaceImages] = await Promise.all([
+    getCategoryShowcase(client),
+    getMarketplaceImages(client),
+  ]);
 
-  return { featuredCommissions, logo, categoryShowcase, marketplaceImages };
+  return { categoryShowcase, marketplaceImages };
 };
 
 export default function HomePage({ loaderData }: Route.ComponentProps) {
-  const { featuredCommissions, logo, categoryShowcase, marketplaceImages } =
-    loaderData;
+  const { categoryShowcase, marketplaceImages } = loaderData;
 
   // 데이터베이스에서 가져온 이미지들을 사용, 만약 없으면 기본 이미지들 사용
   const images =
