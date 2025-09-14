@@ -18,6 +18,7 @@ export const loader = async ({ params, request }: Route.LoaderArgs) => {
   }
   const { provider } = data;
   const redirectTo = `https://art-work-three.vercel.app/auth/social/${provider}/complete`;
+  console.log("Social start - redirectTo:", redirectTo);
   const { client, headers } = makeSSRClient(request);
   const {
     data: { url },

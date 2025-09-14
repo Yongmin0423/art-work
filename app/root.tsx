@@ -15,6 +15,36 @@ import "./app.css";
 import Navigation from "./components/navigation";
 import { makeSSRClient } from "./supa-client";
 import { getUserById } from "./features/users/queries";
+import { getActiveLogo } from "./common/queries";
+
+export const meta: Route.MetaFunction = ({ data }) => {
+  const logoUrl = data?.logo?.image_url || "/아트워크로고.png";
+
+  return [
+    { charset: "utf-8" },
+    { name: "viewport", content: "width=device-width,initial-scale=1" },
+    { title: "아트워크 - 커미션 마켓플레이스" },
+    {
+      name: "description",
+      content: "아티스트와 클라이언트를 연결하는 커미션 플랫폼",
+    },
+    { property: "og:title", content: "아트워크 - 커미션 마켓플레이스" },
+    {
+      property: "og:description",
+      content: "아티스트와 클라이언트를 연결하는 커미션 플랫폼",
+    },
+    { property: "og:type", content: "website" },
+    { property: "og:url", content: "https://artwork.com" },
+    { property: "og:image", content: logoUrl },
+    { name: "twitter:card", content: "summary_large_image" },
+    { name: "twitter:title", content: "아트워크 - 커미션 마켓플레이스" },
+    {
+      name: "twitter:description",
+      content: "아티스트와 클라이언트를 연결하는 커미션 플랫폼",
+    },
+    { name: "twitter:image", content: logoUrl },
+  ];
+};
 
 export const links: Route.LinksFunction = () => [
   {
@@ -56,41 +86,45 @@ export const loader = async ({ request }: Route.LoaderArgs) => {
   console.log("=== ROOT LOADER START ===");
   console.log("Request URL:", request.url);
   console.log("Request headers - Cookie:", request.headers.get("Cookie"));
-  
+
   const { client } = makeSSRClient(request);
   console.log("Client created successfully");
-  
+
   const {
     data: { user },
-    error: authError
+    error: authError,
   } = await client.auth.getUser();
-  
+
   console.log("Auth result:", {
     user_id: user?.id,
     user_email: user?.email,
     user_exists: !!user,
-    auth_error: authError?.message
+    auth_error: authError?.message,
   });
-  
+
   if (user) {
     console.log("User found, getting profile...");
     try {
-      const profile = await getUserById(client, { id: user.id });
+      const [profile, logo] = await Promise.all([
+        getUserById(client, { id: user.id }),
+        getActiveLogo(client),
+      ]);
       console.log("Profile result:", {
         profile_id: profile?.profile_id,
         username: profile?.username,
         name: profile?.name,
-        profile_exists: !!profile
+        profile_exists: !!profile,
       });
-      return { user, profile };
+      return { user, profile, logo };
     } catch (error) {
       console.error("Profile fetch error:", error);
-      return { user, profile: null };
+      return { user, profile: null, logo: null };
     }
   }
-  
+
   console.log("No user found, returning null");
-  return { user: null, profile: null };
+  const logo = await getActiveLogo(client);
+  return { user: null, profile: null, logo };
 };
 
 export default function App({ loaderData }: Route.ComponentProps) {
