@@ -1,0 +1,1 @@
+CREATE POLICY "commission-images-select-policy-auth" ON "commission_images" AS PERMISSIVE FOR SELECT TO "authenticated" USING (true);

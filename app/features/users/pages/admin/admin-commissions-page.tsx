@@ -5,7 +5,7 @@ import { DataTable } from "../../components/commissions-table/data-table";
 import {
   columns,
   type Commission,
-} from "../../components/commissions-table/columns";
+} from "../../components/commissions-table/admin-columns";
 import type { Route } from "./+types/admin-commissions-page";
 
 export const meta: Route.MetaFunction = () => {

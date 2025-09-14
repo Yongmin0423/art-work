@@ -3,7 +3,7 @@ import { Button } from "~/components/ui/button";
 import { PlusIcon } from "lucide-react";
 import { makeSSRClient } from "~/supa-client";
 import { getUserProfile } from "../queries";
-import { getCommissionsByArtist } from "../../commissions/queries";
+import { getAvailableCommissionsByArtist } from "../../commissions/queries";
 import ArtistCard from "../../commissions/components/artist-card";
 import type { Route } from "./+types/profile-commissions-page";
 
@@ -16,8 +16,8 @@ export const loader = async ({ request, params }: Route.LoaderArgs) => {
       username: params.username as string,
     });
 
-    // 해당 사용자의 커미션들 가져오기
-    const commissions = await getCommissionsByArtist(
+    // 해당 사용자의 커미션들 가져오기 (공개된 것만)
+    const commissions = await getAvailableCommissionsByArtist(
       client,
       profile.profile_id
     );

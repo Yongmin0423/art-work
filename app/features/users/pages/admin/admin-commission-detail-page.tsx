@@ -15,31 +15,108 @@ import {
   ShoppingCart,
   User,
 } from "lucide-react";
-import { Link, Form } from "react-router";
+import { Link, Form, redirect } from "react-router";
 import { useState } from "react";
 import { getStatusBadge } from "~/utils/commission";
 import type { Route } from "./+types/admin-commission-detail-page";
 
 export const loader = async ({ params, request }: Route.LoaderArgs) => {
   const { id } = params;
+  console.log("=== ADMIN COMMISSION DETAIL LOADER START ===");
+  console.log("Request URL:", request.url);
+  console.log("Commission ID from params:", id);
+  console.log("ID type:", typeof id);
+
   if (!id) {
+    console.error("No ID provided in params");
     throw new Response("ID가 필요합니다", { status: 400 });
   }
 
   const { client, headers } = makeSSRClient(request);
 
-  // 관리자 권한 체크
-  await requireAdmin(client, request);
+  try {
+    // 관리자 권한 체크
+    console.log("=== CHECKING ADMIN PERMISSIONS ===");
+    const {
+      data: { user },
+      error: authError,
+    } = await client.auth.getUser();
+    console.log("Auth result:", {
+      user_id: user?.id,
+      auth_error: authError?.message,
+    });
 
-  const commission = await getCommissionById(client, {
-    commissionId: Number(id),
-  });
+    if (authError || !user) {
+      console.error("Auth failed, redirecting to login");
+      throw redirect("/auth/login");
+    }
 
-  if (!commission) {
-    throw new Response("커미션을 찾을 수 없습니다", { status: 404 });
+    const { data: profile, error: profileError } = await client
+      .from("profiles")
+      .select("*")
+      .eq("profile_id", user.id)
+      .single();
+
+    console.log("Profile result:", {
+      profile_id: profile?.profile_id,
+      role: profile?.role,
+      profile_error: profileError?.message,
+    });
+
+    if (profileError) {
+      console.error("Profile error occurred:", profileError);
+      throw redirect("/");
+    }
+    
+    if (!profile) {
+      console.error("Profile not found");
+      throw redirect("/");
+    }
+    
+    if (profile.role !== "admin") {
+      console.error("User role is not admin:", profile.role);
+      throw redirect("/");
+    }
+    console.log("✅ Admin check passed");
+
+    // 커미션 데이터 가져오기
+    console.log("=== FETCHING COMMISSION DATA ===");
+    console.log("Parsed commission ID:", Number(id));
+
+    const commission = await getCommissionById(client, {
+      commissionId: Number(id),
+    });
+
+    console.log("Commission result:", {
+      found: !!commission,
+      commission_id: commission?.commission_id,
+      title: commission?.title,
+      status: commission?.status,
+      artist_name: commission?.artist_name,
+    });
+
+    if (!commission) {
+      console.error("Commission not found");
+      throw new Response("커미션을 찾을 수 없습니다", { status: 404 });
+    }
+
+    console.log("✅ Commission fetched successfully");
+    console.log("=== RETURNING FROM LOADER ===");
+    console.log("Commission object keys:", Object.keys(commission));
+    console.log("Commission sample fields:", {
+      commission_id: commission.commission_id,
+      title: commission.title?.substring(0, 20),
+      status: commission.status,
+      artist_name: commission.artist_name
+    });
+    
+    return { commission, headers };
+  } catch (error) {
+    console.error("=== ADMIN COMMISSION DETAIL LOADER ERROR ===");
+    console.error("Error type:", error?.constructor?.name);
+    console.error("Full error:", error);
+    throw error;
   }
-
-  return { commission, headers };
 };
 
 export const action = async ({ request, params }: Route.ActionArgs) => {
@@ -108,7 +185,21 @@ export default function AdminCommissionDetailPage({
   loaderData,
   actionData,
 }: Route.ComponentProps) {
+  console.log("=== ADMIN COMMISSION DETAIL COMPONENT RENDER ===");
+  console.log("Loader data:", loaderData);
+  console.log("Commission data:", loaderData?.commission);
+
   const { commission } = loaderData;
+
+  console.log("Commission fields check:", {
+    commission_id: commission?.commission_id,
+    title: commission?.title,
+    images: commission?.images,
+    images_type: typeof commission?.images,
+    images_length: commission?.images?.length,
+    created_at: commission?.created_at,
+    artist_name: commission?.artist_name,
+  });
   const [showRejectForm, setShowRejectForm] = useState(false);
 
   const formatPrice = (price: number) => {

@@ -61,6 +61,11 @@ export const reviews = pgTable(
       to: anonRole,
       using: sql`true`,
     }),
+    pgPolicy("reviews-select-policy-auth", {
+      for: "select",
+      to: authenticatedRole,
+      using: sql`true`,
+    }),
     // 주문한 클라이언트만 리뷰 작성 가능
     pgPolicy("reviews-insert-policy", {
       for: "insert",

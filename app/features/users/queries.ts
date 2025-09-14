@@ -47,8 +47,6 @@ export const getUserById = async (
   client: SupabaseClient<Database>,
   { id }: { id: string }
 ) => {
-  console.log("getUserById called with id:", id);
-  
   const { data, error } = await client
     .from("profiles")
     .select(
@@ -57,8 +55,6 @@ export const getUserById = async (
     .eq("profile_id", id)
     .maybeSingle();
 
-  console.log("Query result:", { data, error });
-  
   if (error) {
     console.error("getUserById error:", error);
     throw error;

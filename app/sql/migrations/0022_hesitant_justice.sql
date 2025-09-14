@@ -1,0 +1,1 @@
+CREATE POLICY "commission-select-policy-auth" ON "commission" AS PERMISSIVE FOR SELECT TO "authenticated" USING (true);
