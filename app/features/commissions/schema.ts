@@ -82,6 +82,12 @@ export const commission = pgTable(
       to: anonRole,
       using: sql`true`,
     }),
+    // 인증된 사용자도 모든 커미션을 볼 수 있음
+    pgPolicy("commission-select-policy-auth", {
+      for: "select",
+      to: authenticatedRole,
+      using: sql`true`,
+    }),
     // 인증된 사용자만 커미션 생성 가능
     pgPolicy("commission-insert-policy", {
       for: "insert",
@@ -138,6 +144,11 @@ export const commissionImages = pgTable(
     pgPolicy("commission-images-select-policy", {
       for: "select",
       to: anonRole,
+      using: sql`true`,
+    }),
+    pgPolicy("commission-images-select-policy-auth", {
+      for: "select",
+      to: authenticatedRole,
       using: sql`true`,
     }),
     pgPolicy("commission-images-insert-policy", {

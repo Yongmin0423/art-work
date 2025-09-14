@@ -69,18 +69,50 @@ export const getCommissionById = async (
   client: SupabaseClient<Database>,
   { commissionId }: { commissionId: number }
 ) => {
+  console.log("=== GET COMMISSION BY ID ===");
+  console.log("Commission ID:", commissionId);
+  console.log("Commission ID type:", typeof commissionId);
+
   const { data, error } = await client
     .from("commission_with_artist")
     .select("*")
     .eq("commission_id", commissionId)
     .single();
 
-  if (error) throw error;
+  console.log("Query result:", {
+    data_found: !!data,
+    error_message: error?.message,
+    error_code: error?.code,
+    error_details: error?.details,
+  });
+
+  if (error) {
+    console.error("Commission query error:", error);
+    throw error;
+  }
+
+  console.log("✅ getCommissionById returning data successfully");
   return data;
 };
 
 // 특정 artist의 commission들 조회
 export const getCommissionsByArtist = async (
+  client: SupabaseClient<Database>,
+  artistId: string
+) => {
+  const { data, error } = await client
+    .from("commission_with_artist")
+    .select("*")
+    .eq("profile_id", artistId);
+  // 모든 상태의 커미션을 조회 (pending_approval, available, rejected 등)
+
+  if (error) {
+    throw new Error(error.message);
+  }
+  return data;
+};
+// 공개된 커미션만 조회 (프로필 페이지용)
+export const getAvailableCommissionsByArtist = async (
   client: SupabaseClient<Database>,
   artistId: string
 ) => {
@@ -634,7 +666,11 @@ export const getRequestedOrders = async (
 // 사용자가 좋아요한 커미션들 조회
 export const getUserLikedCommissions = async (
   client: SupabaseClient<Database>,
-  { userId, limit = 20, offset = 0 }: { userId: string; limit?: number; offset?: number }
+  {
+    userId,
+    limit = 20,
+    offset = 0,
+  }: { userId: string; limit?: number; offset?: number }
 ) => {
   // 1단계: 좋아요한 commission_id들 가져오기
   const { data: likedIds, error: likeError } = await client
@@ -651,15 +687,20 @@ export const getUserLikedCommissions = async (
   const { data, error } = await client
     .from("commission_with_artist")
     .select("*")
-    .in("commission_id", likedIds.map(x => x.commission_id))
+    .in(
+      "commission_id",
+      likedIds.map((x) => x.commission_id)
+    )
     .eq("status", "available");
 
   if (error) throw error;
 
-  return data?.map((commission) => ({
-    ...commission,
-    tags: [commission.category, ...toStringArray(commission.tags)],
-    images: toStringArray(commission.images),
-    isLiked: true,
-  })) || [];
+  return (
+    data?.map((commission) => ({
+      ...commission,
+      tags: [commission.category, ...toStringArray(commission.tags)],
+      images: toStringArray(commission.images),
+      isLiked: true,
+    })) || []
+  );
 };

@@ -83,38 +83,20 @@ export function Layout({ children }: { children: React.ReactNode }) {
 }
 
 export const loader = async ({ request }: Route.LoaderArgs) => {
-  console.log("=== ROOT LOADER START ===");
-  console.log("Request URL:", request.url);
-  console.log("Request headers - Cookie:", request.headers.get("Cookie"));
-
   const { client } = makeSSRClient(request);
-  console.log("Client created successfully");
 
   const {
     data: { user },
     error: authError,
   } = await client.auth.getUser();
 
-  console.log("Auth result:", {
-    user_id: user?.id,
-    user_email: user?.email,
-    user_exists: !!user,
-    auth_error: authError?.message,
-  });
-
   if (user) {
-    console.log("User found, getting profile...");
     try {
       const [profile, logo] = await Promise.all([
         getUserById(client, { id: user.id }),
         getActiveLogo(client),
       ]);
-      console.log("Profile result:", {
-        profile_id: profile?.profile_id,
-        username: profile?.username,
-        name: profile?.name,
-        profile_exists: !!profile,
-      });
+
       return { user, profile, logo };
     } catch (error) {
       console.error("Profile fetch error:", error);
@@ -122,7 +104,6 @@ export const loader = async ({ request }: Route.LoaderArgs) => {
     }
   }
 
-  console.log("No user found, returning null");
   const logo = await getActiveLogo(client);
   return { user: null, profile: null, logo };
 };
