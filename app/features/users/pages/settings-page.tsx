@@ -29,6 +29,7 @@ const formSchema = z.object({
   name: z.string().min(1),
   username: z.string().min(1),
   job_title: z.string().min(1),
+  short_intro: z.string().optional(),
   bio: z.string().optional(),
   work_status: z.string().min(1),
   location: z.string().optional(),
@@ -67,13 +68,14 @@ export const action = async ({ request }: Route.ActionArgs) => {
     if (!success) {
       return { formErrors: error.flatten().fieldErrors };
     }
-    const { name, username, job_title, bio, work_status, location, website } =
+    const { name, username, job_title, short_intro, bio, work_status, location, website } =
       data;
     const user = await updateUser(client, {
       id: userId?.profile_id,
       name,
       username,
       job_title,
+      short_intro,
       bio,
       work_status,
       location,
@@ -165,11 +167,27 @@ export default function SettingsPage({
               </Alert>
             ) : null}
             <InputPair
-              label="Bio"
-              description="Tell others about yourself"
+              label="간단 소개"
+              description="프로필에 표시될 10자 내외의 한줄 소개"
+              id="short_intro"
+              name="short_intro"
+              placeholder="감성적인 일러스트를 그리는 작가"
+              defaultValue={loaderData.user?.short_intro || ""}
+            />
+            {actionData?.formErrors && "short_intro" in actionData?.formErrors ? (
+              <Alert>
+                <AlertTitle>Error</AlertTitle>
+                <AlertDescription>
+                  {actionData.formErrors?.short_intro?.join(", ")}
+                </AlertDescription>
+              </Alert>
+            ) : null}
+            <InputPair
+              label="자기소개"
+              description="상세한 자기소개 (프로필 페이지에 표시)"
               id="bio"
               name="bio"
-              placeholder="Passionate about creating beautiful and functional designs..."
+              placeholder="안녕하세요! 감성적이고 따뜻한 일러스트를 전문으로 하는 작가입니다..."
               textArea
               defaultValue={loaderData.user?.bio ?? ""}
             />

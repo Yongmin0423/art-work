@@ -14,6 +14,7 @@ export const getUserProfile = async (
       username,
       avatar_url,
       name,
+      short_intro,
       bio,
       job_title,
       work_status,
@@ -46,20 +47,22 @@ export const getUserById = async (
   client: SupabaseClient<Database>,
   { id }: { id: string }
 ) => {
-  // 임시: 전체 profiles 데이터 확인
-  const { data: allProfiles, error: allError } = await client
-    .from("profiles")
-    .select("profile_id, username, name");
-
+  console.log("getUserById called with id:", id);
+  
   const { data, error } = await client
     .from("profiles")
     .select(
-      "profile_id,username,avatar_url,name,bio,job_title,work_status,location,website,role"
+      "profile_id,username,avatar_url,name,short_intro,bio,job_title,work_status,location,website,role"
     )
     .eq("profile_id", id)
     .maybeSingle();
 
-  if (error) throw error;
+  console.log("Query result:", { data, error });
+  
+  if (error) {
+    console.error("getUserById error:", error);
+    throw error;
+  }
   return data;
 };
 

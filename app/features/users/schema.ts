@@ -42,7 +42,8 @@ export const profiles = pgTable(
     username: text().notNull().unique(),
     name: text().notNull(),
     job_title: text(),
-    bio: text(),
+    short_intro: text(), // 10자 내외 간단 소개 (layout에 표시)
+    bio: text(), // 상세 자기소개 (profile-page에 표시)
     work_status: text().default("available").notNull(),
     location: text(),
     website: text(),

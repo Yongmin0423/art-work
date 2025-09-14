@@ -1,7 +1,7 @@
-import { GithubIcon, LockIcon, MessageCircleIcon } from 'lucide-react';
-import { Link } from 'react-router';
-import { Button } from '~/components/ui/button';
-import { Separator } from '~/components/ui/separator';
+import { GithubIcon, LockIcon, MessageCircleIcon } from "lucide-react";
+import { Link } from "react-router";
+import { Button } from "~/components/ui/button";
+import { Separator } from "~/components/ui/separator";
 
 export default function AuthButtons() {
   return (
@@ -14,17 +14,13 @@ export default function AuthButtons() {
         <Separator className="w-full" />
       </div>
       <div className="w-full flex flex-col gap-2">
-        <Button
-          variant="outline"
-          className="w-full"
-          asChild
-        >
+        <Button variant="outline" className="w-full" asChild>
           <Link to="/auth/social/kakao/start">
             <MessageCircleIcon className="w-4 h-4" />
             Kakao Talk
           </Link>
         </Button>
-        <Button
+        {/* <Button
           variant="outline"
           className="w-full"
           asChild
@@ -33,12 +29,8 @@ export default function AuthButtons() {
             <GithubIcon className="w-4 h-4" />
             Github
           </Link>
-        </Button>
-        <Button
-          variant="outline"
-          className="w-full"
-          asChild
-        >
+        </Button> */}
+        <Button variant="outline" className="w-full" asChild>
           <Link to="/auth/otp/start">
             <LockIcon className="w-4 h-4" />
             OTP

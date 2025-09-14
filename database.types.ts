@@ -936,6 +936,7 @@ export type Database = {
           name: string
           profile_id: string
           role: Database["public"]["Enums"]["user_role"]
+          short_intro: string | null
           specialties: string[]
           updated_at: string
           username: string
@@ -955,6 +956,7 @@ export type Database = {
           name: string
           profile_id: string
           role?: Database["public"]["Enums"]["user_role"]
+          short_intro?: string | null
           specialties?: string[]
           updated_at?: string
           username: string
@@ -974,6 +976,7 @@ export type Database = {
           name?: string
           profile_id?: string
           role?: Database["public"]["Enums"]["user_role"]
+          short_intro?: string | null
           specialties?: string[]
           updated_at?: string
           username?: string

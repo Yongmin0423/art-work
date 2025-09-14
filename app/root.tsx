@@ -57,9 +57,18 @@ export const loader = async ({ request }: Route.LoaderArgs) => {
   const {
     data: { user },
   } = await client.auth.getUser();
+  
+  console.log("Root loader - user:", user?.id);
+  
   if (user) {
-    const profile = await getUserById(client, { id: user.id });
-    return { user, profile };
+    try {
+      const profile = await getUserById(client, { id: user.id });
+      console.log("Root loader - profile:", profile);
+      return { user, profile };
+    } catch (error) {
+      console.error("Root loader - profile error:", error);
+      return { user, profile: null };
+    }
   }
   return { user: null, profile: null };
 };
