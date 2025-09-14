@@ -11,35 +11,43 @@ import { COMMISSION_CATEGORIES } from "../constants";
 import { makeSSRClient } from "~/supa-client";
 import { getLoggedInUser } from "~/features/community/queries";
 import { z } from "zod";
-import { createCommission, createCommissionImage, updateCommission } from "../mutations";
+import {
+  createCommission,
+  createCommissionImage,
+  updateCommission,
+} from "../mutations";
 import { getCommissionById } from "../queries";
 import { Separator } from "~/components/ui/separator";
 import { Badge } from "~/components/ui/badge";
 
 export const meta: Route.MetaFunction = ({ params }) => {
   const isEdit = params.id;
-  return [{ title: isEdit ? "Edit Commission | wemake" : "Submit Commission | wemake" }];
+  return [
+    {
+      title: isEdit ? "Edit Commission | wemake" : "Submit Commission | wemake",
+    },
+  ];
 };
 
 export const loader = async ({ request, params }: Route.LoaderArgs) => {
   const { client } = await makeSSRClient(request);
   const user = await getLoggedInUser(client); // 로그인 확인
-  
+
   const isEdit = !!params.id;
-  
+
   if (isEdit) {
     const commission = await getCommissionById(client, {
       commissionId: Number(params.id),
     });
-    
+
     // 작성자 권한 확인
     if (commission.profile_id !== user.profile_id) {
       throw new Response("수정 권한이 없습니다.", { status: 403 });
     }
-    
+
     return { commission, isEdit: true };
   }
-  
+
   return { isEdit: false };
 };
 
@@ -68,7 +76,7 @@ type PriceOption = {
 export const action = async ({ request, params }: Route.ActionArgs) => {
   const { client, headers } = makeSSRClient(request);
   const formData = await request.formData();
-  
+
   const isEdit = !!params.id;
 
   // Form validation
@@ -168,10 +176,12 @@ export default function SubmitCommissionPage({
   actionData,
 }: Route.ComponentProps) {
   const { commission, isEdit } = loaderData;
-  
+
   const [portfolioImages, setPortfolioImages] = useState<string[]>([]);
   const [priceOptions, setPriceOptions] = useState<PriceOption[]>(
-    isEdit && commission?.price_options && Array.isArray(commission.price_options)
+    isEdit &&
+      commission?.price_options &&
+      Array.isArray(commission.price_options)
       ? (commission.price_options as unknown as PriceOption[])
       : [{ type: "", choices: [{ label: "", price: 0, description: "" }] }]
   );
@@ -246,8 +256,8 @@ export default function SubmitCommissionPage({
   return (
     <div className="space-y-20">
       <Hero
-        title={isEdit ? "Edit Commission" : "Submit Commission"}
-        subtitle={isEdit ? "Update your artistic services" : "Share your artistic services with the community"}
+        title={isEdit ? "커미션 수정" : "커미션 등록"}
+        subtitle={isEdit ? "커미션 수정하기" : "당신의 작품을 소개해주세요"}
       />
 
       <Form
@@ -265,16 +275,16 @@ export default function SubmitCommissionPage({
         <div className="grid grid-cols-1 md:grid-cols-2 gap-10 md:gap-20">
           {/* 왼쪽 컬럼 - 기본 정보 */}
           <div className="space-y-6">
-            <h3 className="text-2xl font-bold">Basic Information</h3>
+            <h3 className="text-2xl font-bold">기본 정보</h3>
 
             <InputPair
-              label="Commission Title"
-              description="What kind of artwork do you create?"
+              label="제목"
+              description="제목을 작성해주세요"
               id="title"
               name="title"
               required
               defaultValue={isEdit ? commission?.title : ""}
-              placeholder="e.g., Anime Character Illustration"
+              placeholder="캐릭터 일러스트레이트 전문 / 00작가"
             />
             {actionData?.fieldErrors?.title && (
               <div className="text-red-500 text-sm">
@@ -283,14 +293,14 @@ export default function SubmitCommissionPage({
             )}
 
             <InputPair
-              label="Description"
-              description="Detailed description of your commission service"
+              label="설명"
+              description="설명을 작성해주세요"
               id="description"
               name="description"
               textArea
               required
               defaultValue={isEdit ? commission?.description : ""}
-              placeholder="Describe your art style, what you offer, and any special techniques..."
+              placeholder="당신의 장점, 스타일 등 자유롭게 자신을 어필해주세요"
             />
             {actionData?.fieldErrors?.description && (
               <div className="text-red-500 text-sm">
@@ -299,12 +309,12 @@ export default function SubmitCommissionPage({
             )}
 
             <SelectPair
-              label="Category"
-              description="Select the main category for your commission"
+              label="카테고리"
+              description="카테고리를 선택해주세요"
               name="category"
               required
               defaultValue={isEdit ? commission?.category : ""}
-              placeholder="Choose a category"
+              placeholder="카테고리 선택"
               options={COMMISSION_CATEGORIES.map((cat) => ({
                 label: cat.label,
                 value: cat.value,
@@ -317,28 +327,32 @@ export default function SubmitCommissionPage({
             )}
 
             <InputPair
-              label="Tags"
-              description="Comma-separated tags (e.g., anime, portrait, digital)"
+              label="태그"
+              description=",를 통해 태그를 넣어주세요"
               id="tags"
               name="tags"
-              defaultValue={isEdit && Array.isArray(commission?.tags) ? commission.tags.join(", ") : ""}
-              placeholder="anime, portrait, digital, fantasy"
+              defaultValue={
+                isEdit && Array.isArray(commission?.tags)
+                  ? commission.tags.join(", ")
+                  : ""
+              }
+              placeholder="일러스트, 애니메이션, 디지털"
             />
           </div>
 
           {/* 오른쪽 컬럼 - 가격 및 조건 */}
           <div className="space-y-6">
-            <h3 className="text-2xl font-bold">Pricing & Terms</h3>
+            <h3 className="text-2xl font-bold">가격&조건</h3>
 
             <InputPair
-              label="Starting Price"
-              description="Your lowest price (KRW)"
+              label="최소가"
+              description="검색을 위한 최소가를 적어주세요 (KRW)"
               id="price_start"
               name="price_start"
               type="number"
               required
               defaultValue={isEdit ? commission?.price_start?.toString() : ""}
-              placeholder="50000"
+              placeholder="5,000"
             />
             {actionData?.fieldErrors?.price_start && (
               <div className="text-red-500 text-sm">
@@ -349,13 +363,15 @@ export default function SubmitCommissionPage({
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <InputPair
-                  label="Turnaround Days"
-                  description="How many days to complete"
+                  label="작업 기간(일)"
+                  description="작업 소요 평균 시간 "
                   id="turnaround_days"
                   name="turnaround_days"
                   type="number"
                   required
-                  defaultValue={isEdit ? commission?.turnaround_days?.toString() : ""}
+                  defaultValue={
+                    isEdit ? commission?.turnaround_days?.toString() : ""
+                  }
                   placeholder="7"
                 />
                 {actionData?.fieldErrors?.turnaround_days && (
@@ -366,13 +382,15 @@ export default function SubmitCommissionPage({
               </div>
               <div>
                 <InputPair
-                  label="Free Revisions"
-                  description="Number of free revisions"
+                  label="수정기간"
+                  description="작업 완료 후 수정기간"
                   id="revision_count"
                   name="revision_count"
                   type="number"
                   required
-                  defaultValue={isEdit ? commission?.revision_count?.toString() : ""}
+                  defaultValue={
+                    isEdit ? commission?.revision_count?.toString() : ""
+                  }
                   placeholder="3"
                 />
                 {actionData?.fieldErrors?.revision_count && (
@@ -384,8 +402,8 @@ export default function SubmitCommissionPage({
             </div>
 
             <InputPair
-              label="Base Canvas Size"
-              description="Default image dimensions"
+              label="기본 이미지 사이즈"
+              description=""
               id="base_size"
               name="base_size"
               required
@@ -405,9 +423,9 @@ export default function SubmitCommissionPage({
         {/* 가격 옵션 섹션 */}
         <div className="space-y-6">
           <div className="flex justify-between items-center">
-            <h3 className="text-2xl font-bold">Price Options</h3>
+            <h3 className="text-2xl font-bold">가격 옵션</h3>
             <Button type="button" onClick={addPriceOption} variant="outline">
-              Add Option Category
+              옵션 추가하기
             </Button>
           </div>
 
@@ -419,7 +437,7 @@ export default function SubmitCommissionPage({
               >
                 <div className="flex justify-between items-center">
                   <Badge variant="default" className="text-lg">
-                    Option Category {optionIndex + 1}
+                    작품 선택 옵션 {optionIndex + 1}
                   </Badge>
                   {priceOptions.length > 1 && (
                     <Button
@@ -428,7 +446,7 @@ export default function SubmitCommissionPage({
                       variant="destructive"
                       size="sm"
                     >
-                      Remove Category
+                      옵션 제거
                     </Button>
                   )}
                 </div>
@@ -436,12 +454,12 @@ export default function SubmitCommissionPage({
                 {/* 옵션 타입 */}
                 <div>
                   <Label htmlFor={`price_type_${optionIndex}`}>
-                    Option Type
+                    작품 옵션 제목
                   </Label>
                   <Input
                     id={`price_type_${optionIndex}`}
                     name={`price_type_${optionIndex}`}
-                    placeholder="e.g., Character Type, Background Style, etc."
+                    placeholder="예시) 캐릭터 일러스트"
                     value={option.type}
                     onChange={(e) =>
                       updatePriceOptionType(optionIndex, e.target.value)
@@ -455,7 +473,7 @@ export default function SubmitCommissionPage({
                 <div className="space-y-3">
                   <div className="flex justify-between items-center">
                     <Label className="text-sm font-medium">
-                      Available Choices
+                      선택 가능 옵션들
                     </Label>
                     <Button
                       type="button"
@@ -463,7 +481,7 @@ export default function SubmitCommissionPage({
                       variant="outline"
                       size="sm"
                     >
-                      Add Choice
+                      옵션 추가
                     </Button>
                   </div>
 
@@ -474,7 +492,7 @@ export default function SubmitCommissionPage({
                     >
                       <div className="flex justify-between items-center">
                         <span className="text-xs text-gray-500">
-                          Choice {choiceIndex + 1}
+                          선택지 {choiceIndex + 1}
                         </span>
                         {option.choices.length > 1 && (
                           <Button
@@ -486,7 +504,7 @@ export default function SubmitCommissionPage({
                             size="sm"
                             className="text-red-500 hover:text-red-700"
                           >
-                            Remove
+                            삭제
                           </Button>
                         )}
                       </div>
@@ -497,12 +515,12 @@ export default function SubmitCommissionPage({
                             htmlFor={`choice_label_${optionIndex}_${choiceIndex}`}
                             className="text-xs"
                           >
-                            Choice Name
+                            선택지 이름
                           </Label>
                           <Input
                             id={`choice_label_${optionIndex}_${choiceIndex}`}
                             name={`choice_label_${optionIndex}_${choiceIndex}`}
-                            placeholder="e.g., Basic, Premium"
+                            placeholder="예시) SD캐릭터, 상반신 일러스트 등"
                             value={choice.label}
                             onChange={(e) =>
                               updateChoice(
@@ -521,7 +539,7 @@ export default function SubmitCommissionPage({
                             htmlFor={`choice_price_${optionIndex}_${choiceIndex}`}
                             className="text-xs"
                           >
-                            Price (KRW)
+                            가격 (KRW)
                           </Label>
                           <Input
                             id={`choice_price_${optionIndex}_${choiceIndex}`}
@@ -546,12 +564,12 @@ export default function SubmitCommissionPage({
                             htmlFor={`choice_desc_${optionIndex}_${choiceIndex}`}
                             className="text-xs"
                           >
-                            Description
+                            설명
                           </Label>
                           <Input
                             id={`choice_desc_${optionIndex}_${choiceIndex}`}
                             name={`choice_desc_${optionIndex}_${choiceIndex}`}
-                            placeholder="What's included"
+                            placeholder="선택지에 대한 설명을 작성해주세요"
                             value={choice.description || ""}
                             onChange={(e) =>
                               updateChoice(
@@ -574,30 +592,26 @@ export default function SubmitCommissionPage({
 
           <div className="text-sm text-gray-600 bg-blue-50 p-4 rounded-lg space-y-1">
             <p>
-              <strong>Example:</strong>
+              <strong>예시:</strong>
             </p>
             <p>
-              • <strong>Option Type:</strong> "Character Type"
+              • <strong>옵션 선택 제목:</strong> "캐릭터 일러스트"
             </p>
             <p>
-              • <strong>Choices:</strong> "Basic - 50,000원", "Full Body -
-              100,000원", "Detailed - 150,000원"
-            </p>
-            <p>
-              • <strong>Result:</strong> Customers can select one choice from
-              each option category
+              • <strong>선택지:</strong> "SD 캐릭터 - 5,000원", "상반신 -
+              10,000원", "전신 - 5,0000원", "배경 포함 전신 - 10,000원"
             </p>
           </div>
         </div>
 
         <Separator />
 
-        {/* 포트폴리오 이미지 섹션 */}
+        {/*  이미지 섹션 */}
         <div className="space-y-6">
           <div className="flex justify-between items-center">
-            <h3 className="text-2xl font-bold">Portfolio Images</h3>
+            <h3 className="text-2xl font-bold">작품 이미지</h3>
             <Button type="button" onClick={addImageSlot} variant="outline">
-              Add Image Slot
+              이미지 슬롯 추가
             </Button>
           </div>
 
@@ -631,10 +645,9 @@ export default function SubmitCommissionPage({
           </div>
 
           <div className="text-sm text-gray-600 bg-blue-50 p-4 rounded-lg space-y-1">
-            <p>• Upload high-quality examples of your work</p>
-            <p>• Recommended: 1200x1200px or larger</p>
-            <p>• Formats: PNG, JPEG, WebP</p>
-            <p>• Max file size: 5MB per image</p>
+            <p>• 선택에 도움을 줄 수 있도록 자신의 작품을 업로드해주세요</p>
+            <p>• 이미지 형식: PNG, JPEG, WebP</p>
+            <p>• 이미지 최대 사이즈: 5MB per image</p>
           </div>
         </div>
 

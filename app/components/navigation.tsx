@@ -86,12 +86,6 @@ const menus = [
         to: "/commissions/video",
       },
       {
-        name: "모든 샘플 보기",
-        description:
-          "모든 카테고리의 커미션 샘플을 한눈에 살펴보고 마음에 드는 작가님을 찾아보세요.",
-        to: "/commissions",
-      },
-      {
         name: "커미션 등록하기",
         description: "커미션을 받기 위해서 폼을 작성해보세요.",
         to: "/commissions/create",
