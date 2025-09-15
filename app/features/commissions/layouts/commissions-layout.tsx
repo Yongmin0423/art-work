@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Form, Link, Outlet } from "react-router";
+import { Form, Link, Outlet, useParams } from "react-router";
 import {
   Accordion,
   AccordionContent,
@@ -42,10 +42,11 @@ export default function CommissionsLayout({
   loaderData,
 }: Route.ComponentProps) {
   const [isSwitchOn, setIsSwitchOn] = useState(true);
+  const params = useParams();
 
   return (
     <div className="container mx-auto px-4 md:px-6">
-      <div className="flex flex-col items-center mb-3 md:mb-5">
+      <div className="flex flex-col mb-3 md:mb-5">
         <Marquee3D images={loaderData.categoryImages} />
       </div>
       <div className="flex flex-col lg:grid lg:grid-cols-8 gap-5 lg:gap-8">
@@ -67,22 +68,29 @@ export default function CommissionsLayout({
               >
                 <AccordionItem value="category">
                   <AccordionTrigger className="text-base">
-                    Category
+                    카테고리
                   </AccordionTrigger>
                   <AccordionContent>
                     <div className="flex flex-col gap-2 pt-2">
-                      {COMMISSION_CATEGORIES.map((category) => (
-                        <Button
-                          key={category.value}
-                          asChild
-                          variant="outline"
-                          className="justify-start"
-                        >
-                          <Link to={`/commissions/${category.value}`}>
-                            {category.label}
-                          </Link>
-                        </Button>
-                      ))}
+                      {COMMISSION_CATEGORIES.map((category) => {
+                        const isSelected = params.category === category.value;
+                        return (
+                          <Button
+                            key={category.value}
+                            asChild
+                            variant={isSelected ? "default" : "outline"}
+                            className={`justify-start ${
+                              isSelected
+                                ? "bg-primary text-primary-foreground"
+                                : ""
+                            }`}
+                          >
+                            <Link to={`/commissions/${category.value}`}>
+                              {category.label}
+                            </Link>
+                          </Button>
+                        );
+                      })}
                     </div>
                   </AccordionContent>
                 </AccordionItem>

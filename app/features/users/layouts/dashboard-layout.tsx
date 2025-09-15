@@ -44,6 +44,7 @@ export default function DashboardLayout() {
   const location = useLocation();
   const context = useOutletContext<OutletContext>();
   const isAdmin = context?.isAdmin ?? false;
+  const username = context?.username;
 
   return (
     <SidebarProvider className="flex min-h-full w-full">
@@ -144,7 +145,7 @@ export default function DashboardLayout() {
                 >
                   <Link to="/my/commissions/received">
                     <ClipboardListIcon className="size-4" />
-                    <span>받은 커미션</span>
+                    <span>받은 주문</span>
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
@@ -235,11 +236,11 @@ export default function DashboardLayout() {
               <SidebarMenuItem>
                 <SidebarMenuButton
                   asChild
-                  isActive={location.pathname === "/my/profile"}
+                  isActive={location.pathname === `/users/${username}`}
                 >
-                  <Link to="/my/profile">
+                  <Link to={`/users/${username}`}>
                     <UserIcon className="size-4" />
-                    <span>프로필 설정</span>
+                    <span>내 프로필</span>
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>

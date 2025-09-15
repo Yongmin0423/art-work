@@ -37,7 +37,7 @@ export const loader = async ({ request }: Route.LoaderArgs) => {
 export const action = async ({ request }: Route.ActionArgs) => {
   const { client } = makeSSRClient(request);
   const user = await getLoggedInUser(client);
-  
+
   if (!user) {
     throw new Response("로그인이 필요합니다.", { status: 401 });
   }
@@ -52,12 +52,17 @@ export const action = async ({ request }: Route.ActionArgs) => {
         orderId: Number(orderId),
         userId: user.profile_id,
       });
-      
+
       return redirect("/my/commissions/requested?success=cancelled");
     } catch (error) {
       console.error("주문 취소 중 오류:", error);
-      const errorMessage = error instanceof Error ? error.message : "주문 취소 중 오류가 발생했습니다";
-      return redirect(`/my/commissions/requested?error=${encodeURIComponent(errorMessage)}`);
+      const errorMessage =
+        error instanceof Error
+          ? error.message
+          : "주문 취소 중 오류가 발생했습니다";
+      return redirect(
+        `/my/commissions/requested?error=${encodeURIComponent(errorMessage)}`
+      );
     }
   }
 
@@ -66,21 +71,21 @@ export const action = async ({ request }: Route.ActionArgs) => {
 
 const getOrderStatusBadge = (status: string) => {
   switch (status) {
-    case 'pending':
+    case "pending":
       return <Badge variant="outline">대기 중</Badge>;
-    case 'accepted':
+    case "accepted":
       return <Badge variant="default">승인됨</Badge>;
-    case 'in_progress':
+    case "in_progress":
       return <Badge variant="secondary">진행 중</Badge>;
-    case 'revision_requested':
+    case "revision_requested":
       return <Badge variant="outline">수정 요청</Badge>;
-    case 'completed':
+    case "completed":
       return <Badge variant="default">완료</Badge>;
-    case 'cancelled':
+    case "cancelled":
       return <Badge variant="destructive">취소됨</Badge>;
-    case 'refunded':
+    case "refunded":
       return <Badge variant="destructive">환불됨</Badge>;
-    case 'disputed':
+    case "disputed":
       return <Badge variant="destructive">분쟁 중</Badge>;
     default:
       return <Badge variant="outline">{status}</Badge>;
@@ -101,8 +106,8 @@ export default function RequestedCommissionsPage({
 
       <div className="mt-6 space-y-4">
         {orders.map((order) => {
-          const canCancel = ['pending', 'accepted'].includes(order.status);
-          
+          const canCancel = ["pending", "accepted"].includes(order.status);
+
           return (
             <div key={order.order_id} className="border rounded-lg p-4">
               <div className="flex items-start justify-between">
@@ -118,10 +123,11 @@ export default function RequestedCommissionsPage({
                     </span>
                   </div>
                   <p className="text-xs text-muted-foreground mt-1">
-                    주문일: {new Date(order.created_at).toLocaleDateString("ko-KR")}
+                    주문일:{" "}
+                    {new Date(order.created_at).toLocaleDateString("ko-KR")}
                   </p>
                 </div>
-                
+
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <Button variant="ghost" size="icon">
@@ -130,9 +136,7 @@ export default function RequestedCommissionsPage({
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end">
-                    <DropdownMenuItem>
-                      주문 상세보기
-                    </DropdownMenuItem>
+                    <DropdownMenuItem>주문 상세보기</DropdownMenuItem>
                     {canCancel && (
                       <>
                         <DropdownMenuSeparator />
@@ -140,13 +144,19 @@ export default function RequestedCommissionsPage({
                           <Form
                             method="post"
                             onSubmit={(e) => {
-                              if (!confirm("정말로 이 주문을 취소하시겠습니까?")) {
+                              if (
+                                !confirm("정말로 이 주문을 취소하시겠습니까?")
+                              ) {
                                 e.preventDefault();
                               }
                             }}
                           >
                             <input type="hidden" name="action" value="cancel" />
-                            <input type="hidden" name="orderId" value={order.order_id} />
+                            <input
+                              type="hidden"
+                              name="orderId"
+                              value={order.order_id}
+                            />
                             <button type="submit" className="w-full text-left">
                               주문 취소
                             </button>

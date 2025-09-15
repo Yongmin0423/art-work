@@ -175,15 +175,8 @@ export default function Navigation({
 
   return (
     <nav className="flex px-4 md:px-8 lg:px-20 h-16 items-center justify-between backdrop-blur fixed top-0 left-0 right-0 z-50 bg-background/50">
-      <div className="flex items-center">
-        <Link to="/" className="font-bold tracking-tighter text-lg">
-          Arkwork
-        </Link>
-        <Separator
-          orientation="vertical"
-          className="h-6 mx-4 hidden md:block"
-        />
-        {isMobile ? (
+      {isMobile ? (
+        <div className="flex items-center">
           <Sheet open={isOpen} onOpenChange={setIsOpen}>
             <SheetTrigger asChild>
               <Button variant="ghost" size="icon">
@@ -220,7 +213,15 @@ export default function Navigation({
               </div>
             </SheetContent>
           </Sheet>
-        ) : (
+          <Link to="/" className="font-bold tracking-tighter text-lg">
+            Artwork
+          </Link>
+        </div>
+      ) : (
+        <div className="flex items-center">
+          <Link to="/" className="font-bold tracking-tighter text-lg">
+            Artwork
+          </Link>
           <NavigationMenu>
             <NavigationMenuList>
               {menus.map((menu) => (
@@ -272,8 +273,8 @@ export default function Navigation({
               ))}
             </NavigationMenuList>
           </NavigationMenu>
-        )}
-      </div>
+        </div>
+      )}
       {isLoggedIn ? (
         <div className="flex items-center gap-2 md:gap-4">
           {/* <Button size="icon" variant="ghost" asChild className="relative">
@@ -356,7 +357,7 @@ export default function Navigation({
                 <DropdownMenuItem asChild className="cursor-pointer">
                   <Link to="/my/commissions/received">
                     <ClipboardListIcon className="size-4 mr-2" />
-                    받은 커미션
+                    받은 주문
                   </Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem asChild className="cursor-pointer">

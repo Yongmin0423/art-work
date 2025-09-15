@@ -7,6 +7,7 @@ import { toggleCommissionLike } from "../mutations";
 import type { Route } from "./+types/commissions";
 import { makeSSRClient } from "~/supa-client";
 import { getLoggedInUser } from "~/features/community/queries";
+import { useIsMobile } from "~/hooks/use-mobile";
 
 export const meta: Route.MetaFunction = () => {
   return [
@@ -55,7 +56,6 @@ export const loader = async ({ request }: Route.LoaderArgs) => {
   };
 };
 
-
 export default function commissions({ loaderData }: Route.ComponentProps) {
   const {
     characterCommissions,
@@ -64,6 +64,8 @@ export default function commissions({ loaderData }: Route.ComponentProps) {
     live2dCommissions,
     isLoggedIn,
   } = loaderData;
+
+  const isMobile = useIsMobile();
 
   return (
     <div className="space-y-10 md:space-y-16 xl:space-y-20 font-pretendard">
@@ -77,9 +79,11 @@ export default function commissions({ loaderData }: Route.ComponentProps) {
           <h2 className="text-2xl md:text-2xl xl:text-3xl font-bold tracking-tight font-inter">
             캐릭터 일러스트레이션
           </h2>
-          <p className="text-sm md:text-md text-gray-500 font-medium">
-            artwork에서 가장 인기있는 캐릭터 일러스트레이터입니다.
-          </p>
+          {!isMobile && (
+            <p className="text-sm md:text-md text-gray-500 font-medium">
+              artwork에서 가장 인기있는 캐릭터 일러스트레이터입니다.
+            </p>
+          )}
           <Button
             variant="link"
             asChild

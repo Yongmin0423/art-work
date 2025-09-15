@@ -54,6 +54,10 @@ export default [
           "features/users/pages/received-commissions-page.tsx"
         ),
         route(
+          "/received/:orderId",
+          "features/users/pages/received-order-detail-page.tsx"
+        ),
+        route(
           "/requested",
           "features/users/pages/requested-commissions-page.tsx"
         ),

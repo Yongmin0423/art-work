@@ -196,11 +196,18 @@ export default function Artist({ loaderData }: Route.ComponentProps) {
   );
 
   const handleDelete = () => {
-    if (confirm("정말로 이 커미션을 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.")) {
-      deleteFetcher.submit({}, {
-        method: "post",
-        action: `/commissions/${loaderData.commission.commission_id}/delete`
-      });
+    if (
+      confirm(
+        "정말로 이 커미션을 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다."
+      )
+    ) {
+      deleteFetcher.submit(
+        {},
+        {
+          method: "post",
+          action: `/commissions/${loaderData.commission.commission_id}/delete`,
+        }
+      );
     }
   };
 
@@ -275,20 +282,25 @@ export default function Artist({ loaderData }: Route.ComponentProps) {
           >
             <div className="flex justify-between">
               <div className="flex gap-4 md:gap-5">
-                <Avatar className="size-12 md:size-14">
-                  <AvatarFallback>
-                    {loaderData.commission.artist_name?.[0] || "A"}
-                  </AvatarFallback>
-                  {loaderData.commission.artist_avatar_url && (
-                    <AvatarImage
-                      src={loaderData.commission.artist_avatar_url}
-                    />
-                  )}
-                </Avatar>
+                <Link to={`/users/${loaderData.commission.artist_username}`}>
+                  <Avatar className="size-12 md:size-14 cursor-pointer hover:opacity-80 transition-opacity">
+                    <AvatarFallback>
+                      {loaderData.commission.artist_name?.[0] || "A"}
+                    </AvatarFallback>
+                    {loaderData.commission.artist_avatar_url && (
+                      <AvatarImage
+                        src={loaderData.commission.artist_avatar_url}
+                      />
+                    )}
+                  </Avatar>
+                </Link>
                 <div className="flex flex-col gap-2">
-                  <h4 className="text-base md:text-lg font-bold">
+                  <Link
+                    to={`/users/${loaderData.commission.artist_username}`}
+                    className="text-base md:text-lg font-bold hover:text-primary transition-colors"
+                  >
                     {loaderData.commission.artist_name}
-                  </h4>
+                  </Link>
                   <div className="flex flex-wrap gap-2 md:gap-5">
                     {loaderData.commission.tags.map((tag) => (
                       <Badge key={tag} variant={"secondary"}>
@@ -324,7 +336,7 @@ export default function Artist({ loaderData }: Route.ComponentProps) {
                         </Link>
                       </DropdownMenuItem>
                       <DropdownMenuSeparator />
-                      <DropdownMenuItem 
+                      <DropdownMenuItem
                         className="text-red-600 cursor-pointer"
                         onClick={handleDelete}
                       >
