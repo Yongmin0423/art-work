@@ -72,6 +72,18 @@ export default function PostPage({
   const fetcher = useDebouncedFetcher(300);
   const [optimisticUpvotesCount, setOptimisticUpvotesCount] = useState(loaderData.post.upvotes_count || 0);
   const [optimisticIsUpvoted, setOptimisticIsUpvoted] = useState(loaderData.post.is_upvoted);
+  
+  // 원본 상태 보관 (실패시 롤백용)
+  const [originalUpvotesCount] = useState(loaderData.post.upvotes_count || 0);
+  const [originalIsUpvoted] = useState(loaderData.post.is_upvoted);
+
+  // API 요청 실패시 상태 롤백
+  useEffect(() => {
+    if (fetcher.state === 'idle' && fetcher.data?.error) {
+      setOptimisticUpvotesCount(originalUpvotesCount);
+      setOptimisticIsUpvoted(originalIsUpvoted);
+    }
+  }, [fetcher.state, fetcher.data, originalUpvotesCount, originalIsUpvoted]);
   const { isLoggedIn, name, username, avatarUrl } = useOutletContext<{
     isLoggedIn: boolean;
     name: string;

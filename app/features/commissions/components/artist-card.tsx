@@ -11,7 +11,7 @@ import { Heart } from "lucide-react";
 import { Badge } from "~/components/ui/badge";
 import { Link } from "react-router";
 import { useDebouncedFetcher } from "~/hooks/use-debounced-fetcher";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 interface ArtistCardProps {
   id: number;
@@ -41,6 +41,18 @@ export default function ArtistCard({
   const fetcher = useDebouncedFetcher(300);
   const [optimisticIsLiked, setOptimisticIsLiked] = useState(isLiked);
   const [optimisticLikes, setOptimisticLikes] = useState(likes);
+  
+  // 원본 상태 보관 (실패시 롤백용)
+  const [originalIsLiked] = useState(isLiked);
+  const [originalLikes] = useState(likes);
+
+  // API 요청 실패시 상태 롤백
+  useEffect(() => {
+    if (fetcher.state === 'idle' && fetcher.data?.error) {
+      setOptimisticIsLiked(originalIsLiked);
+      setOptimisticLikes(originalLikes);
+    }
+  }, [fetcher.state, fetcher.data, originalIsLiked, originalLikes]);
 
   const handleLikeClick = () => {
     const newIsLiked = !optimisticIsLiked;

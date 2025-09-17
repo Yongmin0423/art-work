@@ -3,7 +3,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar";
 import { Button } from "~/components/ui/button";
 import { Link } from "react-router";
 import { useDebouncedFetcher } from "~/hooks/use-debounced-fetcher";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { cn } from "~/lib/utils";
 import { ChevronUpIcon } from "lucide-react";
 import { DateTime } from "luxon";
@@ -34,6 +34,18 @@ export function PostCard({
   const fetcher = useDebouncedFetcher(300);
   const [optimisticVotesCount, setOptimisticVotesCount] = useState(votesCount);
   const [optimisticIsUpvoted, setOptimisticIsUpvoted] = useState(isUpvoted);
+  
+  // 원본 상태 보관 (실패시 롤백용)
+  const [originalVotesCount] = useState(votesCount);
+  const [originalIsUpvoted] = useState(isUpvoted);
+
+  // API 요청 실패시 상태 롤백
+  useEffect(() => {
+    if (fetcher.state === 'idle' && fetcher.data?.error) {
+      setOptimisticVotesCount(originalVotesCount);
+      setOptimisticIsUpvoted(originalIsUpvoted);
+    }
+  }, [fetcher.state, fetcher.data, originalVotesCount, originalIsUpvoted]);
   
   const absorbClick = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
